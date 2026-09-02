@@ -1,0 +1,4 @@
+[
+  {"id":"media-hero","owner_unit_id":"ai-center","name":"單位主視覺示意","type":"image","alt":"人工智慧中心研究意象示意圖","status":"demo-only"},
+  {"id":"media-course","owner_unit_id":"ai-center","name":"課程附件示意","type":"document","alt":"","status":"demo-only"}
+]

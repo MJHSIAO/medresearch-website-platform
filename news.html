@@ -1,0 +1,28 @@
+﻿<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="醫學研究部最新消息與活動。"><title>最新消息｜醫學研究部</title>
+  <link rel="stylesheet" href="assets/css/base.css"><link rel="stylesheet" href="assets/css/layout.css"><link rel="stylesheet" href="assets/css/components.css"><link rel="stylesheet" href="assets/css/public-site.css"><link rel="stylesheet" href="assets/css/responsive.css">
+</head>
+<body data-root="." data-page="news-list">
+  <a class="skip-link" href="#main-content">跳到主要內容</a><header id="site-header"></header>
+  <div class="breadcrumb-wrap"><nav class="container breadcrumbs" aria-label="麵包屑"><ol><li><a href="index.html">首頁</a></li><li aria-current="page">最新消息</li></ol></nav></div>
+  <main id="main-content" tabindex="-1">
+    <header class="page-header"><div class="container"><span class="eyebrow">News &amp; Events</span><h1>最新消息</h1><p class="page-kicker">查找醫學研究部官網公開的研討會、研究誠信、課程及各單位消息；歷史內容保留供查閱。</p></div></header>
+    <section class="section"><div class="container">
+      <div class="filter-panel" role="search" aria-label="最新消息篩選">
+        <div class="field"><label for="news-keyword">關鍵字</label><input id="news-keyword" type="search" placeholder="搜尋標題、摘要或類別"></div>
+        <div class="field"><label for="news-unit">單位</label><select id="news-unit"><option value="">全部單位</option></select></div>
+        <div class="field"><label for="news-category">類別</label><select id="news-category"><option value="">全部類別</option></select></div>
+        <div class="field"><label for="news-year">年份</label><select id="news-year"><option value="">全部年份</option></select></div>
+        <div class="field"><label for="news-status">狀態</label><select id="news-status"><option value="">全部公開狀態</option><option value="published">已發布</option><option value="expired">已過期</option></select></div>
+      </div>
+      <div class="toolbar"><strong id="news-count" aria-live="polite">載入中</strong><button class="button ghost" id="clear-filters" type="button">清除篩選</button></div>
+      <div class="grid grid-2" id="news-results" aria-live="polite"></div>
+      <p class="pagination"><button class="button secondary" id="load-more" type="button">載入更多</button></p>
+    </div></section>
+  </main><footer id="site-footer"></footer>
+  <script src="assets/js/data-service.js"></script><script src="assets/js/main.js"></script><script src="assets/js/news.js"></script>
+</body>
+</html>
+

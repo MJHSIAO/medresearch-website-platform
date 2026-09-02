@@ -1,0 +1,14 @@
+﻿[
+  {"id":"person-academic-lead","unit_id":"academic-office","name":"吳泓彥","title":"學術研發室主任","bio":"統籌學術研發室業務；姓名與職稱依官方頁面整理。","visibility":"public"},
+  {"id":"person-core-lead","unit_id":"core-laboratory","name":"劉芫宏","title":"共同研究室主任","bio":"統籌共同研究室研究空間與資源；姓名與職稱依官方頁面整理。","visibility":"public"},
+  {"id":"person-core-contacts","unit_id":"core-laboratory","name":"陳健福、許慈恩","title":"共同研究室管理師","bio":"分別負責第一共同研究室（分機4565）及第二共同研究室（分機4566）。","visibility":"public"},
+  {"id":"person-animal-lead","unit_id":"animal-laboratory","name":"羅武嘉","title":"動物實驗室主任","bio":"統籌動物實驗室業務；姓名與職稱依官方頁面整理。","visibility":"public"},
+  {"id":"person-ai-lead","unit_id":"ai-center","name":"林哲光","title":"人工智慧中心主任","bio":"統籌負責任醫療 AI 治理與中心業務；姓名與職稱依官方頁面整理。","visibility":"public"},
+  {"id":"person-ai-team","unit_id":"ai-center","name":"李念庭、蔡丞智、蕭旻荊","title":"人工智慧中心工程師","bio":"人工智慧中心工程團隊，官方頁面所列聯絡分機為2539。","visibility":"public"},
+  {"id":"person-clinical-lead","unit_id":"clinical-trial-center","name":"蔡萬全","title":"臨床試驗中心主任","bio":"統籌臨床試驗中心業務；姓名與職稱依官方頁面整理。","visibility":"public"},
+  {"id":"person-clinical-team","unit_id":"clinical-trial-center","name":"張宣廷、黃儷惠","title":"助理管理師、研究護理師","bio":"協助臨床試驗中心行政與研究執行業務。","visibility":"public"},
+  {"id":"person-cell-lead","unit_id":"cell-therapy-center","name":"徐愷翔","title":"細胞治療中心主任","bio":"統籌細胞治療中心業務；姓名與職稱依官方頁面整理。","visibility":"public"},
+  {"id":"person-cell-contact","unit_id":"cell-therapy-center","name":"黃儷惠","title":"研究護理師","bio":"細胞治療中心聯絡窗口，電話 (02) 7728-1897。","visibility":"public"},
+  {"id":"person-ip-lead","unit_id":"innovation-ip-center","name":"姜智耀","title":"創新智財產學中心主任","bio":"統籌創新智財產學中心業務；姓名與職稱依官方頁面整理。","visibility":"public"},
+  {"id":"person-ip-team","unit_id":"innovation-ip-center","name":"周三芳、馬慶宇","title":"研究員、專員","bio":"協助研發成果、專利與技術移轉相關業務。","visibility":"public"}
+]

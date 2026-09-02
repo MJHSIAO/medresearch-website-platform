@@ -1,0 +1,9 @@
+﻿[
+  {"id":"research-consultation","title":"研究諮詢及協助","description":"從研究問題與計畫設計開始，找到適合的諮詢及支援入口。","icon":"01","href":"content-page.html?page=research-consultation"},
+  {"id":"academic-ethics","title":"學術倫理比對","description":"查看 iThenticate 申請與學術研究規範相關資訊。","icon":"02","href":"content-page.html?page=ethics"},
+  {"id":"experimental-tech","title":"實驗分析技術","description":"連結共同研究室、核心實驗室與實驗分析資源。","icon":"03","href":"content-page.html?page=experimental-tech"},
+  {"id":"statistics","title":"統計分析方法","description":"查找統計方法、諮詢系統與研究資料分析入口。","icon":"04","href":"content-page.html?page=statistics"},
+  {"id":"equipment","title":"儀器設備","description":"瀏覽顯微鏡、流式細胞分析、層析與定量反應設備。","icon":"05","href":"content-page.html?page=equipment"},
+  {"id":"courses","title":"課程資訊","description":"查看研究規範、共研必修、實驗原理及儀器操作課程。","icon":"06","href":"content-page.html?page=courses"},
+  {"id":"downloads","title":"文件表單","description":"依單位查找學術研發、共研、臨床試驗與審查申請表單。","icon":"07","href":"content-page.html?page=downloads"}
+]

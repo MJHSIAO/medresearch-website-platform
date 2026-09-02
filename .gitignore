@@ -1,0 +1,6 @@
+dist/
+*.tgz
+*.tar.gz
+.env
+.env.*
+!.env.example

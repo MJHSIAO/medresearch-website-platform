@@ -1,0 +1,69 @@
+﻿<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="人工智慧中心最新公告、教育訓練、活動資訊、平台更新與專案成果。">
+  <title>最新消息｜人工智慧中心</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/content.js" defer></script>
+  <script src="js/news.js" defer></script>
+  <script src="js/main.js" defer></script>
+</head>
+<body data-area="public">
+  <a class="skip-link" href="#main-content">跳到主要內容</a>
+  <header class="site-header">
+    <nav class="navbar container" aria-label="主要導覽">
+      <a class="brand" href="index.html" aria-label="人工智慧中心首頁"><span class="brand__mark" aria-hidden="true"></span><span class="brand__text">人工智慧中心<small>AI GOVERNANCE &amp; CLINICAL IMPLEMENTATION</small></span></a>
+      <button class="nav-toggle" type="button" aria-label="開啟網站選單" aria-controls="primary-menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      <ul class="nav-list" id="primary-menu">
+        <li><a class="nav-link" href="index.html">首頁</a></li>
+        <li><a class="nav-link" href="origin.html">成立緣由</a></li>
+        <li><a class="nav-link" href="about.html">中心介紹</a></li>
+        <li><a class="nav-link" href="organization.html">組織及辦法</a></li>
+        <li><a class="nav-link" href="strategy.html">落地策略</a></li>
+        <li><a class="nav-link" href="application.html">申請途徑</a></li>
+        <li><a class="nav-link" href="news.html">最新消息</a></li>
+        <li><a class="nav-link" href="contact.html">聯繫窗口</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <section class="page-hero page-hero--structured">
+      <div class="container page-hero__content">
+        <nav class="breadcrumb" aria-label="麵包屑"><a href="index.html">首頁</a><span>/</span><span>最新消息</span></nav>
+        <p class="eyebrow">News &amp; Updates</p>
+        <h1>最新消息</h1>
+        <p>掌握中心公告、教育訓練、活動資訊、平台更新與專案成果。</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="all-news-title">
+      <div class="container">
+        <div class="section-header-row">
+          <div class="section-heading">
+            <h2 id="all-news-title">全部已發布消息</h2>
+            <p class="lead">置頂消息優先，其餘依發布日期由新到舊排列。</p>
+          </div>
+          <a class="button button--outline" href="../admin-demo/news-list.html">前往醫研部內容管理 Demo</a>
+        </div>
+        <div class="news-grid" data-news-list data-news-area="public"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 前台與管理頁共用的消息預覽視窗。 -->
+  <dialog class="news-dialog" data-news-dialog aria-labelledby="news-dialog-title">
+    <button class="dialog-close" type="button" data-close-dialog aria-label="關閉消息預覽">×</button>
+    <div class="news-card__meta"><span class="tag" data-dialog-category></span><time data-dialog-date></time></div>
+    <h2 id="news-dialog-title" data-dialog-title></h2>
+    <p class="news-dialog__summary" data-dialog-summary></p>
+    <div class="news-dialog__content" data-dialog-content></div>
+  </dialog>
+
+  <!-- 全站頁尾由 js/main.js 統一產生，避免多頁內容不同步。 -->
+  <footer class="site-footer"></footer>
+</body>
+</html>
+

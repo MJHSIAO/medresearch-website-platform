@@ -1,0 +1,26 @@
+.admin-body { background: #eef3f1; }
+.admin-topbar { color: #fff; background: var(--green-950); }
+.admin-topbar-row { display: flex; min-height: 4.25rem; align-items: center; justify-content: space-between; gap: 1rem; }
+.admin-brand { color: #fff; font-size: 1.08rem; font-weight: 900; text-decoration: none; }
+.admin-demo-label { padding: 0.25rem 0.55rem; border: 1px solid rgba(255,255,255,0.3); border-radius: 999px; font-size: 0.78rem; }
+.admin-shell { display: grid; grid-template-columns: 16.5rem minmax(0, 1fr); min-height: calc(100vh - 4.25rem); }
+.admin-sidebar { padding: 1.2rem; border-right: 1px solid var(--line); background: #fff; }
+.role-box { padding: 0.9rem; border-radius: var(--radius-sm); background: var(--green-050); }
+.role-box label { display: block; margin-bottom: 0.35rem; font-size: 0.82rem; font-weight: 800; }
+.role-box select { width: 100%; padding: 0.5rem; border: 1px solid #aabdb8; border-radius: 0.4rem; background: #fff; }
+.admin-nav { margin-top: 1.25rem; }
+.admin-nav ul { margin: 0; padding: 0; list-style: none; }
+.admin-nav a { display: block; margin-bottom: 0.25rem; padding: 0.55rem 0.7rem; border-radius: 0.5rem; color: var(--ink); font-weight: 700; text-decoration: none; }
+.admin-nav a:hover, .admin-nav a[aria-current="page"] { color: var(--green-950); background: var(--green-100); }
+.admin-main { min-width: 0; padding: clamp(1.25rem, 4vw, 3rem); }
+.admin-main-inner { width: min(100%, 68rem); margin-inline: auto; }
+.admin-header { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+.admin-header h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); }
+.admin-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+.admin-action { min-height: 8.5rem; }
+.permission-note { margin-bottom: 1.2rem; padding: 0.9rem 1rem; border: 1px solid #e1c36f; border-radius: var(--radius-sm); color: #684600; background: var(--warning-bg); }
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 1rem; }
+.upload-drop { padding: 2rem; border: 2px dashed #8fb1a7; border-radius: var(--radius); text-align: center; background: var(--green-050); }
+.file-preview { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1rem; padding: 1rem; border: 1px solid var(--line); border-radius: var(--radius-sm); background: #fff; }
+.image-preview { display: block; max-width: 20rem; max-height: 13rem; margin: 1rem auto 0; border-radius: var(--radius-sm); object-fit: cover; }
+.admin-mobile-toggle { display: none; }

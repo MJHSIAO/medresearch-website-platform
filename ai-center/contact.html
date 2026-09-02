@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="人工智慧中心單一洽案窗口、聯絡方式與需求諮詢表單。">
+  <title>單一洽案窗口及聯繫方式｜人工智慧中心</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/content.js" defer></script>
+  <script src="js/main.js" defer></script>
+</head>
+<body data-area="public">
+  <a class="skip-link" href="#main-content">跳到主要內容</a>
+  <header class="site-header">
+    <nav class="navbar container" aria-label="主要導覽">
+      <a class="brand" href="index.html" aria-label="人工智慧中心首頁"><span class="brand__mark" aria-hidden="true"></span><span class="brand__text">人工智慧中心<small>AI CENTER</small></span></a>
+      <button class="nav-toggle" type="button" aria-label="開啟網站選單" aria-controls="primary-menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      <ul class="nav-list" id="primary-menu">
+        <li><a class="nav-link" href="index.html">首頁</a></li><li><a class="nav-link" href="origin.html">成立緣由</a></li><li><a class="nav-link" href="about.html">中心介紹</a></li><li><a class="nav-link" href="organization.html">組織及辦法</a></li><li><a class="nav-link" href="strategy.html">落地策略</a></li><li><a class="nav-link" href="application.html">申請途徑</a></li><li><a class="nav-link" href="contact.html">聯繫窗口</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <section class="page-hero">
+      <div class="container page-hero__content">
+        <nav class="breadcrumb" aria-label="麵包屑"><a href="index.html">首頁</a><span>/</span><span>單一洽案窗口及聯繫方式</span></nav>
+        <h1>單一洽案窗口</h1>
+        <p>不確定需求屬於哪個單位也沒關係，由中心窗口協助釐清並媒合合適資源。</p>
+      </div>
+    </section>
+
+    <section class="section section--soft">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Contact Us</p>
+          <h2>從一場需求對話開始</h2>
+          <p class="lead" data-contact-description>如有人工智慧應用構想、專案合作、平台使用或教育訓練需求，請透過人工智慧中心單一窗口與我們聯繫。</p>
+        </div>
+        <div class="contact-panel">
+          <div class="contact-panel__info">
+            <h2>聯繫方式</h2>
+            <p>服務院內智慧醫療應用需求、跨域媒合與流程諮詢。</p>
+            <ul class="contact-list">
+              <!-- 待補正式資訊：請至 js/content.js 統一修改。 -->
+              <li><small>聯絡人</small><strong data-contact-person>【待補正式聯絡人】</strong></li>
+              <li><small>聯絡分機</small><strong data-contact-extension>【待補正式分機】</strong></li>
+              <li><small>電子郵件</small><strong data-contact-email>【待補正式電子郵件】</strong></li>
+              <li><small>辦公地點</small><strong data-contact-location>【待補正式辦公地點】</strong></li>
+            </ul>
+          </div>
+          <div class="contact-panel__form">
+            <h2>需求諮詢表單</h2>
+            <p class="text-muted">此表單只做前端示意，不會送出或儲存任何資料。</p>
+            <form data-demo-form>
+              <div class="form-grid">
+                <div class="form-field"><label for="name">聯絡人姓名</label><input id="name" name="name" type="text" autocomplete="name" required></div>
+                <div class="form-field"><label for="unit">服務單位</label><input id="unit" name="unit" type="text" required></div>
+                <div class="form-field"><label for="email">聯絡信箱</label><input id="email" name="email" type="email" autocomplete="email" required></div>
+                <div class="form-field"><label for="type">需求類型</label><select id="type" name="type" required><option value="">請選擇</option><option>需求諮詢</option><option>專案評估</option><option>教育合作</option><option>其他</option></select></div>
+                <div class="form-field form-field--full"><label for="summary">需求摘要</label><textarea id="summary" name="summary" placeholder="請描述想改善的問題、使用情境與期待成果；請勿填寫任何病人或敏感資料。" required></textarea></div>
+              </div>
+              <p class="form-note">提醒：請勿填寫姓名、病歷號、身分證字號、聯絡資訊、影像或任何可識別病人的資料。</p>
+              <button class="button" type="submit">檢查示意表單</button>
+              <p class="form-message" data-form-message aria-live="polite"></p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-heading section-heading--center">
+          <p class="eyebrow">Before Contact</p>
+          <h2>洽詢前準備</h2>
+        </div>
+        <div class="grid grid--3">
+          <article class="card"><p class="card__number">01</p><h3>描述問題</h3><p>說明目前情境、主要困難及為什麼值得改善。</p></article>
+          <article class="card"><p class="card__number">02</p><h3>想像成果</h3><p>說明希望為使用者、照護品質或流程帶來什麼改變。</p></article>
+          <article class="card"><p class="card__number">03</p><h3>保護資料</h3><p>初次洽詢不提供病人資料，資料需求留待合規流程評估。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--soft">
+      <div class="container content-grid">
+        <article class="prose">
+          <p class="eyebrow">Notice</p>
+          <h2>重要提醒</h2>
+          <ul>
+            <li>本窗口不提供個別病人的診斷、治療或醫療諮詢。</li>
+            <li>緊急醫療需求請依院方正式急診或緊急通報流程處理。</li>
+            <li>研究、採購、資訊安全及倫理審查仍應依院方既有規範辦理。</li>
+            <li>請勿透過示意表單或一般電子郵件傳送敏感資訊。</li>
+          </ul>
+        </article>
+        <aside class="aside-card"><h3>先看申請流程</h3><p class="text-muted">了解需求受理後的五個階段，以及建議準備的資訊。</p><a class="button button--outline" href="application.html">查看申請途徑</a></aside>
+      </div>
+    </section>
+  </main>
+
+  <!-- 全站頁尾由 js/main.js 統一產生，避免多頁內容不同步。 -->
+  <footer class="site-footer"></footer>
+</body>
+</html>

@@ -1,0 +1,29 @@
+﻿{
+  "name": "亞東紀念醫院 醫學研究部",
+  "platform_name": "醫學研究部多單位網站平台",
+  "description": "整合研究服務、最新消息、隸屬單位與研究資源的公開資訊入口。",
+  "notice": "內容依醫學研究部官網整理，資料查核日期 2026-09-01；最新正式資訊仍以原官網為準。",
+  "source_url": "https://depart.femh.org.tw/medresearch/News.html",
+  "source_checked_at": "2026-09-01",
+  "principles": {
+    "spirit": "誠勤樸慎、創新",
+    "mission": "持續提升醫療品質，善盡社會醫療責任",
+    "vision": "成為民眾首選的醫學中心"
+  },
+  "contact": {
+    "unit": "亞東紀念醫院 醫學研究部",
+    "person": "各項業務請依服務或隸屬單位洽詢",
+    "phone": "各單位分機請見隸屬單位頁",
+    "email": "電子郵件請依各單位官方頁面洽詢",
+    "address": "220 新北市板橋區南雅南路二段21號",
+    "transport": "交通與就醫資訊請參閱亞東紀念醫院官網"
+  },
+  "navigation": [
+    { "label": "首頁", "href": "index.html" },
+    { "label": "部門介紹", "href": "content-page.html?page=department-about" },
+    { "label": "研究資源", "href": "content-page.html?page=research-services" },
+    { "label": "最新消息", "href": "news.html" },
+    { "label": "隸屬單位", "href": "units.html" },
+    { "label": "聯絡資訊", "href": "contact.html" }
+  ]
+}

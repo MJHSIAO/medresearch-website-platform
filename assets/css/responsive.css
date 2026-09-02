@@ -1,0 +1,50 @@
+@media (max-width: 62rem) {
+  .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .filter-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .filter-panel .field:first-child { grid-column: 1 / -1; }
+  .hero-grid, .unit-hero-grid { grid-template-columns: 1fr; }
+  .hero-aside { max-width: 36rem; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .admin-actions { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 48rem) {
+  .header-row { min-height: 4.35rem; }
+  .brand-copy span { display: none; }
+  .menu-toggle { display: inline-flex; }
+  .main-nav { position: fixed; inset: calc(4.35rem + 2.9rem) 0 auto; max-height: calc(100vh - 7.25rem); overflow-y: auto; padding: 1rem; border-bottom: 1px solid var(--line); background: #fff; box-shadow: var(--shadow); }
+  .main-nav[hidden] { display: none !important; }
+  .main-nav ul { display: grid; align-items: stretch; }
+  .main-nav a { padding: 0.8rem; border-radius: 0.5rem; }
+  .grid-2, .grid-3, .grid-4, .sidebar-layout, .footer-grid { grid-template-columns: 1fr; }
+  .section-heading { align-items: start; flex-direction: column; }
+  .quick-strip-inner { grid-template-columns: 1fr; }
+  .filter-panel, .form-grid { grid-template-columns: 1fr; }
+  .filter-panel .field:first-child, .field.full { grid-column: auto; }
+  .detail-list > div { grid-template-columns: 1fr; gap: 0.1rem; }
+  .stat-line { grid-template-columns: 1fr; }
+  .admin-shell { display: block; }
+  .admin-sidebar { position: fixed; z-index: 90; inset: 4.25rem 0 0; overflow-y: auto; border-right: 0; }
+  .admin-sidebar[hidden] { display: none !important; }
+  .admin-mobile-toggle { display: inline-flex; }
+  .admin-main { padding: 1.2rem 1rem 3rem; }
+  .admin-actions { grid-template-columns: 1fr; }
+  .admin-header { align-items: start; flex-direction: column; }
+}
+
+@media (max-width: 24rem) {
+  .container { width: min(calc(100% - 1rem), var(--content)); }
+  .brand { gap: 0.5rem; }
+  .brand-mark { width: 2.3rem; height: 2.3rem; }
+  .brand-copy strong { font-size: 0.92rem; }
+  .menu-toggle { padding-inline: 0.55rem; }
+  .menu-toggle .menu-label { display: none; }
+  .card, .filter-panel { padding: 1rem; }
+  .button-row .button { width: 100%; }
+  th, td { min-width: 7.5rem; padding: 0.65rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}

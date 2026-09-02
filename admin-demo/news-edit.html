@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="最新消息編輯表單 UI Demo。"><title>新增或編輯消息｜內容管理 Demo</title>
+  <link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/layout.css"><link rel="stylesheet" href="../assets/css/components.css"><link rel="stylesheet" href="../assets/css/admin.css"><link rel="stylesheet" href="../assets/css/responsive.css">
+</head>
+<body class="admin-body" data-root=".." data-admin-page="news-edit">
+  <a class="skip-link" href="#admin-main">跳到主要內容</a><header id="admin-header"></header><div class="admin-shell"><aside class="admin-sidebar" id="admin-sidebar"></aside><main class="admin-main" id="admin-main" tabindex="-1"><div class="admin-main-inner">
+    <div class="permission-note" id="permission-note"></div><header class="admin-header"><div><span class="eyebrow">消息管理</span><h1>新增或編輯最新消息</h1><p>主要負責單位由登入身分帶入，一般使用者不可自行選擇。</p></div></header>
+    <form class="card" id="news-form" novalidate>
+      <div class="form-grid">
+        <div class="field full"><label for="news-title">標題 <span class="required">必填</span></label><input id="news-title" name="title" required></div>
+        <div class="field"><label for="owner-unit">主要負責單位</label><input id="owner-unit" name="owner_unit" value="人工智慧中心（由登入身分帶入）" readonly></div>
+        <div class="field"><label for="news-category-admin">類別</label><select id="news-category-admin" name="category"><option>研究服務</option><option>課程活動</option><option>儀器設備</option><option>研究成果</option><option>一般公告</option></select></div>
+        <div class="field full"><label for="news-summary-admin">摘要 <span class="required">必填</span></label><textarea id="news-summary-admin" name="summary" maxlength="220" required></textarea></div>
+        <div class="field full"><label for="news-content-admin">內文 <span class="required">必填</span></label><textarea id="news-content-admin" name="content" required></textarea></div>
+        <div class="field"><label for="cover-file">封面圖片</label><input id="cover-file" name="cover_file" type="file" accept="image/jpeg,image/png,image/webp"><small>建議 1600×900、16:9、JPG/PNG/WebP、5 MB 以下。僅瀏覽器端示意。</small></div>
+        <div class="field"><label for="cover-alt">圖片替代文字</label><input id="cover-alt" name="cover_alt"><small>使用圖片時必填，請描述內容與用途。</small></div>
+        <div class="field"><label for="attachment-file">附件</label><input id="attachment-file" name="attachment" type="file"><small>僅顯示檔名與大小，不會上傳至伺服器。不得含病人資料或個資。</small></div>
+        <div class="field"><label for="published-at">發布日期</label><input id="published-at" name="published_at" type="date"></div>
+        <div class="field"><label for="event-date">活動日期</label><input id="event-date" name="event_date" type="date"></div>
+        <div class="field"><label for="expires-at">截止日期</label><input id="expires-at" name="expires_at" type="date"></div>
+        <div class="field"><label for="visibility">顯示範圍</label><select id="visibility" name="visibility"><option value="public">公開網站</option><option value="internal">院內</option><option value="both">院內外皆顯示</option></select></div>
+        <div class="field"><label for="news-status-admin">狀態</label><select id="news-status-admin" name="status" disabled><option value="draft">草稿</option><option value="pending_review">待確認</option><option value="published">已發布</option><option value="expired">已過期</option><option value="archived">已封存</option></select></div>
+      </div>
+      <div class="button-row"><button class="button secondary" type="button" data-save-action="draft">儲存草稿</button><button class="button ghost" type="button" data-save-action="preview">預覽</button><button class="button" type="button" data-save-action="review">送出確認</button><button class="button" type="button" data-save-action="publish" data-publish-button>發布</button><button class="button ghost" type="button" data-save-action="cancel">取消</button></div>
+      <p class="status-message" id="news-save-status" role="status" tabindex="-1" hidden></p>
+    </form>
+  </div></main></div><script src="../assets/js/data-service.js"></script><script src="../assets/js/admin-demo.js"></script>
+</body>
+</html>

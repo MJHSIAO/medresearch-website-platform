@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="最新消息管理列表 UI Demo。"><title>管理最新消息｜內容管理 Demo</title>
+  <link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/layout.css"><link rel="stylesheet" href="../assets/css/components.css"><link rel="stylesheet" href="../assets/css/admin.css"><link rel="stylesheet" href="../assets/css/responsive.css">
+</head>
+<body class="admin-body" data-root=".." data-admin-page="news-list">
+  <a class="skip-link" href="#admin-main">跳到主要內容</a><header id="admin-header"></header><div class="admin-shell"><aside class="admin-sidebar" id="admin-sidebar"></aside><main class="admin-main" id="admin-main" tabindex="-1"><div class="admin-main-inner">
+    <div class="permission-note" id="permission-note"></div><header class="admin-header"><div><span class="eyebrow">消息管理</span><h1>管理最新消息</h1><p id="admin-news-count" aria-live="polite">載入中</p></div><a class="button" href="news-edit.html">新增最新消息</a></header>
+    <div class="table-wrap"><table><thead><tr><th>消息</th><th>所屬單位</th><th>狀態</th><th>顯示範圍</th><th>最後更新</th><th>操作</th></tr></thead><tbody id="admin-news-body"></tbody></table></div>
+    <div class="callout"><strong>狀態說明</strong><p>過期與封存內容不直接刪除。一般單位角色只看到自己單位的管理範圍；總管理員可看到全部單位。</p></div>
+  </div></main></div><script src="../assets/js/data-service.js"></script><script src="../assets/js/admin-demo.js"></script>
+</body>
+</html>
