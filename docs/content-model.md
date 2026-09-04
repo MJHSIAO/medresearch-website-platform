@@ -1,4 +1,4 @@
-﻿# 內容模型
+# 內容模型
 
 ## 單位 `units`
 
@@ -19,6 +19,10 @@
 | `status` | 單位啟用狀態 |
 | `visibility` | `public`、`internal` 或 `both` |
 | `display_order` | 全站顯示順序；結構性欄位 |
+| `template_label` / `service_heading` | 共用子站的單位定位與業務區標題；人工智慧中心不使用 |
+| `resource_links` | 選用；原官網可確認的常用公開連結，含 `label`、`href`、`note` |
+| `special_sections` | 選用；各單位特有區塊，含 `id`、`eyebrow`、`title`、`intro`、`items` |
+| `source_url` / `source_updated_at` / `source_checked_at` | 官方來源、原頁面更新日及本版查核日 |
 | `site_href` / `site_about_href` | 選用；指定獨立單位子站及介紹頁入口 |
 | `updated_at` / `updated_by` | 最後更新資訊 |
 

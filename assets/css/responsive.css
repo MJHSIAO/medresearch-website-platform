@@ -4,6 +4,7 @@
   .filter-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .filter-panel .field:first-child { grid-column: 1 / -1; }
   .hero-grid, .unit-hero-grid { grid-template-columns: 1fr; }
+  .unit-resource-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .hero-aside { max-width: 36rem; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .admin-actions { grid-template-columns: repeat(2, 1fr); }
@@ -19,6 +20,10 @@
   .main-nav a { padding: 0.8rem; border-radius: 0.5rem; }
   .grid-2, .grid-3, .grid-4, .sidebar-layout, .footer-grid { grid-template-columns: 1fr; }
   .section-heading { align-items: start; flex-direction: column; }
+  .unit-site-bar-inner { align-items: flex-start; flex-direction: column; gap: 0; padding-block: 0.75rem; }
+  .unit-site-nav { width: 100%; }
+  .unit-overview-grid, .unit-section-grid, .unit-contact-grid, .unit-network-inner { grid-template-columns: 1fr; }
+  .unit-resource-grid { grid-template-columns: 1fr; }
   .quick-strip-inner { grid-template-columns: 1fr; }
   .filter-panel, .form-grid { grid-template-columns: 1fr; }
   .filter-panel .field:first-child, .field.full { grid-column: auto; }
@@ -42,6 +47,10 @@
   .menu-toggle .menu-label { display: none; }
   .card, .filter-panel { padding: 1rem; }
   .button-row .button { width: 100%; }
+  .unit-site-name { width: 100%; }
+  .unit-identity-card { padding: 1rem; }
+  .unit-member-card { grid-template-columns: 1fr; }
+  .unit-contact-list > div { grid-template-columns: 1fr; gap: 0.15rem; }
   th, td { min-width: 7.5rem; padding: 0.65rem; }
 }
 
