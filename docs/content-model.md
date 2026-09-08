@@ -14,7 +14,7 @@
 | `hero_image` / `hero_alt` | 主視覺與替代文字 |
 | `services` | 主要服務項目 |
 | `research_fields` | 研究方向或特色 |
-| `members` | 主管及成員摘要 |
+| `members` | 主管及成員摘要；應與 `people` 詳細資料同步 |
 | `contact` | 聯絡窗口、電話、信箱、地址 |
 | `status` | 單位啟用狀態 |
 | `visibility` | `public`、`internal` 或 `both` |
@@ -26,6 +26,17 @@
 | `site_href` / `site_about_href` | 選用；指定獨立單位子站及介紹頁入口 |
 | `updated_at` / `updated_by` | 最後更新資訊 |
 
+## 單位成員 `people`
+
+| 欄位 | 用途 |
+| --- | --- |
+| `id` | 成員識別碼 |
+| `unit_id` | 所屬單位，對應 `units.id` |
+| `name` | 原官網公開姓名；未公開姓名時保留職務與人數 |
+| `title` | 原官網公開職稱或所屬部門 |
+| `bio` | 公開補充說明，不加入無法核對的經歷 |
+| `visibility` | `public`、`internal` 或 `both` |
+
 ## 最新消息 `news`
 
 | 欄位 | 用途 |
@@ -35,7 +46,8 @@
 | `related_unit_ids` | 共同顯示單位，避免跨單位消息重複建立 |
 | `category` | 類別 |
 | `title` / `summary` / `content` | 標題、摘要與本文 |
-| `cover_image` / `cover_alt` | 封面圖片與替代文字 |
+| `cover_image` / `cover_alt` | 封面圖片相對路徑與替代文字 |
+| `gallery` | 選用；新聞詳細頁相關圖片，含 `src` 與 `alt` |
 | `attachments` | 附件名稱、格式、大小及正式儲存資訊 |
 | `visibility` | `public`、`internal` 或 `both` |
 | `status` | `draft`、`pending_review`、`published`、`expired`、`archived` |

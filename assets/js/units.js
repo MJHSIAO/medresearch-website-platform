@@ -18,6 +18,21 @@
     return `<section class="${sectionClass}" id="${D.escapeHTML(section.id)}"><div class="container unit-section-grid"><div><span class="eyebrow">${D.escapeHTML(section.eyebrow || '單位特色')}</span><h2>${D.escapeHTML(section.title)}</h2>${section.intro ? `<p>${D.escapeHTML(section.intro)}</p>` : ''}</div><ul class="unit-info-list">${(section.items || []).map((item) => `<li>${D.escapeHTML(item)}</li>`).join('')}</ul></div></section>`;
   }
 
+  function normalizedMember(value = '') {
+    return String(value).replace(/[\s（）()、，,・]/g, '');
+  }
+
+  function renderMemberCards(unit, people) {
+    const verifiedPeople = people.filter((person) => person.unit_id === unit.id && ['public', 'both'].includes(person.visibility));
+    const missingSummaries = (unit.members || []).filter((member) => {
+      const summary = normalizedMember(member);
+      return !verifiedPeople.some((person) => summary.includes(normalizedMember(person.name)));
+    });
+    const peopleCards = verifiedPeople.map((person) => `<article class="card unit-member-card"><span class="unit-member-mark" aria-hidden="true">${D.escapeHTML(person.name.slice(0, 1))}</span><div><h3>${D.escapeHTML(person.name)}</h3><p><strong>${D.escapeHTML(person.title)}</strong></p><p>${D.escapeHTML(person.bio)}</p></div></article>`);
+    const summaryCards = missingSummaries.map((member) => `<article class="card unit-member-card"><span class="unit-member-mark" aria-hidden="true">研</span><div><h3>${D.escapeHTML(member)}</h3><p>姓名與職務依原醫研部官網整理。</p></div></article>`);
+    return [...peopleCards, ...summaryCards].join('');
+  }
+
   async function renderUnits() {
     const target = document.getElementById('units-grid');
     if (!target) return;
@@ -42,15 +57,13 @@
     const [unit, allUnits, allNews, people] = await Promise.all([D.getUnit(slug), D.getUnits(), D.getNews(), D.load('people')]);
     if (unit.site_href) { location.replace(`${root()}/${unit.site_href}`); return; }
 
-    const publicPeople = people.filter((person) => person.unit_id === unit.id && person.visibility !== 'internal');
-    const news = D.publicNews(allNews, false).filter((item) => item.owner_unit_id === unit.id || item.related_unit_ids?.includes(unit.id)).slice(0, 3);
+    const publicPeople = people.filter((person) => person.unit_id === unit.id && ['public', 'both'].includes(person.visibility));
+    const news = D.publicNews(allNews, false).sort((a, b) => String(b.published_at).localeCompare(String(a.published_at))).slice(0, 3);
     const resources = Array.isArray(unit.resource_links) ? unit.resource_links : [];
     const specialSections = Array.isArray(unit.special_sections) ? unit.special_sections : [];
     const otherUnits = allUnits.filter((entry) => publicUnit(entry) && entry.id !== unit.id);
-    const checkedAt = unit.source_checked_at || '2026-09-04';
-    const membersMarkup = publicPeople.length
-      ? publicPeople.map((person) => `<article class="card unit-member-card"><span class="unit-member-mark" aria-hidden="true">${D.escapeHTML(person.name.slice(0, 1))}</span><div><h3>${D.escapeHTML(person.name)}</h3><p><strong>${D.escapeHTML(person.title)}</strong></p><p>${D.escapeHTML(person.bio)}</p></div></article>`).join('')
-      : unit.members.map((member) => `<article class="card unit-member-card"><span class="unit-member-mark" aria-hidden="true">研</span><div><h3>${D.escapeHTML(member)}</h3><p>姓名與職務依原醫研部官網整理。</p></div></article>`).join('');
+    const checkedAt = unit.source_checked_at || '2026-09-07';
+    const membersMarkup = renderMemberCards(unit, publicPeople);
 
     document.title = `${unit.name}｜醫學研究部隸屬單位`;
     const meta = document.querySelector('meta[name="description"]');
@@ -83,7 +96,7 @@
 
       <section class="section" id="unit-members"><div class="container"><div class="section-heading"><div><span class="eyebrow">Team</span><h2>單位成員</h2><p>姓名與職稱依原醫研部官網公開頁面整理。</p></div></div><div class="grid grid-2 unit-member-grid">${membersMarkup}</div></div></section>
 
-      <section class="section section-tint" id="unit-news"><div class="container"><div class="section-heading"><div><span class="eyebrow">News</span><h2>${D.escapeHTML(unit.name)}相關消息</h2><p>只顯示公開且已發布的共用消息資料。</p></div><a href="${root()}/news.html">瀏覽全部消息</a></div><div class="grid grid-3">${news.length ? news.map((item) => window.MedUI.newsCard(item, [unit])).join('') : '<div class="empty-state"><p>目前沒有可確認的公開消息，請由官方來源查看最新資訊。</p></div>'}</div></div></section>
+      <section class="section section-tint" id="unit-news"><div class="container"><div class="section-heading"><div><span class="eyebrow">News</span><h2>${D.escapeHTML(unit.name)}與醫學研究部最新消息</h2><p>顯示全站最新三則公開消息；單位別與歷史消息可由完整列表查閱。</p></div><a href="${root()}/news.html">瀏覽全部消息</a></div><div class="grid grid-3">${news.length ? news.map((item) => window.MedUI.newsCard(item, allUnits)).join('') : '<div class="empty-state"><p>目前沒有可確認的公開消息，請由官方來源查看最新資訊。</p></div>'}</div></div></section>
 
       <section class="section" id="unit-contact"><div class="container unit-contact-grid"><div><span class="eyebrow">Contact</span><h2>聯絡${D.escapeHTML(unit.name)}</h2><p>未在原官網公開的聯絡欄位維持「請依官方頁面洽詢」，不以示意資料代替。</p><div class="unit-source-note"><strong>資料查核</strong><span>原頁面更新：${D.formatDate(unit.source_updated_at)}</span><span>本版查核：${D.formatDate(checkedAt)}</span></div></div><div class="contact-panel"><h3>${D.escapeHTML(unit.contact.person)}</h3><dl class="unit-contact-list"><div><dt>電話</dt><dd>${D.escapeHTML(unit.contact.phone)}</dd></div><div><dt>電子郵件</dt><dd>${D.escapeHTML(unit.contact.email)}</dd></div><div><dt>位置</dt><dd>${D.escapeHTML(unit.contact.address)}</dd></div></dl><p><a class="button secondary" href="${D.escapeHTML(unit.source_url)}" target="_blank" rel="noopener">前往單位原官網 ↗</a></p></div></div></section>
 
@@ -96,11 +109,12 @@
     if (!target) return;
     const slug = new URLSearchParams(location.search).get('unit') || 'academic-office';
     const [unit, people] = await Promise.all([D.getUnit(slug), D.load('people')]);
-    const publicPeople = people.filter((person) => person.unit_id === unit.id && person.visibility !== 'internal');
+    const publicPeople = people.filter((person) => person.unit_id === unit.id && ['public', 'both'].includes(person.visibility));
+    const membersMarkup = renderMemberCards(unit, publicPeople);
     if (unit.site_about_href) { location.replace(`${root()}/${unit.site_about_href}`); return; }
     document.title = `${unit.name}完整介紹｜醫學研究部`;
     document.querySelector('[data-unit-crumb]').textContent = unit.name;
-    target.innerHTML = `<div class="prose"><span class="eyebrow">單位完整介紹</span><h1>${D.escapeHTML(unit.name)}</h1><p class="page-kicker">${D.escapeHTML(unit.full_description)}</p><h2>成立宗旨</h2><p>${D.escapeHTML(unit.purpose)}</p><h2>發展目標</h2><ul>${unit.goals.map((item) => `<li>${D.escapeHTML(item)}</li>`).join('')}</ul><h2>主要業務與服務內容</h2><ul>${unit.services.map((item) => `<li>${D.escapeHTML(item)}</li>`).join('')}</ul><h2>重點領域與特色</h2><ul>${unit.research_fields.map((item) => `<li>${D.escapeHTML(item)}</li>`).join('')}</ul><h2>主管及成員</h2>${publicPeople.length ? publicPeople.map((person) => `<div class="card person-card"><h3>${D.escapeHTML(person.name)}</h3><p><strong>${D.escapeHTML(person.title)}</strong></p><p>${D.escapeHTML(person.bio)}</p></div>`).join('') : `<ul>${unit.members.map((member) => `<li>${D.escapeHTML(member)}</li>`).join('')}</ul>`}<p><a class="button secondary" href="${root()}/unit.html?unit=${encodeURIComponent(unit.slug)}">返回單位子站</a></p></div><aside><div class="card source-card"><span class="tag">官方資料</span><h2>資料來源</h2><p>內容依醫學研究部單位原官網整理。</p><p><strong>原頁面更新：</strong>${D.formatDate(unit.source_updated_at)}<br><strong>本版查核：</strong>${D.formatDate(unit.source_checked_at || '2026-09-04')}</p><p><a class="button secondary" href="${D.escapeHTML(unit.source_url)}" target="_blank" rel="noopener">前往官方頁面 ↗</a></p></div></aside>`;
+    target.innerHTML = `<div class="prose"><span class="eyebrow">單位完整介紹</span><h1>${D.escapeHTML(unit.name)}</h1><p class="page-kicker">${D.escapeHTML(unit.full_description)}</p><h2>成立宗旨</h2><p>${D.escapeHTML(unit.purpose)}</p><h2>發展目標</h2><ul>${unit.goals.map((item) => `<li>${D.escapeHTML(item)}</li>`).join('')}</ul><h2>主要業務與服務內容</h2><ul>${unit.services.map((item) => `<li>${D.escapeHTML(item)}</li>`).join('')}</ul><h2>重點領域與特色</h2><ul>${unit.research_fields.map((item) => `<li>${D.escapeHTML(item)}</li>`).join('')}</ul><h2>主管及成員</h2><div class="unit-about-members">${membersMarkup}</div><p><a class="button secondary" href="${root()}/unit.html?unit=${encodeURIComponent(unit.slug)}">返回單位子站</a></p></div><aside><div class="card source-card"><span class="tag">官方資料</span><h2>資料來源</h2><p>內容依醫學研究部單位原官網整理。</p><p><strong>原頁面更新：</strong>${D.formatDate(unit.source_updated_at)}<br><strong>本版查核：</strong>${D.formatDate(unit.source_checked_at || '2026-09-07')}</p><p><a class="button secondary" href="${D.escapeHTML(unit.source_url)}" target="_blank" rel="noopener">前往官方頁面 ↗</a></p></div></aside>`;
   }
 
   document.addEventListener('DOMContentLoaded', async () => {

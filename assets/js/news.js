@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
   'use strict';
   const D = window.MedData;
   const root = () => document.body.dataset.root || '.';
@@ -28,7 +28,7 @@
       const term = keyword.value.trim().toLowerCase();
       const filtered = publicItems.filter((item) => {
         const haystack = `${item.title} ${item.summary} ${item.category}`.toLowerCase();
-        return (!term || haystack.includes(term)) && (!unit.value || item.owner_unit_id === unit.value) && (!category.value || item.category === category.value) && (!year.value || String(item.published_at).startsWith(year.value)) && (!status.value || item.status === status.value);
+        return (!term || haystack.includes(term)) && (!unit.value || item.owner_unit_id === unit.value || item.related_unit_ids?.includes(unit.value)) && (!category.value || item.category === category.value) && (!year.value || String(item.published_at).startsWith(year.value)) && (!status.value || item.status === status.value);
       });
       document.getElementById('news-count').textContent = `共 ${filtered.length} 則`;
       list.innerHTML = filtered.slice(0, visibleCount).map((item) => window.MedUI.newsCard(item, units)).join('') || '<div class="empty-state"><h2>沒有符合條件的消息</h2><p>請調整關鍵字或篩選條件。</p></div>';
@@ -59,13 +59,20 @@
     const related = D.publicNews(all, true).filter((entry) => entry.id !== item.id && (entry.category === item.category || entry.owner_unit_id === item.owner_unit_id)).slice(0, 2);
     document.title = `${item.title}｜醫學研究部`;
     document.querySelector('[data-detail-crumb]').textContent = item.title;
+    const coverMarkup = item.cover_image
+      ? `<figure class="article-media"><img src="${D.escapeHTML(window.MedUI.assetUrl(item.cover_image))}" alt="${D.escapeHTML(item.cover_alt)}"></figure>`
+      : `<div class="article-visual" role="img" aria-label="${D.escapeHTML(item.cover_alt || `${item.category}消息`)}"><span>${D.escapeHTML(item.category)}｜官方資訊摘要</span></div>`;
+    const galleryMarkup = item.gallery?.length
+      ? `<section class="article-gallery-section" aria-labelledby="news-gallery-title"><h2 id="news-gallery-title">相關圖片</h2><div class="article-gallery">${item.gallery.map((image) => `<figure><img src="${D.escapeHTML(window.MedUI.assetUrl(image.src))}" alt="${D.escapeHTML(image.alt)}" loading="lazy"><figcaption>${D.escapeHTML(image.alt)}</figcaption></figure>`).join('')}</div></section>`
+      : '';
     target.innerHTML = `<article>
       <div class="card-meta"><span class="tag ${item.status}">${D.statusLabels[item.status]}</span><span>${D.escapeHTML(item.category)}</span></div>
       <h1>${D.escapeHTML(item.title)}</h1>
       <p class="page-kicker">${D.escapeHTML(item.summary)}</p>
       <dl class="detail-list"><div><dt>所屬單位</dt><dd>${D.escapeHTML(owner)}</dd></div><div><dt>資料日期</dt><dd>${D.formatDate(item.published_at)}</dd></div><div><dt>最後更新</dt><dd>${D.formatDate(item.updated_at)}</dd></div>${item.event_date ? `<div><dt>活動日期</dt><dd>${D.formatDate(item.event_date)}</dd></div>` : ''}${item.expires_at ? `<div><dt>資料效期</dt><dd>${D.formatDate(item.expires_at)}</dd></div>` : ''}</dl>
-      <div class="article-visual" role="img" aria-label="${D.escapeHTML(item.cover_alt)}"><span>${D.escapeHTML(item.category)}｜官方資訊摘要</span></div>
+      ${coverMarkup}
       <div class="prose">${item.content.map((paragraph) => `<p>${D.escapeHTML(paragraph)}</p>`).join('')}</div>
+      ${galleryMarkup}
       ${item.attachments?.length ? `<section><h2>附件</h2><ul class="attachment-list">${item.attachments.map((file) => `<li><span><strong>${D.escapeHTML(file.name)}</strong><br><small>${D.escapeHTML(file.type)} · ${D.escapeHTML(file.size)}</small></span></li>`).join('')}</ul></section>` : ''}
       <div class="callout"><strong>資料核對</strong><p>本頁為原官網內容摘要，詳細資訊、附件及後續異動請以前往官方來源查閱為準。</p></div>
       <div class="button-row"><a class="button secondary" href="${root()}/news.html">返回列表</a>${item.source_url ? `<a class="button" href="${D.escapeHTML(item.source_url)}" target="_blank" rel="noopener">前往官方來源 ↗</a>` : ''}</div>

@@ -29,11 +29,13 @@
 | 細胞治療中心 | 最新資訊、專業課程、再生醫療法規、核定收費與臨床成果 | [原官網](https://depart.femh.org.tw/medresearch/CellTherapy.html) |
 | 創新智財產學中心 | 研發成果管理、專利申請與清單、讓與公告及技術移轉 | [原官網](https://depart.femh.org.tw/medresearch/IIP.html) |
 
-資料查核日期：2026-09-04。正式規範、表單版本、資格、期限與聯絡資訊仍以官方頁面及院內最新公告為準。
+資料查核日期：2026-09-07。正式規範、表單版本、資格、期限與聯絡資訊仍以官方頁面及院內最新公告為準。
 
 ## 維護方式
 
 - 基本內容維護於 `data/units.json` 的既有欄位。
+- 詳細成員卡片維護於 `data/people.json`，並同步更新 `units.json` 的 `members` 摘要。
+- 醫研部共用新聞與單位相關新聞維護於 `data/news.json`，新聞圖片集中於 `assets/images/news/`。
 - 常用公開連結維護於 `resource_links`；外部連結一律另開新分頁。
 - 單位特有內容維護於 `special_sections`，不複製 HTML。
 - 新增單位時沿用 `unit.html?unit={slug}`，除非已有經核准的獨立子站。

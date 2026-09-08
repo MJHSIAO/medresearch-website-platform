@@ -42,9 +42,9 @@
         "status":  "active",
         "visibility":  "public",
         "display_order":  1,
-        "updated_at":  "2026-09-04T09:00:00+08:00",
+        "updated_at":  "2026-09-07T09:00:00+08:00",
         "updated_by":  "醫學研究部原官網查核",
-        "source_checked_at":  "2026-09-04",
+        "source_checked_at":  "2026-09-07",
         "template_label":  "研究行政與學術發展",
         "service_heading":  "研究制度、獎勵與培訓",
         "resource_links":  [
@@ -103,9 +103,9 @@
                                 "人體生物資料庫"
                             ],
         "members":  [
-                        "主任 劉芫宏",
-                        "管理師 陳健福（第一共同研究室，分機4565）",
-                        "管理師 許慈恩（第二共同研究室，分機4566）"
+                        "主任 劉芫宏 醫師",
+                        "管理師 陳健福（五樓第一共同研究室，分機4565）",
+                        "管理師 許慈恩（六樓第二共同研究室，分機4566）"
                     ],
         "contact":  {
                         "person":  "共同研究室",
@@ -120,9 +120,9 @@
         "status":  "active",
         "visibility":  "public",
         "display_order":  2,
-        "updated_at":  "2026-09-04T09:00:00+08:00",
+        "updated_at":  "2026-09-07T09:00:00+08:00",
         "updated_by":  "醫學研究部原官網查核",
-        "source_checked_at":  "2026-09-04",
+        "source_checked_at":  "2026-09-07",
         "template_label":  "研究空間與儀器支援",
         "service_heading":  "空間、儀器與操作支援",
         "resource_links":  [
@@ -194,7 +194,7 @@
                                 "實驗動物照護"
                             ],
         "members":  [
-                        "主任 羅武嘉",
+                        "主任 羅武嘉 醫師",
                         "獸醫師 蔡雅慧 博士",
                         "管理師 楊元蕙（B2動物實驗室）",
                         "照護員二名"
@@ -212,9 +212,9 @@
         "status":  "active",
         "visibility":  "public",
         "display_order":  3,
-        "updated_at":  "2026-09-04T09:00:00+08:00",
+        "updated_at":  "2026-09-07T09:00:00+08:00",
         "updated_by":  "醫學研究部原官網查核",
-        "source_checked_at":  "2026-09-04",
+        "source_checked_at":  "2026-09-07",
         "template_label":  "實驗動物研究支援",
         "service_heading":  "計畫申請、實驗執行與照護",
         "resource_links":  [
@@ -345,9 +345,9 @@
         "status":  "active",
         "visibility":  "public",
         "display_order":  5,
-        "updated_at":  "2026-09-04T09:00:00+08:00",
+        "updated_at":  "2026-09-07T09:00:00+08:00",
         "updated_by":  "醫學研究部原官網查核",
-        "source_checked_at":  "2026-09-04",
+        "source_checked_at":  "2026-09-07",
         "template_label":  "臨床研究行政與執行支援",
         "service_heading":  "臨床試驗行政協調服務",
         "resource_links":  [
@@ -400,8 +400,18 @@
                                 "幹細胞與軟骨再生"
                             ],
         "members":  [
-                        "主任 徐愷翔 醫師",
-                        "跨專科細胞治療團隊",
+                        "細胞治療中心主任 徐愷翔",
+                        "癌症防治中心主任 鄧仲仁",
+                        "健康管理部主任 邱彥霖",
+                        "放射腫瘤科主任 謝忱希",
+                        "放射部主任 熊佩韋",
+                        "外科部主任 陳國鋅",
+                        "婦產部主任 蕭聖謀",
+                        "整形外科主任 張惇皓",
+                        "胸腔外科主任 郝政鴻",
+                        "形體美容醫學中心主任 陳右昇",
+                        "超音波暨內視鏡中心主任 張晟瑜",
+                        "腫瘤科暨血液科病房主任 蔣京谷",
                         "研究護理師 黃儷惠"
                     ],
         "contact":  {
@@ -417,9 +427,9 @@
         "status":  "active",
         "visibility":  "public",
         "display_order":  6,
-        "updated_at":  "2026-09-04T09:00:00+08:00",
+        "updated_at":  "2026-09-07T09:00:00+08:00",
         "updated_by":  "醫學研究部原官網查核",
-        "source_checked_at":  "2026-09-04",
+        "source_checked_at":  "2026-09-07",
         "template_label":  "再生醫療與細胞治療資訊",
         "service_heading":  "法規、課程與臨床成果",
         "resource_links":  [
@@ -496,8 +506,7 @@
                             ],
         "members":  [
                         "主任 姜智耀 醫師",
-                        "研究員 周三芳 博士",
-                        "專員 馬慶宇"
+                        "醫學研究部研究員 周三芳 博士"
                     ],
         "contact":  {
                         "person":  "創新智財產學中心",
@@ -512,9 +521,9 @@
         "status":  "active",
         "visibility":  "public",
         "display_order":  7,
-        "updated_at":  "2026-09-04T09:00:00+08:00",
+        "updated_at":  "2026-09-07T09:00:00+08:00",
         "updated_by":  "醫學研究部原官網查核",
-        "source_checked_at":  "2026-09-04",
+        "source_checked_at":  "2026-09-07",
         "template_label":  "創新、智財與產學轉譯",
         "service_heading":  "專利、技轉與產學合作",
         "resource_links":  [

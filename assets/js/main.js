@@ -3,6 +3,9 @@
 
   const D = window.MedData;
   const root = () => document.body.dataset.root || '.';
+  const assetUrl = (value = '') => /^(?:https?:|data:|blob:)/i.test(value)
+    ? value
+    : `${root()}/${String(value).replace(/^\.?\//, '')}`;
 
   function currentFile() {
     const file = location.pathname.split('/').pop() || 'index.html';
@@ -42,6 +45,12 @@
         document.body.classList.toggle('menu-open', open);
         syncMenu();
       });
+      toggle.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          toggle.click();
+        }
+      });
       nav.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
           toggle.setAttribute('aria-expanded', 'false');
@@ -65,7 +74,10 @@
 
   function newsCard(item, units) {
     const owner = item.owner_unit_id === 'medresearch' ? '醫學研究部' : (units.find((unit) => unit.id === item.owner_unit_id)?.name || '醫學研究部');
-    return `<article class="card interactive">
+    const media = item.cover_image
+      ? `<div class="news-card-media"><img src="${D.escapeHTML(assetUrl(item.cover_image))}" alt="${D.escapeHTML(item.cover_alt)}" loading="lazy"></div>`
+      : `<div class="news-card-media news-card-fallback" role="img" aria-label="${D.escapeHTML(item.cover_alt || `${item.category}消息`)}"><span>${D.escapeHTML(item.category)}</span></div>`;
+    return `<article class="card interactive news-card">${media}
       <div class="card-meta"><span class="tag ${item.status}">${D.statusLabels[item.status]}</span><span>${D.escapeHTML(item.category)}</span><span>${D.escapeHTML(owner)}</span></div>
       <h3><a href="${root()}/news-detail.html?id=${encodeURIComponent(item.id)}">${D.escapeHTML(item.title)}</a></h3>
       <p>${D.escapeHTML(item.summary)}</p>
@@ -81,7 +93,7 @@
     if (serviceGrid) {
       serviceGrid.innerHTML = services.map((service) => `<article class="card service-card interactive"><span class="service-number">${D.escapeHTML(service.icon)} / RESOURCE</span><div><h3><a href="${root()}/${service.href}">${D.escapeHTML(service.title)}</a></h3><p>${D.escapeHTML(service.description)}</p></div></article>`).join('');
     }
-    const homeNews = D.publicNews(rawNews, false).filter((item) => item.featured || item.status === 'published').slice(0, 3);
+    const homeNews = D.publicNews(rawNews, false).sort((a, b) => String(b.published_at).localeCompare(String(a.published_at))).slice(0, 3);
     if (newsGrid) newsGrid.innerHTML = homeNews.map((item) => newsCard(item, units)).join('');
     if (unitGrid) {
       unitGrid.innerHTML = units
@@ -136,6 +148,6 @@
     }
   });
 
-  window.MedUI = { newsCard, renderShell };
+  window.MedUI = { newsCard, renderShell, assetUrl };
 })();
 
