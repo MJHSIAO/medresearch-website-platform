@@ -25,6 +25,12 @@
   .unit-overview-grid, .unit-section-grid, .unit-contact-grid, .unit-network-inner { grid-template-columns: 1fr; }
   .unit-resource-grid { grid-template-columns: 1fr; }
   .article-gallery { grid-template-columns: 1fr; }
+  .image-lightbox { width: calc(100vw - 1rem); max-height: calc(100vh - 1rem); }
+  .image-lightbox-shell { max-height: calc(100vh - 1rem); }
+  .image-lightbox-toolbar { align-items: flex-start; flex-direction: column; }
+  .image-lightbox-actions { width: 100%; }
+  .image-lightbox-actions .button { flex: 1 1 auto; }
+  .image-lightbox-viewport { max-height: calc(100vh - 12rem); }
   .quick-strip-inner { grid-template-columns: 1fr; }
   .filter-panel, .form-grid { grid-template-columns: 1fr; }
   .filter-panel .field:first-child, .field.full { grid-column: auto; }

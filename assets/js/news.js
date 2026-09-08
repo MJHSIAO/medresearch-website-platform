@@ -45,6 +45,59 @@
     update(true);
   }
 
+  function imageTrigger(src, alt, loading = '') {
+    const imageUrl = window.MedUI.assetUrl(src);
+    const safeUrl = D.escapeHTML(imageUrl);
+    const safeAlt = D.escapeHTML(alt || '新聞圖片');
+    return `<button class="article-image-trigger" type="button" data-image-src="${safeUrl}" data-image-alt="${safeAlt}" aria-label="放大查看：${safeAlt}"><img src="${safeUrl}" alt="${safeAlt}"${loading ? ` loading="${loading}"` : ''}><span class="image-zoom-hint" aria-hidden="true">＋ 點擊放大原圖</span></button>`;
+  }
+
+  function bindImageLightbox(target) {
+    const dialog = target.querySelector('#news-image-lightbox');
+    if (!dialog) return;
+    const dialogImage = dialog.querySelector('[data-lightbox-image]');
+    const dialogCaption = dialog.querySelector('[data-lightbox-caption]');
+    const originalLink = dialog.querySelector('[data-lightbox-original]');
+    const viewport = dialog.querySelector('.image-lightbox-viewport');
+    let activeTrigger = null;
+
+    target.querySelectorAll('[data-image-src]').forEach((trigger) => {
+      trigger.addEventListener('click', () => {
+        const src = trigger.dataset.imageSrc;
+        const alt = trigger.dataset.imageAlt || '新聞圖片';
+        activeTrigger = trigger;
+        dialogImage.src = src;
+        dialogImage.alt = alt;
+        dialogCaption.textContent = alt;
+        originalLink.href = src;
+        if (typeof dialog.showModal === 'function') {
+          dialog.showModal();
+          viewport.scrollTo({ top: 0, left: 0 });
+        } else {
+          window.open(src, '_blank', 'noopener');
+        }
+      });
+      trigger.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          trigger.click();
+        }
+      });
+    });
+
+    dialog.querySelector('[data-lightbox-close]').addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        dialog.close();
+      }
+    });
+    dialog.addEventListener('close', () => activeTrigger?.focus());
+  }
+
   async function renderDetail() {
     const target = document.getElementById('news-detail');
     if (!target) return;
@@ -60,10 +113,10 @@
     document.title = `${item.title}｜醫學研究部`;
     document.querySelector('[data-detail-crumb]').textContent = item.title;
     const coverMarkup = item.cover_image
-      ? `<figure class="article-media"><img src="${D.escapeHTML(window.MedUI.assetUrl(item.cover_image))}" alt="${D.escapeHTML(item.cover_alt)}"></figure>`
+      ? `<figure class="article-media">${imageTrigger(item.cover_image, item.cover_alt)}</figure>`
       : `<div class="article-visual" role="img" aria-label="${D.escapeHTML(item.cover_alt || `${item.category}消息`)}"><span>${D.escapeHTML(item.category)}｜官方資訊摘要</span></div>`;
     const galleryMarkup = item.gallery?.length
-      ? `<section class="article-gallery-section" aria-labelledby="news-gallery-title"><h2 id="news-gallery-title">相關圖片</h2><div class="article-gallery">${item.gallery.map((image) => `<figure><img src="${D.escapeHTML(window.MedUI.assetUrl(image.src))}" alt="${D.escapeHTML(image.alt)}" loading="lazy"><figcaption>${D.escapeHTML(image.alt)}</figcaption></figure>`).join('')}</div></section>`
+      ? `<section class="article-gallery-section" aria-labelledby="news-gallery-title"><h2 id="news-gallery-title">相關圖片</h2><p>點擊圖片可用原始尺寸查看，或在新分頁開啟原圖。</p><div class="article-gallery">${item.gallery.map((image) => `<figure>${imageTrigger(image.src, image.alt, 'lazy')}<figcaption>${D.escapeHTML(image.alt)}</figcaption></figure>`).join('')}</div></section>`
       : '';
     target.innerHTML = `<article>
       <div class="card-meta"><span class="tag ${item.status}">${D.statusLabels[item.status]}</span><span>${D.escapeHTML(item.category)}</span></div>
@@ -76,7 +129,15 @@
       ${item.attachments?.length ? `<section><h2>附件</h2><ul class="attachment-list">${item.attachments.map((file) => `<li><span><strong>${D.escapeHTML(file.name)}</strong><br><small>${D.escapeHTML(file.type)} · ${D.escapeHTML(file.size)}</small></span></li>`).join('')}</ul></section>` : ''}
       <div class="callout"><strong>資料核對</strong><p>本頁為原官網內容摘要，詳細資訊、附件及後續異動請以前往官方來源查閱為準。</p></div>
       <div class="button-row"><a class="button secondary" href="${root()}/news.html">返回列表</a>${item.source_url ? `<a class="button" href="${D.escapeHTML(item.source_url)}" target="_blank" rel="noopener">前往官方來源 ↗</a>` : ''}</div>
-    </article><aside><div class="card"><h2>相關消息</h2>${related.length ? related.map((entry) => `<p><a href="${root()}/news-detail.html?id=${encodeURIComponent(entry.id)}">${D.escapeHTML(entry.title)}</a><br><small>${D.formatDate(entry.published_at)}</small></p>`).join('') : '<p>目前沒有相關消息。</p>'}</div></aside>`;
+    </article><aside><div class="card"><h2>相關消息</h2>${related.length ? related.map((entry) => `<p><a href="${root()}/news-detail.html?id=${encodeURIComponent(entry.id)}">${D.escapeHTML(entry.title)}</a><br><small>${D.formatDate(entry.published_at)}</small></p>`).join('') : '<p>目前沒有相關消息。</p>'}</div></aside>
+    <dialog class="image-lightbox" id="news-image-lightbox" aria-labelledby="news-image-lightbox-title" aria-describedby="news-image-lightbox-caption">
+      <div class="image-lightbox-shell">
+        <div class="image-lightbox-toolbar"><h2 id="news-image-lightbox-title">放大查看原圖</h2><div class="image-lightbox-actions"><a class="button secondary" data-lightbox-original href="#" target="_blank" rel="noopener">新分頁開啟原圖 ↗</a><button class="button" type="button" data-lightbox-close>關閉</button></div></div>
+        <div class="image-lightbox-viewport"><img data-lightbox-image alt=""></div>
+        <p class="image-lightbox-caption" id="news-image-lightbox-caption" data-lightbox-caption></p>
+      </div>
+    </dialog>`;
+    bindImageLightbox(target);
   }
 
   document.addEventListener('DOMContentLoaded', async () => {

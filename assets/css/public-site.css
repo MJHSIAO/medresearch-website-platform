@@ -102,9 +102,23 @@
 .news-card-fallback span { position: relative; font-weight: 900; letter-spacing: 0.08em; }
 .article-media { margin: 2rem 0; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: var(--green-050); }
 .article-media img { display: block; width: 100%; max-height: 44rem; object-fit: contain; object-position: top center; }
+.article-image-trigger { position: relative; display: block; width: 100%; padding: 0; overflow: hidden; border: 0; border-radius: inherit; color: inherit; background: transparent; cursor: zoom-in; text-align: inherit; }
+.article-image-trigger:focus-visible { outline: 0.25rem solid var(--focus); outline-offset: -0.25rem; }
+.image-zoom-hint { position: absolute; right: 0.75rem; bottom: 0.75rem; padding: 0.45rem 0.7rem; border-radius: 999px; color: #fff; background: rgba(4, 47, 42, 0.88); font-size: 0.88rem; font-weight: 900; box-shadow: var(--shadow); }
+.article-image-trigger:hover .image-zoom-hint, .article-image-trigger:focus-visible .image-zoom-hint { background: var(--green-950); }
 .article-gallery-section { margin-top: 2.5rem; }
 .article-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
 .article-gallery figure { margin: 0; padding: 0.75rem; border: 1px solid var(--line); border-radius: var(--radius-sm); background: #fff; }
 .article-gallery img { display: block; width: 100%; height: auto; border-radius: 0.5rem; }
 .article-gallery figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.9rem; }
+.image-lightbox { width: min(96vw, 100rem); max-width: none; max-height: 96vh; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; box-shadow: 0 2rem 6rem rgba(0, 30, 27, 0.35); }
+.image-lightbox::backdrop { background: rgba(0, 25, 23, 0.78); backdrop-filter: blur(3px); }
+.image-lightbox-shell { display: grid; max-height: 96vh; grid-template-rows: auto minmax(0, 1fr) auto; }
+.image-lightbox-toolbar { display: flex; padding: 1rem 1.25rem; border-bottom: 1px solid var(--line); align-items: center; justify-content: space-between; gap: 1rem; background: #fff; }
+.image-lightbox-toolbar h2 { margin: 0; font-size: 1.15rem; }
+.image-lightbox-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.image-lightbox-actions .button { min-height: 2.75rem; padding: 0.55rem 0.85rem; }
+.image-lightbox-viewport { min-height: 12rem; max-height: calc(96vh - 10rem); overflow: auto; overscroll-behavior: contain; background: #e9f2ef; }
+.image-lightbox-viewport img { display: block; width: auto; max-width: none; height: auto; margin: 0 auto; }
+.image-lightbox-caption { margin: 0; padding: 0.85rem 1.25rem; border-top: 1px solid var(--line); color: var(--muted); background: #fff; }
 .unit-about-members { display: grid; gap: 1rem; }

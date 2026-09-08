@@ -42,6 +42,7 @@
 - 單位自己的新聞以該單位 `id` 填入 `owner_unit_id`。
 - 跨單位新聞只建立一筆，其他相關單位填入 `related_unit_ids`。
 - `cover_image` 使用相對路徑，例如 `assets/images/news/example.jpg`；`cover_alt` 必須說明圖片內容。
+- 新聞詳細頁的封面與圖集可點擊放大為原始尺寸，燈箱內也可另開新分頁查看原圖；不需要另外製作縮圖。
 
 ## 成員名單維護規則
 
