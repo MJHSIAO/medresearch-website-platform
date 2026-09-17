@@ -24,6 +24,12 @@
 
 ## 六個單位識別碼
 
+搜尋結果直接取用上表的 JSON，不另存一份索引；修改資料後重新載入搜尋頁即可更新。同一瀏覽器的 Demo 單位／消息覆寫也會套用，若看不到正式 JSON 變更請先檢查 Demo 覆寫。
+
+搜尋框及提示文字位於 `index.html`、`search.html`、`assets/js/search.js`。本頁快捷導覽由 `assets/js/units.js` 依實際 section 與 h2 產生；修改區塊標題時會同步變更導覽文字。詳細規則見 `docs/navigation-search.md`。
+
+### 單位代碼對照
+
 | 單位 | `id` |
 | --- | --- |
 | 學術研發室 | `academic-office` |

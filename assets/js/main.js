@@ -18,12 +18,12 @@
     const footer = document.getElementById('site-footer');
     if (header) {
       const current = currentFile();
-      const links = site.navigation.map((item) => {
+      const navigation = [...site.navigation, { label: '全站搜尋', href: 'search.html' }];
+      const links = navigation.map((item) => {
         const active = current === item.href.split('?')[0] || (current === 'unit.html' && item.href === 'units.html');
         return `<li><a href="${root()}/${item.href}"${active ? ' aria-current="page"' : ''}>${D.escapeHTML(item.label)}</a></li>`;
       }).join('');
       header.innerHTML = `
-        <p class="demo-notice">${D.escapeHTML(site.notice)}</p>
         <div class="site-header"><div class="container header-row">
           <a class="brand" href="${root()}/index.html" aria-label="${D.escapeHTML(site.name)}首頁">
             <span class="brand-mark" aria-hidden="true">研</span>
@@ -32,10 +32,19 @@
           <button class="menu-toggle" type="button" aria-label="開啟主選單" aria-expanded="false" aria-controls="main-navigation"><span aria-hidden="true">☰</span><span class="menu-label">選單</span></button>
           <nav class="main-nav" id="main-navigation" aria-label="主要導覽"><ul>${links}</ul></nav>
         </div></div>`;
+      // Keep the source notice in normal flow so it does not occupy the sticky header.
+      header.insertAdjacentHTML('beforebegin', `<p class="demo-notice">${D.escapeHTML(site.notice)}</p>`);
+      const measureHeader = () => {
+        document.documentElement.style.setProperty('--header-height', `${Math.ceil(header.getBoundingClientRect().height)}px`);
+        document.dispatchEvent(new Event('header-resized'));
+      };
+      measureHeader();
+      if ('ResizeObserver' in window) new ResizeObserver(measureHeader).observe(header);
+      else window.addEventListener('resize', measureHeader);
       const toggle = header.querySelector('.menu-toggle');
       const nav = header.querySelector('.main-nav');
       const syncMenu = () => {
-        const mobile = matchMedia('(max-width: 48rem)').matches;
+        const mobile = matchMedia('(max-width: 70rem)').matches;
         nav.hidden = mobile && toggle.getAttribute('aria-expanded') !== 'true';
       };
       toggle.addEventListener('click', () => {
@@ -60,7 +69,7 @@
           toggle.focus();
         }
       });
-      matchMedia('(max-width: 48rem)').addEventListener('change', syncMenu);
+      matchMedia('(max-width: 70rem)').addEventListener('change', syncMenu);
       syncMenu();
     }
     if (footer) {
@@ -97,7 +106,7 @@
     if (newsGrid) newsGrid.innerHTML = homeNews.map((item) => newsCard(item, units)).join('');
     if (unitGrid) {
       unitGrid.innerHTML = units
-        .filter((unit) => ['public', 'both'].includes(unit.visibility) && unit.status === 'active')
+        .filter(D.publicUnit)
         .sort((a, b) => a.display_order - b.display_order)
         .map((unit) => {
           const unitHref = unit.site_href ? `${root()}/${unit.site_href}` : `${root()}/unit.html?unit=${encodeURIComponent(unit.slug)}`;
