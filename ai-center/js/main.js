@@ -50,7 +50,6 @@ function buildFooter() {
             <li><a href="index.html">人工智慧中心首頁</a></li>
             <li><a href="../index.html" target="_blank" rel="noopener">醫學研究部首頁 ↗</a></li>
             <li><a href="../units.html" target="_blank" rel="noopener">醫學研究部隸屬單位 ↗</a></li>
-            <li><a href="../search.html" target="_blank" rel="noopener">全站搜尋 ↗</a></li>
             <li><a href="../admin-demo/">內容管理 Demo</a></li>
           </ul>
         </div>

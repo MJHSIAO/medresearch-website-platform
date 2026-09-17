@@ -54,13 +54,7 @@ Demo 提供四種角色視角：
 
 正式登入、Active Directory／Microsoft Entra ID、正式 CMS、正式資料庫、後端權限驗證、真實檔案上傳、正式寄信、院內 API、病人資料及任何院內機密資料均不在第一版範圍。
 
-## 長頁導覽與全站搜尋
-
-首頁搜尋框及主選單可前往 `search.html?q=關鍵字`。六個共用單位子站新增依實際區塊產生的本頁導覽：桌機左側 sticky、手機水平滑動。主站 Header 使用 sticky，錨點偏移會依 Header 實際高度更新。
-
-搜尋共用既有公開資料與 Demo 覆寫，不需額外套件或搜尋服務。範圍、編輯方式、限制及測試方式請見 `docs/navigation-search.md`。
-
-## 專案文件索引
+## 專案文件
 
 詳細範圍、資訊架構、權限矩陣、內容模型、發布流程、Demo 操作、文字與圖片編輯方式及驗收紀錄請參閱 `docs/` 及 `PLANS.md`；日常內容維護請先看 `docs/content-editing-guide.md`。
 

@@ -75,17 +75,8 @@
     });
   }
 
-  function isPublic(item) {
-    return ['public', 'both'].includes(item.visibility) &&
-      (!item.status || ['active', 'published', 'expired'].includes(item.status));
-  }
-
-  function publicUnit(unit) {
-    return isPublic(unit) && unit.status === 'active';
-  }
-
   function publicNews(items, includeExpired = true) {
-    return items.filter((item) => isPublic(item) && (item.status === 'published' || (includeExpired && item.status === 'expired')));
+    return items.filter((item) => ['public', 'both'].includes(item.visibility) && (item.status === 'published' || (includeExpired && item.status === 'expired')));
   }
 
   function escapeHTML(value = '') {
@@ -102,7 +93,7 @@
   const statusLabels = { draft: '草稿', pending_review: '待確認', published: '已發布', expired: '已過期', archived: '已封存' };
 
   window.MedData = {
-    load, getUnits, getUnit, getNews, saveUnit, saveNews, publicNews, isPublic, publicUnit, resetDemo,
+    load, getUnits, getUnit, getNews, saveUnit, saveNews, publicNews, resetDemo,
     readLocal, writeLocal, addAudit, escapeHTML, formatDate, statusLabels, keys
   };
 })();

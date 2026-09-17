@@ -32,25 +32,7 @@
 - [ ] 跳到主要內容、focus 樣式、label、標題層級及替代文字檢查完成。
 - [x] 瀏覽器 Console 沒有未處理 JavaScript 錯誤（2026-09-07；本次實測頁面）。
 
-## 2026-09-17 導覽與搜尋回歸
-
-本次使用本機無頭 Microsoft Edge 與隔離瀏覽器 context，將網站掛在 `/medresearch-website-platform/` 子路徑。測試腳本：`scripts/check-navigation-search.mjs`，最後一次執行 exit code 0。
-
-- [x] JSON 解析（處理既有 UTF-8 BOM）、全部 JS 語法、CSS 括號、靜態 HTML 本機連結與資源、新聞封面／圖集檔案存在。
-- [x] 320、375、768、1024、1440px 各 12 頁：首頁、新聞列表、搜尋、新聞詳細、部門介紹、AI 首頁、六個共用子站；無整頁水平溢出。
-- [x] 共用 Header 捲動後 top 0 且高度低於 110px；六個單位各快捷導覽 Enter 定位、標題不被 Header 遮住、aria-current 高亮。
-- [x] 搜尋 Enter 提交、trim、中文／英文／數字／混合與全形正規化、100/75/50/25 權重排序、空白與零結果提示。
-- [x] 非公開狀態與 internal visibility 測試資料未納入索引；Demo 單位覆寫由 getUnits 同步到搜尋。
-- [x] 搜尋結果 URL 留在專案子路徑且回傳 200；AI 介紹頁的搜尋連結使用 `../search.html` 並另開分頁。
-- [x] 新聞燈箱 Enter／Space 開啟、Escape 關閉、焦點回到觸發按鈕、原圖連結 target 為 `_blank`。
-- [x] 手機主選單 Enter 展開、Tab 進入導覽、Escape 關閉；四種角色的系統／部門／單位入口與既有矩陣相符。
-- [x] 最後一輪所測頁面無 console error／pageerror／HTTP 資源錯誤；測試伺服器對瀏覽器自動請求的根目錄 favicon 回傳 204。
-- [x] `node scripts/build-site.mjs` 成功，產出包含 search.html 及 search.js；`git diff --check` 無空白錯誤（只有 Windows 換行提醒）。
-- [x] 人工檢視桌機單位導覽與 320px 搜尋頁截圖，確認文字、搜尋框與卡片可讀。
-
-範圍限制：本次不是完整 WCAG、螢幕閱讀器或跨瀏覽器驗收，也未連線驗證外部院方網址。未 push 或部署，因此未驗證線上 GitHub Pages 新版。搜尋不包含同義詞、圖片 OCR 或附件全文；現有資料搜尋「研究倫理」為零結果，屬預期關鍵字比對行為。
-
-## 維持第一版範圍
+## 第一版後停止
 
 驗收不包含正式登入、CMS、資料庫、權限驗證、上傳、寄信或院內身分整合。這些項目不得因第一版驗收完成而自動開始開發。
 

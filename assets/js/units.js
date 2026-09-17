@@ -2,65 +2,7 @@
   'use strict';
   const D = window.MedData;
   const root = () => document.body.dataset.root || '.';
-  const publicUnit = D.publicUnit;
-
-  function setupPageNavigation(target) {
-    const subsite = target.querySelector('.unit-subsite');
-    const sections = [...subsite.querySelectorAll(':scope > section[id]')];
-    if (!sections.length) return;
-    const layout = document.createElement('div');
-    layout.className = 'unit-reading-layout';
-    const content = document.createElement('div');
-    content.className = 'unit-reading-content';
-    const sidebar = document.createElement('aside');
-    sidebar.className = 'page-navigation';
-    sidebar.innerHTML = `<strong>本頁導覽</strong><nav aria-label="本頁快捷導覽"><ul>${sections.map((section) => {
-      section.classList.add('section-anchor');
-      section.tabIndex = -1;
-      return `<li><a href="#${encodeURIComponent(section.id)}">${D.escapeHTML(section.querySelector('h2')?.textContent || section.id)}</a></li>`;
-    }).join('')}</ul></nav>`;
-    // One set of links: sticky column on desktop, horizontally scrollable row on mobile.
-    subsite.insertBefore(layout, sections[0]);
-    layout.append(sidebar, content);
-    sections.forEach((section) => content.append(section));
-    const links = [...sidebar.querySelectorAll('a')];
-    if ('IntersectionObserver' in window) {
-      let observer;
-      const updateActive = () => {
-        const edge = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 80) + 24;
-        const current = sections.filter((section) => section.getBoundingClientRect().top <= edge).pop() || sections[0];
-        links.forEach((link, index) => {
-          const active = sections[index] === current;
-          link.classList.toggle('is-active', active);
-          if (active) link.setAttribute('aria-current', 'location');
-          else link.removeAttribute('aria-current');
-        });
-      };
-      const observe = () => {
-        observer?.disconnect();
-        const height = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 80;
-        observer = new IntersectionObserver(updateActive, { rootMargin: `-${height + 24}px 0px -55% 0px`, threshold: [0, 0.1, 0.5, 1] });
-        sections.forEach((section) => observer.observe(section));
-        updateActive();
-      };
-      observe();
-      document.addEventListener('header-resized', observe);
-      // Long sections can cross the reading edge without crossing an observer threshold.
-      let scheduled = false;
-      window.addEventListener('scroll', () => {
-        if (scheduled) return;
-        scheduled = true;
-        requestAnimationFrame(() => { updateActive(); scheduled = false; });
-      }, { passive: true });
-    }
-    // Initial hashes arrive before JSON renders; re-align once the target exists.
-    if (location.hash) {
-      let id;
-      try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }
-      const anchor = document.getElementById(id);
-      requestAnimationFrame(() => anchor?.scrollIntoView());
-    }
-  }
+  const publicUnit = (unit) => ['public', 'both'].includes(unit.visibility) && unit.status === 'active';
 
   function unitUrl(unit) {
     return unit.site_href ? `${root()}/${unit.site_href}` : `${root()}/unit.html?unit=${encodeURIComponent(unit.slug)}`;
@@ -81,7 +23,7 @@
   }
 
   function renderMemberCards(unit, people) {
-    const verifiedPeople = people.filter((person) => person.unit_id === unit.id && D.isPublic(person));
+    const verifiedPeople = people.filter((person) => person.unit_id === unit.id && ['public', 'both'].includes(person.visibility));
     const missingSummaries = (unit.members || []).filter((member) => {
       const summary = normalizedMember(member);
       return !verifiedPeople.some((person) => summary.includes(normalizedMember(person.name)));
@@ -113,7 +55,6 @@
     if (!target) return;
     const slug = new URLSearchParams(location.search).get('unit') || 'academic-office';
     const [unit, allUnits, allNews, people] = await Promise.all([D.getUnit(slug), D.getUnits(), D.getNews(), D.load('people')]);
-    if (!publicUnit(unit)) { target.innerHTML = '<p class="empty-state">找不到公開單位資料。</p>'; return; }
     if (unit.site_href) { location.replace(`${root()}/${unit.site_href}`); return; }
 
     const publicPeople = people.filter((person) => person.unit_id === unit.id && ['public', 'both'].includes(person.visibility));
@@ -149,7 +90,7 @@
 
       <section class="section section-tint" id="unit-services"><div class="container"><div class="section-heading"><div><span class="eyebrow">Services</span><h2>${D.escapeHTML(unit.service_heading || '主要業務與服務')}</h2><p>以下項目依原官網業務、辦法或資訊入口歸納，正式申請條件仍以官方公告為準。</p></div></div><div class="grid grid-3">${unit.services.map((service, index) => `<article class="card unit-service-card"><span>${String(index + 1).padStart(2, '0')}</span><h3>${D.escapeHTML(service)}</h3></article>`).join('')}</div></div></section>
 
-      <section class="section highlight-band" id="unit-fields"><div class="container"><div class="section-heading"><div><span class="eyebrow">Focus</span><h2>${D.escapeHTML(unit.name)}重點領域</h2></div></div><div class="stat-line">${unit.research_fields.slice(0, 3).map((field) => `<div><strong>${D.escapeHTML(field)}</strong><span>依公開業務內容整理</span></div>`).join('')}</div></div></section>
+      <section class="section highlight-band"><div class="container"><div class="section-heading"><div><span class="eyebrow">Focus</span><h2>${D.escapeHTML(unit.name)}重點領域</h2></div></div><div class="stat-line">${unit.research_fields.slice(0, 3).map((field) => `<div><strong>${D.escapeHTML(field)}</strong><span>依公開業務內容整理</span></div>`).join('')}</div></div></section>
 
       ${specialSections.map(renderSpecialSection).join('')}
 
@@ -161,7 +102,6 @@
 
       <section class="unit-network"><div class="container unit-network-inner"><div><span class="eyebrow">Medical Research Network</span><h2>返回醫研部或查看其他單位</h2><p>跨單位連結會另開新分頁，保留目前子站。</p></div><div class="button-row"><a class="button secondary" href="${root()}/index.html" target="_blank" rel="noopener">醫研部首頁 ↗</a><a class="button secondary" href="${root()}/units.html" target="_blank" rel="noopener">全部隸屬單位 ↗</a></div></div><div class="container unit-network-list" aria-label="其他隸屬單位">${otherUnits.map((entry) => `<a href="${unitUrl(entry)}" target="_blank" rel="noopener">${D.escapeHTML(entry.name)} ↗</a>`).join('')}</div></section>
     </div>`;
-    setupPageNavigation(target);
   }
 
   async function renderUnitAbout() {
@@ -169,7 +109,6 @@
     if (!target) return;
     const slug = new URLSearchParams(location.search).get('unit') || 'academic-office';
     const [unit, people] = await Promise.all([D.getUnit(slug), D.load('people')]);
-    if (!publicUnit(unit)) { target.innerHTML = '<p class="empty-state">找不到公開單位資料。</p>'; return; }
     const publicPeople = people.filter((person) => person.unit_id === unit.id && ['public', 'both'].includes(person.visibility));
     const membersMarkup = renderMemberCards(unit, publicPeople);
     if (unit.site_about_href) { location.replace(`${root()}/${unit.site_about_href}`); return; }
