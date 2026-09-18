@@ -32,7 +32,35 @@
 - [ ] 跳到主要內容、focus 樣式、label、標題層級及替代文字檢查完成。
 - [x] 瀏覽器 Console 沒有未處理 JavaScript 錯誤（2026-09-07；本次實測頁面）。
 
-## 第一版後停止
+## 2026-09-18 導覽與搜尋 UX 驗證
+
+本次在 feature/medresearch-platform-v1 修改，起點 HEAD 為 7679e8a（檔案樹與 2ff6196 一致）。使用隔離的無頭 Microsoft Edge 與本機伺服器，以 `/medresearch-website-platform/` 模擬 GitHub Pages 專案子路徑。最終完整測試 `scripts/check-navigation-search.mjs` exit code 0。
+
+| 實際執行的檢查 | 結果 |
+| --- | --- |
+| 全部 JSON 解析、JavaScript 語法、CSS 括號、靜態 HTML 本機連結與資源、新聞封面／圖集檔案 | 通過（既有 JSON BOM 於驗證時處理） |
+| 320、375、768、1024、1440px 各 15 個代表頁面，共 75 個頁面尺寸組合 | 無整頁水平溢出；共用 Header sticky top 0，實測高度低於 110px |
+| 首頁、短篇內容、AI 頁面沒有本頁 Sidebar | 通過 |
+| 六個單位各段目錄 Enter 跳轉、標題不被 Header 遮住、active／aria-current | 通過 |
+| 部門介紹、研究資源總覽、細胞治療中心完整介紹的最後一段定位與底部高亮 | 通過 |
+| 手機目錄展開／收合、aria-expanded／aria-controls、Tab、Enter、焦點轉到目標區塊 | 通過；所有目錄項目可見，未沿用橫向目錄 |
+| 首次開啟帶 #unit-services 網址（320、1440px） | 通過，定位於 Header 下 16px；使用新文件避免視窗切換混入同頁導覽 |
+| 不支援 IntersectionObserver 時的單位錨點 | 通過；不依賴高亮也可跳轉 |
+| 首頁 Enter 搜尋、結果頁按鈕 Tab/Enter、trim、空白、無結果 | 通過 |
+| 中文、英文、數字、中英文混合／全形正規化；100/75/50/25 排序 | 通過；研究倫理為零筆，符合目前精確詞句資料 |
+| 搜尋排除 internal visibility 及 internal/draft/pending_review/archived 狀態測試資料 | 通過；單位／成員／消息未進入索引 |
+| 搜尋結果連結與 AI 頁尾 ../search.html | 專案相對路徑正確，所測結果 HTTP 200 |
+| 後台表單實際儲存 AI 簡介後，首頁、AI 預覽及搜尋讀取同一 Demo 覆寫 | 通過；結束後清除隔離 context 的測試資料 |
+| 六個子站最新三則消息及跨單位另開分頁 | 通過 |
+| 新聞多圖、Enter/Space 開燈箱、Escape 關閉、焦點返回、原圖連結新分頁、圖片原尺寸與燈箱內捲動 | 通過 |
+| 手機主選單 Tab/Escape 與切換桌機後解除捲動鎖定 | 通過 |
+| 四種 Demo 角色的單位／部門／系統入口 | 與既有權限矩陣相符（仍非正式權限驗證） |
+| Browser console error、pageerror、所測資源 HTTP 錯誤 | 最終完整測試為 0；測試伺服器對瀏覽器自動請求的根目錄 favicon 回傳 204 |
+| 靜態 build 與 git diff --check | 通過；dist/client 包含 search.html/search.js，Git 僅有 Windows 換行提示 |
+
+人工檢視桌機首頁與單位 Sidebar、320px 首頁／收合目錄截圖，確認既有綠白風格、可讀性與無側欄首頁。未進行完整 CSS validator、WCAG／螢幕閱讀器或跨瀏覽器認證；未檢查外部院方連結的即時可用性。未部署，線上新版仍待使用者 Commit/Push。功能範圍與搜尋限制見 navigation-search.md。
+
+## 維持第一版範圍
 
 驗收不包含正式登入、CMS、資料庫、權限驗證、上傳、寄信或院內身分整合。這些項目不得因第一版驗收完成而自動開始開發。
 

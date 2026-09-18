@@ -24,6 +24,10 @@
 
 ## 六個單位識別碼
 
+搜尋索引由上述 site、units、people、news JSON 即時產生，不需另外維護索引檔。搜尋文案位於 `index.html`、`search.html`、`assets/js/search.js`；共用本頁導覽由 `assets/js/main.js` 依實際區塊標題產生。詳細欄位與限制見 `docs/navigation-search.md`。
+
+### 單位代碼對照
+
 | 單位 | `id` |
 | --- | --- |
 | 學術研發室 | `academic-office` |

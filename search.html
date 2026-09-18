@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="搜尋醫學研究部公開單位、成員、研究主題與最新消息。"><title>全站搜尋｜醫學研究部</title>
+  <link rel="stylesheet" href="assets/css/base.css"><link rel="stylesheet" href="assets/css/layout.css"><link rel="stylesheet" href="assets/css/components.css"><link rel="stylesheet" href="assets/css/public-site.css"><link rel="stylesheet" href="assets/css/responsive.css">
+</head>
+<body data-root="." data-page="search">
+  <a class="skip-link" href="#main-content">跳到主要內容</a><header id="site-header"></header>
+  <div class="breadcrumb-wrap"><nav class="container breadcrumbs" aria-label="麵包屑"><ol><li><a href="index.html">首頁</a></li><li aria-current="page">全站搜尋</li></ol></nav></div>
+  <main id="main-content" tabindex="-1">
+    <header class="page-header"><div class="container"><span class="eyebrow">Search</span><h1 id="search-title">全站搜尋</h1>
+      <form class="site-search-form" action="search.html" method="get" role="search" aria-label="全站搜尋">
+        <label class="sr-only" for="site-query">搜尋單位、研究主題或最新消息</label>
+        <input id="site-query" name="q" type="search" placeholder="搜尋單位、研究主題或最新消息">
+        <button class="button" type="submit">搜尋</button>
+      </form>
+    </div></header>
+    <section class="section"><div class="container"><p id="search-count" role="status">載入中…</p><div id="search-results"></div></div></section>
+  </main><footer id="site-footer"></footer>
+  <script src="assets/js/data-service.js"></script><script src="assets/js/main.js"></script><script src="assets/js/search.js"></script>
+</body>
+</html>

@@ -18,12 +18,12 @@
     const footer = document.getElementById('site-footer');
     if (header) {
       const current = currentFile();
-      const links = site.navigation.map((item) => {
+      const navigation = [...site.navigation, { label: '全站搜尋', href: 'search.html' }];
+      const links = navigation.map((item) => {
         const active = current === item.href.split('?')[0] || (current === 'unit.html' && item.href === 'units.html');
         return `<li><a href="${root()}/${item.href}"${active ? ' aria-current="page"' : ''}>${D.escapeHTML(item.label)}</a></li>`;
       }).join('');
       header.innerHTML = `
-        <p class="demo-notice">${D.escapeHTML(site.notice)}</p>
         <div class="site-header"><div class="container header-row">
           <a class="brand" href="${root()}/index.html" aria-label="${D.escapeHTML(site.name)}首頁">
             <span class="brand-mark" aria-hidden="true">研</span>
@@ -32,10 +32,20 @@
           <button class="menu-toggle" type="button" aria-label="開啟主選單" aria-expanded="false" aria-controls="main-navigation"><span aria-hidden="true">☰</span><span class="menu-label">選單</span></button>
           <nav class="main-nav" id="main-navigation" aria-label="主要導覽"><ul>${links}</ul></nav>
         </div></div>`;
+      // Keep the source notice in normal flow so it does not occupy the sticky header.
+      header.insertAdjacentHTML('beforebegin', `<p class="demo-notice">${D.escapeHTML(site.notice)}</p>`);
+      header.dataset.ready = 'true';
+      const measureHeader = () => {
+        document.documentElement.style.setProperty('--header-height', `${Math.ceil(header.getBoundingClientRect().height)}px`);
+        document.dispatchEvent(new Event('header-resized'));
+      };
+      measureHeader();
+      if ('ResizeObserver' in window) new ResizeObserver(measureHeader).observe(header);
+      else window.addEventListener('resize', measureHeader);
       const toggle = header.querySelector('.menu-toggle');
       const nav = header.querySelector('.main-nav');
       const syncMenu = () => {
-        const mobile = matchMedia('(max-width: 48rem)').matches;
+        const mobile = matchMedia('(max-width: 70rem)').matches;
         nav.hidden = mobile && toggle.getAttribute('aria-expanded') !== 'true';
       };
       toggle.addEventListener('click', () => {
@@ -60,7 +70,12 @@
           toggle.focus();
         }
       });
-      matchMedia('(max-width: 48rem)').addEventListener('change', syncMenu);
+      matchMedia('(max-width: 70rem)').addEventListener('change', () => {
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', '開啟主選單');
+        document.body.classList.remove('menu-open');
+        syncMenu();
+      });
       syncMenu();
     }
     if (footer) {
@@ -69,6 +84,96 @@
         <div><h3>網站導覽</h3><ul>${site.navigation.map((item) => `<li><a href="${root()}/${item.href}">${D.escapeHTML(item.label)}</a></li>`).join('')}</ul></div>
         <div><h3>聯絡資訊</h3><ul><li>${D.escapeHTML(site.contact.unit)}</li><li>${D.escapeHTML(site.contact.address)}</li><li>${D.escapeHTML(site.contact.phone)}</li><li><a href="${D.escapeHTML(site.source_url)}" target="_blank" rel="noopener">醫學研究部原官網 ↗</a></li></ul></div>
       </div><div class="container footer-bottom">© 2026 亞東紀念醫院 醫學研究部網站平台｜資料查核：${D.escapeHTML(site.source_checked_at)}</div></div>`;
+    }
+  }
+
+  function setupPageNavigation(subsite, sections = [...subsite.querySelectorAll(':scope > section[id]')]) {
+    if (document.body.dataset.page === 'home' || sections.length < 3) return;
+    const layout = document.createElement('div');
+    layout.className = 'unit-reading-layout';
+    const content = document.createElement('div');
+    content.className = 'unit-reading-content';
+    const sidebar = document.createElement('aside');
+    sidebar.className = 'page-navigation';
+    sidebar.innerHTML = `<strong>本頁導覽</strong><button class="page-nav-toggle" type="button" aria-expanded="false" aria-controls="page-sections">本頁導覽 <span aria-hidden="true">▾</span></button><nav id="page-sections" aria-label="本頁快捷導覽"><ul>${sections.map((section) => {
+      section.classList.add('section-anchor');
+      section.tabIndex = -1;
+      return `<li><a href="#${encodeURIComponent(section.id)}">${D.escapeHTML(section.querySelector('h2')?.textContent || section.id)}</a></li>`;
+    }).join('')}</ul></nav>`;
+    // One set of links: sticky on desktop, a disclosure on narrow screens.
+    subsite.insertBefore(layout, sections[0]);
+    layout.append(sidebar, content);
+    sections.forEach((section) => content.append(section));
+    const links = [...sidebar.querySelectorAll('a')];
+    const toggle = sidebar.querySelector('.page-nav-toggle');
+    const nav = sidebar.querySelector('nav');
+    const narrow = matchMedia('(max-width: 62rem)');
+    const sync = () => { nav.hidden = narrow.matches && toggle.getAttribute('aria-expanded') !== 'true'; };
+    toggle.addEventListener('click', () => {
+      toggle.setAttribute('aria-expanded', String(toggle.getAttribute('aria-expanded') !== 'true'));
+      sync();
+    });
+    sidebar.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && narrow.matches) {
+        toggle.setAttribute('aria-expanded', 'false');
+        sync();
+        toggle.focus();
+      }
+    });
+    links.forEach((link, index) => link.addEventListener('click', () => {
+      sections[index].focus({ preventScroll: true });
+      if (narrow.matches) { toggle.setAttribute('aria-expanded', 'false'); sync(); }
+    }));
+    narrow.addEventListener('change', () => {
+      if (narrow.matches && nav.contains(document.activeElement)) toggle.focus();
+      toggle.setAttribute('aria-expanded', 'false');
+      sync();
+    });
+    sync();
+    if ('IntersectionObserver' in window) {
+      let observer;
+      const updateActive = () => {
+        const edge = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 80) + 24;
+        const atBottom = scrollY + innerHeight >= document.documentElement.scrollHeight - 2;
+        const current = atBottom ? sections[sections.length - 1] : sections.filter((section) => section.getBoundingClientRect().top <= edge).pop() || sections[0];
+        links.forEach((link, index) => {
+          const active = sections[index] === current;
+          link.classList.toggle('is-active', active);
+          if (active) link.setAttribute('aria-current', 'location');
+          else link.removeAttribute('aria-current');
+        });
+      };
+      const observe = () => {
+        observer?.disconnect();
+        const height = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 80;
+        observer = new IntersectionObserver(updateActive, { rootMargin: `-${height + 24}px 0px -55% 0px`, threshold: [0, 0.1, 0.5, 1] });
+        sections.forEach((section) => observer.observe(section));
+        updateActive();
+      };
+      observe();
+      document.addEventListener('header-resized', observe);
+      // Long sections can cross the reading edge without crossing an observer threshold.
+      let scheduled = false;
+      window.addEventListener('scroll', () => {
+        if (scheduled) return;
+        scheduled = true;
+        requestAnimationFrame(() => { updateActive(); scheduled = false; });
+      }, { passive: true });
+    }
+    // Initial hashes arrive before JSON and the header. Align after both have settled.
+    if (location.hash) {
+      let id;
+      try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }
+      const anchor = document.getElementById(id);
+      if (!anchor) return;
+      const align = () => {
+        if (!document.getElementById('site-header')?.dataset.ready) return;
+        document.removeEventListener('header-resized', align);
+        requestAnimationFrame(() => requestAnimationFrame(() => anchor.scrollIntoView({ behavior: 'instant', block: 'start' })));
+      };
+      document.addEventListener('header-resized', align);
+      if (document.readyState === 'complete') align();
+      else window.addEventListener('load', align, { once: true });
     }
   }
 
@@ -97,7 +202,7 @@
     if (newsGrid) newsGrid.innerHTML = homeNews.map((item) => newsCard(item, units)).join('');
     if (unitGrid) {
       unitGrid.innerHTML = units
-        .filter((unit) => ['public', 'both'].includes(unit.visibility) && unit.status === 'active')
+        .filter(D.publicUnit)
         .sort((a, b) => a.display_order - b.display_order)
         .map((unit) => {
           const unitHref = unit.site_href ? `${root()}/${unit.site_href}` : `${root()}/unit.html?unit=${encodeURIComponent(unit.slug)}`;
@@ -116,6 +221,12 @@
     const target = document.getElementById('content-page-body');
     if (target) {
       target.innerHTML = `<span class="eyebrow">${D.escapeHTML(page.eyebrow)}</span><h1>${D.escapeHTML(page.title)}</h1><p class="page-kicker">${D.escapeHTML(page.summary)}</p>${page.sections.map((section) => `<section><h2>${D.escapeHTML(section.title)}</h2><p>${D.escapeHTML(section.content)}</p></section>`).join('')}<div class="callout"><strong>資料來源</strong><p>本頁依醫學研究部官網整理，查核日期為 2026-09-01。正式規章、表單版本與申請方式請以原始頁面為準。</p><p><a class="button secondary" href="${D.escapeHTML(page.source_url)}" target="_blank" rel="noopener">前往官方來源 ↗</a></p></div>`;
+      const sections = [...target.querySelectorAll(':scope > section')];
+      if (sections.length >= 4) {
+        sections.forEach((section, index) => { section.id = `content-section-${index + 1}`; });
+        target.classList.add('long-content-page');
+        setupPageNavigation(target, sections);
+      }
     }
   }
 
@@ -148,6 +259,6 @@
     }
   });
 
-  window.MedUI = { newsCard, renderShell, assetUrl };
+  window.MedUI = { newsCard, renderShell, assetUrl, setupPageNavigation };
 })();
 

@@ -1,4 +1,16 @@
 @media (max-width: 62rem) {
+  .menu-toggle { display: inline-flex; flex-shrink: 0; }
+  .main-nav { position: absolute; inset: 100% 0 auto; max-height: calc(100dvh - var(--header-height)); overflow-y: auto; padding: 1rem; border-bottom: 1px solid var(--line); background: #fff; box-shadow: var(--shadow); }
+  .main-nav ul { display: grid; }
+}
+
+@media (max-width: 62rem) {
+  .unit-reading-layout { display: block; padding: 0; }
+  .page-navigation { position: static; max-height: none; margin: 0; padding: 0.8rem 1rem; border-radius: 0; }
+  .page-navigation > strong { display: none; }
+  .page-nav-toggle { display: flex; }
+  .page-navigation nav { margin-top: 0.5rem; }
+  .page-navigation a { min-height: 44px; white-space: normal; }
   .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .filter-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -14,7 +26,7 @@
   .header-row { min-height: 4.35rem; }
   .brand-copy span { display: none; }
   .menu-toggle { display: inline-flex; }
-  .main-nav { position: fixed; inset: calc(4.35rem + 2.9rem) 0 auto; max-height: calc(100vh - 7.25rem); overflow-y: auto; padding: 1rem; border-bottom: 1px solid var(--line); background: #fff; box-shadow: var(--shadow); }
+  .main-nav { position: absolute; inset: 100% 0 auto; max-height: calc(100dvh - var(--header-height)); overflow-y: auto; padding: 1rem; border-bottom: 1px solid var(--line); background: #fff; box-shadow: var(--shadow); }
   .main-nav[hidden] { display: none !important; }
   .main-nav ul { display: grid; align-items: stretch; }
   .main-nav a { padding: 0.8rem; border-radius: 0.5rem; }
@@ -23,6 +35,14 @@
   .unit-site-bar-inner { align-items: flex-start; flex-direction: column; gap: 0; padding-block: 0.75rem; }
   .unit-site-nav { width: 100%; }
   .unit-overview-grid, .unit-section-grid, .unit-contact-grid, .unit-network-inner { grid-template-columns: 1fr; }
+  .unit-reading-content .unit-overview-grid, .unit-reading-content .unit-section-grid, .unit-reading-content .unit-contact-grid { grid-template-columns: 1fr; }
+  .section { padding-block: 1.75rem; }
+  .hero { padding-block: 3rem; }
+  .hero-grid { gap: 2rem; }
+  .unit-hero-site { padding-block: 2.25rem; }
+  .page-header { padding-block: 1.75rem 1.25rem; }
+  .section-heading { margin-bottom: 1.1rem; }
+  .source-card { position: static; }
   .unit-resource-grid { grid-template-columns: 1fr; }
   .article-gallery { grid-template-columns: 1fr; }
   .image-lightbox { width: calc(100vw - 1rem); max-height: calc(100vh - 1rem); }

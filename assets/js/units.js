@@ -2,7 +2,7 @@
   'use strict';
   const D = window.MedData;
   const root = () => document.body.dataset.root || '.';
-  const publicUnit = (unit) => ['public', 'both'].includes(unit.visibility) && unit.status === 'active';
+  const publicUnit = D.publicUnit;
 
   function unitUrl(unit) {
     return unit.site_href ? `${root()}/${unit.site_href}` : `${root()}/unit.html?unit=${encodeURIComponent(unit.slug)}`;
@@ -23,7 +23,7 @@
   }
 
   function renderMemberCards(unit, people) {
-    const verifiedPeople = people.filter((person) => person.unit_id === unit.id && ['public', 'both'].includes(person.visibility));
+    const verifiedPeople = people.filter((person) => person.unit_id === unit.id && D.isPublic(person));
     const missingSummaries = (unit.members || []).filter((member) => {
       const summary = normalizedMember(member);
       return !verifiedPeople.some((person) => summary.includes(normalizedMember(person.name)));
@@ -55,6 +55,7 @@
     if (!target) return;
     const slug = new URLSearchParams(location.search).get('unit') || 'academic-office';
     const [unit, allUnits, allNews, people] = await Promise.all([D.getUnit(slug), D.getUnits(), D.getNews(), D.load('people')]);
+    if (!publicUnit(unit)) { target.innerHTML = '<p class="empty-state">找不到公開單位資料。</p>'; return; }
     if (unit.site_href) { location.replace(`${root()}/${unit.site_href}`); return; }
 
     const publicPeople = people.filter((person) => person.unit_id === unit.id && ['public', 'both'].includes(person.visibility));
@@ -90,7 +91,7 @@
 
       <section class="section section-tint" id="unit-services"><div class="container"><div class="section-heading"><div><span class="eyebrow">Services</span><h2>${D.escapeHTML(unit.service_heading || '主要業務與服務')}</h2><p>以下項目依原官網業務、辦法或資訊入口歸納，正式申請條件仍以官方公告為準。</p></div></div><div class="grid grid-3">${unit.services.map((service, index) => `<article class="card unit-service-card"><span>${String(index + 1).padStart(2, '0')}</span><h3>${D.escapeHTML(service)}</h3></article>`).join('')}</div></div></section>
 
-      <section class="section highlight-band"><div class="container"><div class="section-heading"><div><span class="eyebrow">Focus</span><h2>${D.escapeHTML(unit.name)}重點領域</h2></div></div><div class="stat-line">${unit.research_fields.slice(0, 3).map((field) => `<div><strong>${D.escapeHTML(field)}</strong><span>依公開業務內容整理</span></div>`).join('')}</div></div></section>
+      <section class="section highlight-band" id="unit-fields"><div class="container"><div class="section-heading"><div><span class="eyebrow">Focus</span><h2>${D.escapeHTML(unit.name)}重點領域</h2></div></div><div class="stat-line">${unit.research_fields.slice(0, 3).map((field) => `<div><strong>${D.escapeHTML(field)}</strong><span>依公開業務內容整理</span></div>`).join('')}</div></div></section>
 
       ${specialSections.map(renderSpecialSection).join('')}
 
@@ -102,6 +103,7 @@
 
       <section class="unit-network"><div class="container unit-network-inner"><div><span class="eyebrow">Medical Research Network</span><h2>返回醫研部或查看其他單位</h2><p>跨單位連結會另開新分頁，保留目前子站。</p></div><div class="button-row"><a class="button secondary" href="${root()}/index.html" target="_blank" rel="noopener">醫研部首頁 ↗</a><a class="button secondary" href="${root()}/units.html" target="_blank" rel="noopener">全部隸屬單位 ↗</a></div></div><div class="container unit-network-list" aria-label="其他隸屬單位">${otherUnits.map((entry) => `<a href="${unitUrl(entry)}" target="_blank" rel="noopener">${D.escapeHTML(entry.name)} ↗</a>`).join('')}</div></section>
     </div>`;
+    window.MedUI.setupPageNavigation(target.querySelector('.unit-subsite'));
   }
 
   async function renderUnitAbout() {
@@ -109,12 +111,27 @@
     if (!target) return;
     const slug = new URLSearchParams(location.search).get('unit') || 'academic-office';
     const [unit, people] = await Promise.all([D.getUnit(slug), D.load('people')]);
+    if (!publicUnit(unit)) { target.innerHTML = '<p class="empty-state">找不到公開單位資料。</p>'; return; }
     const publicPeople = people.filter((person) => person.unit_id === unit.id && ['public', 'both'].includes(person.visibility));
     const membersMarkup = renderMemberCards(unit, publicPeople);
     if (unit.site_about_href) { location.replace(`${root()}/${unit.site_about_href}`); return; }
     document.title = `${unit.name}完整介紹｜醫學研究部`;
     document.querySelector('[data-unit-crumb]').textContent = unit.name;
     target.innerHTML = `<div class="prose"><span class="eyebrow">單位完整介紹</span><h1>${D.escapeHTML(unit.name)}</h1><p class="page-kicker">${D.escapeHTML(unit.full_description)}</p><h2>成立宗旨</h2><p>${D.escapeHTML(unit.purpose)}</p><h2>發展目標</h2><ul>${unit.goals.map((item) => `<li>${D.escapeHTML(item)}</li>`).join('')}</ul><h2>主要業務與服務內容</h2><ul>${unit.services.map((item) => `<li>${D.escapeHTML(item)}</li>`).join('')}</ul><h2>重點領域與特色</h2><ul>${unit.research_fields.map((item) => `<li>${D.escapeHTML(item)}</li>`).join('')}</ul><h2>主管及成員</h2><div class="unit-about-members">${membersMarkup}</div><p><a class="button secondary" href="${root()}/unit.html?unit=${encodeURIComponent(unit.slug)}">返回單位子站</a></p></div><aside><div class="card source-card"><span class="tag">官方資料</span><h2>資料來源</h2><p>內容依醫學研究部單位原官網整理。</p><p><strong>原頁面更新：</strong>${D.formatDate(unit.source_updated_at)}<br><strong>本版查核：</strong>${D.formatDate(unit.source_checked_at || '2026-09-07')}</p><p><a class="button secondary" href="${D.escapeHTML(unit.source_url)}" target="_blank" rel="noopener">前往官方頁面 ↗</a></p></div></aside>`;
+    // Full introductions share the same navigation without adding a second right sidebar.
+    target.classList.remove('sidebar-layout');
+    const article = target.querySelector('.prose');
+    article.classList.add('long-content-page');
+    const sections = [...article.querySelectorAll(':scope > h2')].map((heading, index) => {
+      const section = document.createElement('section');
+      section.id = `about-section-${index + 1}`;
+      article.insertBefore(section, heading);
+      section.append(heading);
+      while (section.nextElementSibling && section.nextElementSibling.tagName !== 'H2') section.append(section.nextElementSibling);
+      return section;
+    });
+    article.append(target.querySelector('aside'));
+    window.MedUI.setupPageNavigation(article, sections);
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
