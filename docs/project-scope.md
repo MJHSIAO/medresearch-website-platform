@@ -14,7 +14,7 @@
 
 ## 明確排除
 
-不實作正式登入、Active Directory、Microsoft Entra ID、CMS、資料庫、API、後端權限、正式上傳、寄信、病人資料或院內機密。`localStorage` 與角色切換僅模擬操作流程。
+第一版原始交付不含正式登入。Phase 1.5 已新增院方 OIDC 登入與 `/api/me` 的最小 FastAPI Backend，但仍不包含正式 CMS、資料庫、完整角色／單位授權、正式上傳、寄信、病人資料或院內機密。`localStorage` 與角色切換仍只模擬操作流程；敏感功能不得依前端顯示狀態授權。
 
 ## 外部專案邊界
 

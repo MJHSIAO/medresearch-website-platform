@@ -12,6 +12,46 @@
     return file || 'index.html';
   }
 
+  async function renderAuthNavigation(list) {
+    if (!list) return;
+    const item = document.createElement('li');
+    item.className = 'auth-navigation';
+    const login = document.createElement('a');
+    login.href = assetUrl('auth/login');
+    login.textContent = '院內人員登入';
+    item.append(login);
+    list.append(item);
+
+    // Avoid requesting a backend endpoint on the static-only GitHub Pages demo.
+    // This cookie is only a UI hint; /api/me remains the source of truth.
+    if (!document.cookie.split(';').some((part) => part.trim() === 'medresearch_auth=1')) return;
+
+    try {
+      const response = await fetch(assetUrl('api/me'), {
+        credentials: 'same-origin',
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.ok || !response.headers.get('content-type')?.includes('application/json')) return;
+      const result = await response.json();
+      if (!result.authenticated || !result.user) return;
+
+      item.replaceChildren();
+      const name = document.createElement('span');
+      name.className = 'auth-user-name';
+      name.textContent = result.user.name || result.user.id || '院內使用者';
+      const internal = document.createElement('a');
+      internal.href = assetUrl('admin-demo/');
+      internal.textContent = '院內專區';
+      internal.title = '目前連結至行政後台 UI Demo，敏感功能仍須由後端驗證權限';
+      const logout = document.createElement('a');
+      logout.href = assetUrl('auth/logout');
+      logout.textContent = '登出';
+      item.append(name, internal, logout);
+    } catch {
+      // GitHub Pages and other static-only hosts have no /api/me endpoint.
+    }
+  }
+
   async function renderShell() {
     const site = await D.load('site');
     const header = document.getElementById('site-header');
@@ -32,6 +72,7 @@
           <button class="menu-toggle" type="button" aria-label="開啟主選單" aria-expanded="false" aria-controls="main-navigation"><span aria-hidden="true">☰</span><span class="menu-label">選單</span></button>
           <nav class="main-nav" id="main-navigation" aria-label="主要導覽"><ul>${links}</ul></nav>
         </div></div>`;
+      renderAuthNavigation(header.querySelector('.main-nav ul'));
       // Keep the source notice in normal flow so it does not occupy the sticky header.
       header.insertAdjacentHTML('beforebegin', `<p class="demo-notice">${D.escapeHTML(site.notice)}</p>`);
       header.dataset.ready = 'true';

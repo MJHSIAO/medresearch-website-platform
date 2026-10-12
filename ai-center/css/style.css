@@ -265,6 +265,22 @@ h3 {
   list-style: none;
 }
 
+.auth-navigation {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.auth-user-name {
+  max-width: 9rem;
+  overflow: hidden;
+  padding: 10px 8px;
+  color: var(--color-primary);
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .nav-link {
   display: block;
   padding: 10px 11px;
@@ -1111,6 +1127,15 @@ a.card:hover {
     box-shadow: -18px 20px 45px rgba(9, 73, 59, 0.15);
     transform: translateX(110%);
     transition: transform 0.25s ease;
+  }
+
+  .auth-navigation {
+    display: grid;
+    width: 100%;
+  }
+
+  .auth-user-name {
+    max-width: none;
   }
 
   .nav-list.is-open {

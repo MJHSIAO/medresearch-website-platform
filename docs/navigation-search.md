@@ -56,6 +56,8 @@ node scripts/check-navigation-search.mjs "C:\path\to\playwright\index.mjs" "C:\P
 node scripts/build-site.mjs
 ```
 
+僅執行靜態檢查可用 `node scripts/check-navigation-search.mjs --static-only`。驗證 Docker 部署子路徑時，在執行瀏覽器測試前設定 `$env:CHECK_SITE_PREFIX='/medresearch/'`；預設仍為 GitHub Pages 的專案前綴。檢查涵蓋主站及 AI 子站的登入、API、Demo 與登出連結，也驗證 Markdown 內部文件連結。
+
 Playwright 僅為開發測試工具，不是網站 dependency。腳本使用隔離瀏覽器與限本機測試伺服器，以 /medresearch-website-platform/ 前綴測試。截圖輸出至系統暫存目錄，結束關閉伺服器及瀏覽器；不使用使用者瀏覽器的帳號或儲存資料。
 
 CSS 括號檢查不等同完整 validator；自動化鍵盤與尺寸檢查不等同正式 WCAG、螢幕閱讀器或跨瀏覽器驗收。實際結果記錄於 phase-1-acceptance.md。

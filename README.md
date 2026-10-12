@@ -52,7 +52,84 @@ Demo 提供四種角色視角：
 
 ## 本階段未實作
 
-正式登入、Active Directory／Microsoft Entra ID、正式 CMS、正式資料庫、後端權限驗證、真實檔案上傳、正式寄信、院內 API、病人資料及任何院內機密資料均不在第一版範圍。
+正式 CMS、正式資料庫、完整角色／單位權限對應、不可竄改稽核、真實檔案上傳、正式寄信、病人資料及任何院內機密資料仍不在本階段範圍。`admin-demo/` 仍是 UI Demo；雖然本版已新增院內 OIDC 登入，任何未來的敏感 API 仍必須在後端逐次驗證 Session、角色與單位範圍。
+
+## 院內 OIDC Login
+
+本版新增最小 FastAPI Backend，透過院方 OpenID Connect Discovery、Authorization Code Flow、`S256` PKCE 與 Authlib 完成登入。FastAPI 同時提供既有靜態網站；Client Secret、Access Token、Refresh Token、Authorization Code 與完整 ID Token 不會送到前端或存入 `localStorage`。
+
+### 本機設定與啟動
+
+需求為 Python 3.10 以上。請在專案根目錄執行：
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
+```
+
+編輯 `.env`，填入院方核發的完整 Client ID、Client Secret，以及至少 32 字元的隨機 `SESSION_SECRET`。可用下列指令產生 Session Secret，輸出只貼入本機 `.env`：
+
+```powershell
+python -c "import secrets; print(secrets.token_urlsafe(48))"
+```
+
+接著啟動：
+
+```powershell
+uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+開啟 `http://localhost:8000/`，點選主導覽的「院內人員登入」。登入後可用 `http://localhost:8000/api/me` 確認 `authenticated`、基本使用者資料、暫定角色與實際 claim 名稱；登出網址為 `http://localhost:8000/auth/logout`。
+
+### `.env` 欄位
+
+| 欄位 | 用途 |
+| --- | --- |
+| `OIDC_DISCOVERY_URL` | 院方 Discovery URL；已填入範例檔 |
+| `OIDC_CLIENT_ID` | 院方核發的完整 Client ID |
+| `OIDC_CLIENT_SECRET` | 院方核發的 Client Secret，只能存在執行環境 |
+| `OIDC_REDIRECT_URI` | 必須與院方登記值完全一致 |
+| `SESSION_SECRET` | 至少 32 字元的隨機 Session 簽章密鑰 |
+| `APP_BASE_URL` | 本機為 `http://localhost:8000`；正式環境必須使用 HTTPS |
+| `APP_ENV` | 本機 `development`；正式環境設為 `production` |
+| `OIDC_DEBUG_CLAIMS` | 僅限本機短暫設為 `true` 以檢視 claims；正式環境保持 `false` |
+
+開發環境需要請資訊處登記的 Redirect URI 是：
+
+```text
+http://localhost:8000/auth/callback
+```
+
+Redirect URI 必須與院方 OAuth/OIDC Server 登記的值完全一致。正式環境網址尚未確定，本專案不預設或捏造正式 Redirect URI。
+
+### Discovery 實際能力（2026-10-07 查詢）
+
+| 項目 | Discovery 回傳值 |
+| --- | --- |
+| issuer | `https://intraauth.femh.org.tw` |
+| authorization endpoint | `https://intraauth.femh.org.tw/INTRAAUTHSERVER/oauth/authorize` |
+| token endpoint | `https://intraauth.femh.org.tw/INTRAAUTHSERVER/oauth/token` |
+| userinfo endpoint | `https://intraauth.femh.org.tw/INTRAOPENIDAPI/identity/userinfo` |
+| JWKS URI | `https://intraauth.femh.org.tw/INTRAAUTHSERVER/.well-known/keys` |
+| 支援 scopes | `offline_access openid profile email org_profile` |
+| PKCE | `plain`、`S256`；本專案使用 `S256` |
+| ID Token 簽章 | `RS256` |
+
+Discovery 未提供 `end_session_endpoint`，所以第一階段登出只清除本站 Session。程式不把上述 endpoints 寫死，執行時仍會重新讀取 Discovery，再由 Authlib 依 Discovery 的 issuer、JWKS 與 metadata 驗證登入結果。
+
+### Claims 確認與權限邊界
+
+Discovery 的 `claims_supported` 目前只宣告 `sub`、`iss`、`aud`、`exp`、`iat`、`nonce`；這不等於實際登入後 UserInfo 一定只有這些欄位。尚未使用有效院內帳號完成登入，因此實際 claim 名稱必須在本機串接後確認，不能先假定 `email`、`department`、`role` 或 `group` 一定存在。
+
+登入成功時後端固定只記錄 claim 名稱。若需要短暫檢查候選欄位，可在本機把 `OIDC_DEBUG_CLAIMS=true` 後重新啟動；此時 `/api/me` 會在 `claims` 顯示實際內容，Log 只額外輸出常見候選欄位，不會輸出 Client Secret、Authorization Code、Access Token、Refresh Token 或完整 ID Token。完成欄位確認後應立即改回 `false`。
+
+第一階段所有成功登入者只取得 `internal_user`，`department` 與 `unit_id` 保持空值。後續應由院方確認穩定的員工識別、單位及群組 claim，再建立「claim 值 → 網站 unit id／role」的伺服器端 allowlist；不得由前端、使用者輸入或 `localStorage` 決定角色。`unit_admin` 只能操作對應單位，`site_admin` 可跨醫研部單位，`system_admin` 才能管理共用版型與帳號權限。
+
+目前 Session 資料保存在單一 FastAPI 程序的記憶體，Session Cookie 只保存簽章後的不透明 session id，並設為 HttpOnly、SameSite=Lax；當 `APP_BASE_URL` 使用 HTTPS 時會自動啟用 Secure。另有一個不含身分資料的 `medresearch_auth=1` 可讀 Cookie，只用來避免靜態 Demo 呼叫不存在的 API；它可被竄改，絕不參與授權，畫面仍以 `/api/me` 為準。這適合第一階段單程序測試，正式多 worker／多主機部署前需改用受控的伺服器端 Session Store（例如 Redis），並完成資安、Proxy HTTPS 與金鑰輪替設定。
+
+GitHub Pages 仍只是靜態 Demo，無法保管 Client Secret、建立後端 Session 或保護院內資料；正式登入只能在 FastAPI 部署環境運作。若 Client Secret 曾出現在 HTML、JavaScript、JSON、Git 記錄或 GitHub，必須立即請資訊處 Rotate／重新核發，不能只刪除目前檔案。
 
 ## 導覽與搜尋 UX（2026-09-18）
 
@@ -61,6 +138,12 @@ Demo 提供四種角色視角：
 六個單位子站、完整介紹及四段以上的一般內容頁使用本頁導覽。桌機左側 sticky，手機為預設收合的目錄；不套用到首頁、短內容、新聞頁或 AI 獨立版型。
 
 `search.html?q=關鍵字` 搜尋 site/units/people/news JSON，沿用公開篩選及 Demo 覆寫。操作、欄位、限制與可重跑測試見 `docs/navigation-search.md`。
+
+## Docker 部署
+
+`Dockerfile` 包含既有 FastAPI／OIDC 與靜態網站，使用非 root、單一 worker 及 Healthcheck。Server 整合用 `deployment/docker-compose.medresearch.yml` 合併原 Compose，接上既有 `app_internal`，由 `voice-public-web` 分流 `https://aics.femh.org.tw/medresearch/`，不另外占用 Host Port。
+
+請依 [Docker 部署說明](docs/docker-deployment.md) 建立 `.env.docker`、登記 `/medresearch/auth/callback`、加入 Nginx location，再單獨啟動新服務。該文件含路徑設定、更新、回復與實際驗證步驟。
 
 ## 專案文件索引
 

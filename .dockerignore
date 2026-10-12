@@ -1,0 +1,23 @@
+# Only application files and requirements may enter the build context.
+**
+!Dockerfile
+!requirements.txt
+!*.html
+!backend/
+!backend/*.py
+!assets/
+!assets/**
+!data/
+!data/*.json
+!admin-demo/
+!admin-demo/*.html
+!ai-center/
+!ai-center/**
+**/__pycache__/
+**/*.pyc
+**/.env
+**/.env.*
+**/*.pem
+**/*.key
+**/*.crt
+**/.git/
