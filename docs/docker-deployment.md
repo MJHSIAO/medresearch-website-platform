@@ -154,4 +154,6 @@ node scripts/check-navigation-search.mjs --static-only
 
 後端測試使用示意憑證與模擬 Provider 回應，不會完成院內帳號登入；OAuth2 測試涵蓋四參數授權、Authlib 真實換 Token／UserInfo 流程、state 拒絕與重放、Token／UserInfo 失敗及未驗證身分不可作 fallback。Compose 檢查使用暫存環境檔，不需 Docker daemon。瀏覽器測試方式見 `docs/navigation-search.md`。
 
+2026-10-14 對照參考專案後，`backend/auth.py` 的 Token 交換改採 `client_secret_post`，Client 憑證放在後端表單內。此修正需更新該檔並依上述 Compose 指令重建 `medresearch-app`；既有環境變數無需更名。授權端仍只傳四個參數，密碼錯誤由院方原頁處理，本站不新增失敗轉址。參考專案的 HIS JWT audience 不適用於直接推定本 Client 的設定，本站繼續使用 UserInfo 驗證身分。
+
 本文件的 Server 指令是部署與驗證步驟，不代表已在遠端執行。實際本機檢查結果記錄於 `docs/phase-1-acceptance.md`。目前無遠端 server 連線與完整 Nginx template，遠端 TLS／WAF、容器 Build／啟動及院內實際 OAuth2 登入仍需部署後驗證。

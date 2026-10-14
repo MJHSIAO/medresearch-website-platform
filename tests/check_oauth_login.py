@@ -50,7 +50,10 @@ def check_flow(case: str) -> None:
             assert body["code"] == ["test-code"]
             assert body["redirect_uri"] == [BASE + "/auth/callback"]
             assert "scope" not in body and "code_verifier" not in body
-            assert request.headers.get("authorization", "").startswith("Basic ")
+            assert body["client_id"] == ["oauth-test-client"]
+            assert body["client_secret"] == ["oauth-test-secret"]
+            assert "authorization" not in request.headers
+            assert request.headers["content-type"].startswith("application/x-www-form-urlencoded")
             if case == "token_error":
                 return httpx.Response(400, json={"error": "invalid_grant"}, request=request)
             if case == "token_non_json":

@@ -56,6 +56,8 @@ Demo 提供四種角色視角：
 
 ## 院內 OAuth2 Login
 
+已對照另一個專案的 `routers/access.py`：Token 交換採 `client_secret_post`，以表單傳送 `grant_type`、`code`、`client_id`、`client_secret`，本站另保留原授權請求的 `redirect_uri`。參考專案使用另一組 HIS issuer／audience 驗證 JWT Access Token；本站目前依 INTRAAUTH Discovery 的受保護 UserInfo 取得身分，不複製其他 Client 的 audience、帳密表單或前端 Token 儲存方式。此差異仍須以本 Client 的院內實際登入驗證。
+
 帳密輸入與密碼錯誤提示由院方 `Account/Login` 頁面處理；依使用者確認的流程，密碼錯誤留在院方原頁，成功後才 callback。本站不提供登入提示頁、不將登入失敗導向 `login.html`。院方成功回傳 code 後，本站才核對 state、換 Token 與讀取 UserInfo；串接失敗維持在 callback 回報 400，連線／設定失敗回報 503，不自動重試或誤報密碼錯誤。舊 `login.html` 網址僅相容轉至 `auth/login`，重新進入院方授權流程。
 
 2026-10-14 使用者確認院方允許保留 `state`。授權網址只傳 `response_type=code`、`client_id`、`redirect_uri`、每次新產生的 `state`；不傳 `scope`、`nonce`、`code_challenge` 或 `code_challenge_method`。從本站的 `auth/login` 開始每次登入，不重用舊的授權網址。

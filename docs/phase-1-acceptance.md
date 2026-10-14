@@ -128,3 +128,13 @@
 
 本次只操作本平台；未操作原 ai-center-website-demo、未使用院內帳密、未連線院方或部署／commit／push。院方密碼錯誤原頁提示是使用者提供的行為，並非本機測試已驗證院方頁面。
 
+## 2026-10-14 參考專案 Token 交換對照
+
+唯讀查看使用者提供的四個檔案與其 OAuth2 路由 `routers/access.py`，本站改採表單 `client_secret_post`。保留四參數授權、state、redirect_uri、UserInfo 與後端 Session；未複製參考專案的 HIS audience 或前端 Token 儲存方式。
+
+- `tests.check_oauth_login`、`tests.check_backend`、`tests.check_docker_deployment` 通過：實際 Authlib 送出的表單包含 Client 憑證、不含 Basic 標頭，成功、state 拒絕／重放、Token／UserInfo 失敗及無失敗轉址皆通過。
+- 完整 `check-navigation-search.mjs` 以 `/medresearch/` 前綴通過：JSON、JS 語法、CSS、HTML 資源與 Markdown 連結；15 頁 × 5 寬度（含 320px）無溢出、公開內容篩選、Demo 資料同步、四角色入口、鍵盤互動，瀏覽器錯誤為 0。
+- `git diff --check` 通過，僅 Windows 換行提示。測試依賴仍有既有棄用提示。
+
+未修改參考專案，未連線院方或遠端部署；本 Client 的真實 Token／UserInfo 相容性與院方密碼錯誤畫面仍待部署後驗證。
+

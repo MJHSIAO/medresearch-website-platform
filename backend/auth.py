@@ -84,7 +84,12 @@ class OIDCManager:
                 server_metadata_url=self.settings.oidc_discovery_url,
                 # The hospital accepts response_type, client_id, redirect_uri
                 # and state only. Advertising OIDC/PKCE does not enable them.
-                client_kwargs={"scope": None, "code_challenge_method": None},
+                client_kwargs={
+                    "scope": None,
+                    "code_challenge_method": None,
+                    # Match the hospital integration's form-based token exchange.
+                    "token_endpoint_auth_method": "client_secret_post",
+                },
             )
             self._metadata = metadata
             self._client = self.oauth.create_client("femh")
