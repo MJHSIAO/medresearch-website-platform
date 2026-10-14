@@ -63,6 +63,54 @@ function pageArea() {
 
 function buildNavigation() {
   const menu = document.querySelector(".nav-list");
+  if (!menu) return;
+  const item = document.createElement("li");
+  item.className = "auth-navigation";
+  const login = document.createElement("a");
+  login.className = "nav-link";
+  login.href = "../auth/login";
+  login.textContent = "院內人員登入";
+  item.append(login);
+  menu.append(item);
+
+  // The readable cookie is only a display hint; the HttpOnly session and
+  // /api/me response remain authoritative.
+  if (!document.cookie.split(";").some((part) => part.trim() === "medresearch_auth=1")) return;
+
+  try {
+    const response = await fetch("../api/me", {
+      credentials: "same-origin",
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok || !response.headers.get("content-type")?.includes("application/json")) return;
+    const result = await response.json();
+    if (!result.authenticated || !result.user) return;
+
+    item.replaceChildren();
+    const name = document.createElement("span");
+    name.className = "auth-user-name";
+    name.textContent = result.user.name || result.user.id || "院內使用者";
+    const internal = document.createElement("a");
+    internal.className = "nav-link";
+    internal.href = "../admin-demo/";
+    internal.textContent = "院內專區";
+    internal.title = "目前連結至行政後台 UI Demo，敏感功能仍須由後端驗證權限";
+    const logout = document.createElement("a");
+    logout.className = "nav-link";
+    logout.href = "../auth/logout";
+    logout.textContent = "登出";
+    item.append(name, internal, logout);
+  } catch {
+    // Static-only hosts intentionally keep the login link without a session state.
+  }
+}
+
+function pageArea() {
+  return document.body.dataset.area || "public";
+}
+
+function buildNavigation() {
+  const menu = document.querySelector(".nav-list");
   const content = window.AICenterContent;
   if (!menu || !content) return;
   const current = location.pathname.split("/").pop() || "index.html";

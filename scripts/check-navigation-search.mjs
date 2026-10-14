@@ -37,6 +37,14 @@ for (const file of files) {
       if (path) assert.ok(await stat(resolve(dirname(file), path)).catch(() => null), `${file}: ${url}`);
     }
   }
+  if (file.endsWith('.md')) {
+    for (const match of source.matchAll(/\[[^\]]+\]\(([^)]+)\)/g)) {
+      const url = match[1];
+      if (/^(?:[a-z]+:|#|\/\/)/i.test(url)) continue;
+      const path = decodeURIComponent(url.split(/[?#]/)[0]);
+      if (path) assert.ok(await stat(resolve(dirname(file), path)).catch(() => null), `${file}: ${url}`);
+    }
+  }
 }
 console.log('PASS JSON, JavaScript syntax, CSS braces, static HTML resources and Markdown local links');
 if (process.argv.includes('--static-only')) process.exit(0);
