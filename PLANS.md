@@ -44,6 +44,8 @@
 
 ## Phase 1.5：院內 OAuth2 登入最小版本
 
+- [x] 新增選填 OIDC_AUDIENCE 環境設定，預留 JWT Access Token 驗證使用；尚未啟用 JWT 身分流程。
+
 - [x] 對照參考專案 OAuth2 路由，Token 交換改用表單 `client_secret_post`；保留 state 及現有 UserInfo 身分驗證（2026-10-14）。
 
 - [x] 撤回本站登入提示頁及失敗轉址；密碼錯誤留在院方登入頁，本站只處理 callback 串接結果（2026-10-14）。

@@ -28,6 +28,7 @@ class Settings:
     app_base_url: str
     app_env: str
     oidc_debug_claims: bool
+    oidc_audience: str | None = None
 
     @property
     def is_production(self) -> bool:
@@ -71,6 +72,7 @@ def get_settings() -> Settings:
         app_base_url=required["APP_BASE_URL"].rstrip("/"),
         app_env=app_env,
         oidc_debug_claims=_as_bool(os.getenv("OIDC_DEBUG_CLAIMS")),
+        oidc_audience=os.getenv("OIDC_AUDIENCE", "").strip() or None,
     )
 
     if settings.is_production and not settings.secure_cookie:

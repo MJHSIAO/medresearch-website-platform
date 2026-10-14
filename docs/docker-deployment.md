@@ -158,6 +158,8 @@ node scripts/check-navigation-search.mjs --static-only
 
 ### Callback 診斷
 
+可在 `.env.docker` 加入 `OIDC_AUDIENCE=`，值填院方確認的 JWT Access Token 預期 audience；留空或省略為未設定，不會預設為 Client ID 或其他專案的值。後端讀入 `settings.oidc_audience`，目前僅預留設定，不會因此切換 UserInfo 或解決 `userinfo_missing_sub`。首次需更新 `backend/config.py` 並重建容器；日後只修改環境值也需以 Compose `up -d --force-recreate --no-deps medresearch-app`（沿用上述 project 與兩個 `-f` 參數）重建容器，單純 `restart` 不會重新載入 env_file。
+
 若日誌只有 `OAuth2 callback rejected: OIDCConfigurationError`，舊版尚未區分失敗原因。更新 `backend/auth.py`、`backend/main.py` 並重建本站容器後，從網站重新登入一次；日誌會增加固定的 `reason` 代碼，不輸出 Provider 回應本文、Token、Secret 或使用者資料，也不必開啟 `OIDC_DEBUG_CLAIMS`。
 
 | reason | 意義 |

@@ -97,6 +97,7 @@ uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
 | `OIDC_CLIENT_ID` | 院方核發的完整 Client ID |
 | `OIDC_CLIENT_SECRET` | 院方核發的 Client Secret，只能存在執行環境 |
 | `OIDC_REDIRECT_URI` | 必須與院方登記值完全一致 |
+| `OIDC_AUDIENCE` | 選填，預留 JWT Access Token 的預期 audience；填院方確認的完整值，留空為未設定。目前僅讀入設定，不會切換 UserInfo 流程或啟用 JWT 驗證 |
 | `SESSION_SECRET` | 至少 32 字元的隨機 Session 簽章密鑰 |
 | `APP_BASE_URL` | 本機為 `http://localhost:8000`；正式環境必須使用 HTTPS |
 | `APP_ENV` | 本機 `development`；正式環境設為 `production` |
