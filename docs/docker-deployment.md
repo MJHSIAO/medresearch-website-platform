@@ -173,6 +173,14 @@ node scripts/check-navigation-search.mjs --static-only
 | `jwks_unavailable`／`jwks_invalid_response` | JWKS 無法取得或格式不符 |
 | `access_token_invalid` | JWT 演算法、kid／簽章、issuer、audience 或時間驗證失敗 |
 | `access_token_missing_sub` | 已驗證的 JWT 缺少非空字串 sub |
+| `jwt_invalid_aud`／`jwt_invalid_iss` | audience 不符／issuer 不符或欄位格式不符 |
+| `jwt_missing_iss`／`jwt_missing_aud`／`jwt_missing_exp`／`jwt_missing_iat` | 簽章驗證後發現缺少指定必要欄位 |
+| `jwt_expired`／`jwt_not_yet_valid` | Token 過期／iat 或 nbf 在未來；檢查兩端時鐘 |
+| `jwt_invalid_exp`／`jwt_invalid_iat`／`jwt_invalid_nbf` | 時間欄位格式不符 |
+| `jwt_missing_kid`／`jwt_signing_key_not_found` | 缺少 kid／JWKS 中無唯一相符且允許驗簽的 RSA 金鑰 |
+| `jwt_bad_signature`／`jwt_unsupported_algorithm`／`jwt_invalid_format` | 簽章不符／演算法非 RS256／無法解析 JWT 格式 |
+
+若日誌仍只有舊的 `access_token_invalid`，更新 `backend/auth.py` 並重建後可取得上述細分原因；少數其他驗證錯誤仍保留此通用代碼。診斷不記錄 Token、實際 claims 值或例外本文，不放寬簽章、issuer、audience 或時間驗證。
 
 先依代碼定位，再確認院方契約；不因缺少 sub 就改信任未驗證的 Token 或猜測員工欄位。瀏覽器仍維持原本的通用錯誤訊息，callback 不做失敗轉址。
 

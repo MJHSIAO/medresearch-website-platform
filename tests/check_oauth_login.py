@@ -164,16 +164,21 @@ def check_flow(case: str, jwt_mode: bool = False) -> None:
                 expected_reasons["blank_subject"] = "access_token_missing_sub"
                 expected_reasons["jwks_error"] = "jwks_unavailable"
                 expected_reasons["jwks_non_json"] = "jwks_invalid_response"
-                for invalid in ("wrong_aud", "wrong_issuer", "expired", "future_nbf", "future_iat",
-                                "missing_exp", "missing_iat", "missing_aud", "missing_iss",
-                                "bad_signature", "unknown_kid", "wrong_algorithm", "opaque_token"):
-                    expected_reasons[invalid] = "access_token_invalid"
+                expected_reasons.update({
+                    "wrong_aud": "jwt_invalid_aud", "wrong_issuer": "jwt_invalid_iss",
+                    "expired": "jwt_expired", "future_nbf": "jwt_not_yet_valid",
+                    "future_iat": "jwt_not_yet_valid", "missing_exp": "jwt_missing_exp",
+                    "missing_iat": "jwt_missing_iat", "missing_aud": "jwt_missing_aud",
+                    "missing_iss": "jwt_missing_iss", "bad_signature": "jwt_bad_signature",
+                    "unknown_kid": "jwt_signing_key_not_found", "wrong_algorithm": "jwt_unsupported_algorithm",
+                    "opaque_token": "jwt_invalid_format",
+                })
             if case in expected_reasons:
                 with TestCase().assertLogs("backend.main", level="WARNING") as captured:
                     callback = client.get(callback_url)
                 log = "\n".join(captured.output)
-                assert f"OIDCConfigurationError reason={expected_reasons[case]}" in log
-                for private in ("private-response-body", "oauth-test-secret", "test-code", "test-access-token", "test-subject"):
+                assert f"OIDCConfigurationError reason={expected_reasons[case]}" in log, (case, log)
+                for private in ("private-response-body", "oauth-test-secret", "test-code", "test-access-token", "test-subject", access_token, "other-audience", "https://wrong.example"):
                     assert private not in log
             else:
                 callback = client.get(callback_url)

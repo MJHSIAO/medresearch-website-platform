@@ -44,6 +44,10 @@ class OIDCConfigurationError(RuntimeError):
         "userinfo_missing_sub",
         "jwks_unavailable", "jwks_invalid_response", "access_token_invalid",
         "access_token_missing_sub",
+        "jwt_missing_kid", "jwt_signing_key_not_found", "jwt_bad_signature",
+        "jwt_unsupported_algorithm", "jwt_invalid_format", "jwt_expired", "jwt_not_yet_valid",
+        "jwt_invalid_iss", "jwt_invalid_aud", "jwt_invalid_exp", "jwt_invalid_iat", "jwt_invalid_nbf",
+        "jwt_missing_iss", "jwt_missing_aud", "jwt_missing_exp", "jwt_missing_iat",
     })
 
     def __init__(self, message: str, *, reason: str = "configuration_error") -> None:
@@ -162,6 +166,8 @@ class OIDCManager:
         return user, claims
 
     async def _verify_access_token(self, access_token: str) -> dict[str, Any]:
+        if not isinstance(access_token, str) or len(access_token.split(".")) != 3:
+            raise OIDCConfigurationError("Access Token 不是 JWT 格式。", reason="jwt_invalid_format")
         # Use only the configured provider's Discovery key URL, never a token's
         # jku/x5u or embedded key. Fetch afresh to support provider key rotation.
         metadata = self._metadata
@@ -182,13 +188,13 @@ class OIDCManager:
         def select_key(header, payload):
             kid = header.get("kid")
             if not isinstance(kid, str) or not kid:
-                raise ValueError("Missing key ID")
+                raise OIDCConfigurationError("JWT 缺少 kid。", reason="jwt_missing_kid")
             matches = [key for key in jwks["keys"] if isinstance(key, dict)
                        and key.get("kid") == kid and key.get("kty") == "RSA"
                        and key.get("use", "sig") == "sig" and key.get("alg", "RS256") == "RS256"
                        and "verify" in key.get("key_ops", ["verify"])]
             if len(matches) != 1:
-                raise ValueError("No unique signing key")
+                raise OIDCConfigurationError("JWKS 無唯一相符金鑰。", reason="jwt_signing_key_not_found")
             return matches[0]
 
         try:
@@ -201,9 +207,24 @@ class OIDCManager:
                     "iat": {"essential": True},
                 },
             )
+            for name in ("iss", "aud", "exp", "iat"):
+                if name not in claims:
+                    raise OIDCConfigurationError("JWT 缺少必要欄位。", reason=f"jwt_missing_{name}")
             claims.validate(leeway=0)
         except (JoseError, ValueError, TypeError, KeyError) as error:
-            raise OIDCConfigurationError("Access Token 驗證失敗。", reason="access_token_invalid") from error
+            # Never log exception descriptions, claim values or JWT contents.
+            reasons = {
+                "bad_signature": "jwt_bad_signature",
+                "unsupported_algorithm": "jwt_unsupported_algorithm",
+                "decode_error": "jwt_invalid_format",
+                "expired_token": "jwt_expired",
+                "invalid_token": "jwt_not_yet_valid",
+            }
+            reason = reasons.get(getattr(error, "error", None), "access_token_invalid")
+            claim = getattr(error, "claim_name", None)
+            if getattr(error, "error", None) == "invalid_claim" and claim in {"iss", "aud", "exp", "iat", "nbf"}:
+                reason = f"jwt_invalid_{claim}"
+            raise OIDCConfigurationError("Access Token 驗證失敗。", reason=reason) from error
         if not isinstance(claims.get("sub"), str) or not claims["sub"].strip():
             raise OIDCConfigurationError("Access Token 缺少有效 sub。", reason="access_token_missing_sub")
         return dict(claims)

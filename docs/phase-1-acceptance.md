@@ -159,3 +159,11 @@ OIDC_AUDIENCE 非空時改驗證 JWT Access Token，不呼叫 UserInfo；未設�
 - git diff --check 通過。沿用既有 Authlib <2 相依範圍；本機依賴顯示 JOSE 與整合相容層棄用提示。
 
 尚未連線院方、部署或以真實帳號驗證。部署後必須從 auth/login 開始新流程；不可重用 callback。若 audience 已設定但仍出現 userinfo_missing_sub，需確認容器程式及 env_file 是否已更新。
+
+## 2026-10-14 JWT 失敗原因細分
+
+線上僅回報 access_token_invalid，根因仍待確認。新增固定 JWT 原因代碼，區分 issuer／audience、必要欄位、時間、kid、簽章、演算法與格式；不記錄實際 claims、Token 或例外本文，不放寬驗證。
+
+- check_oauth_login、check_backend、check_docker_deployment 全部通過，驗證既有拒絕情境的新代碼與敏感值不出現在日誌。測試初次發現 Authlib 將未來 iat 歸類為 not_yet_valid，調整預期；非 JWT 格式加入明確前置檢查後重跑通過。
+- 完整網站檢查通過：JSON／JS／CSS／資源與連結、15 頁 × 5 寬度無溢出、公開篩選、Demo 同步、四角色入口與鍵盤操作；瀏覽器錯誤為 0。
+- git diff --check 通過，依賴仍有既有棄用提示。尚未部署或以院方帳號驗證；需更新 backend/auth.py 並從新的登入流程取得細分代碼。
