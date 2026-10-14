@@ -148,3 +148,14 @@
 
 未部署或連線院方。須更新兩個後端檔案並重建容器，再由新 reason 日誌定位線上根因。
 
+
+## 2026-10-14 啟用 audience 對應 JWT 身分驗證
+
+OIDC_AUDIENCE 非空時改驗證 JWT Access Token，不呼叫 UserInfo；未設定時保持原 UserInfo 模式。使用 Discovery issuer／JWKS、唯一 RSA kid 與 RS256，必須通過 issuer、audience、exp、iat、nbf（若存在）及非空字串 sub 檢查。失敗不降級、不使用未驗證 ID Token；登入角色仍為 internal_user。
+
+- 三組後端檢查 check_oauth_login、check_backend、check_docker_deployment 通過。新增真實測試 RSA 簽章、字串／陣列 audience、錯誤 issuer／audience、過期／未生效／缺少必要 claim、錯誤簽章／kid／演算法、非 JWT、缺少 sub、JWKS 失敗；兩種模式都驗證 state 與重放拒絕，JWT 模式確認不呼叫 UserInfo。
+- 首次 unknown_kid 測試被測試用簽章工具覆寫 kid，修正測試金鑰的 kid 後重跑通過；正式程式明確依 kid 選唯一院方 RSA 簽章金鑰。
+- 完整網站檢查通過：JSON、JS 語法、CSS、資源與連結，15 頁 × 5 寬度無溢出、公開過濾、Demo 資料同步、四角色入口與鍵盤操作；瀏覽器錯誤為 0。
+- git diff --check 通過。沿用既有 Authlib <2 相依範圍；本機依賴顯示 JOSE 與整合相容層棄用提示。
+
+尚未連線院方、部署或以真實帳號驗證。部署後必須從 auth/login 開始新流程；不可重用 callback。若 audience 已設定但仍出現 userinfo_missing_sub，需確認容器程式及 env_file 是否已更新。

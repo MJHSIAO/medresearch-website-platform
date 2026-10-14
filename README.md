@@ -56,13 +56,13 @@ Demo 提供四種角色視角：
 
 ## 院內 OAuth2 Login
 
-已對照另一個專案的 `routers/access.py`：Token 交換採 `client_secret_post`，以表單傳送 `grant_type`、`code`、`client_id`、`client_secret`，本站另保留原授權請求的 `redirect_uri`。參考專案使用另一組 HIS issuer／audience 驗證 JWT Access Token；本站目前依 INTRAAUTH Discovery 的受保護 UserInfo 取得身分，不複製其他 Client 的 audience、帳密表單或前端 Token 儲存方式。此差異仍須以本 Client 的院內實際登入驗證。
+已對照另一個專案的 `routers/access.py`：Token 交換採 `client_secret_post`，以表單傳送 `grant_type`、`code`、`client_id`、`client_secret`，本站另保留原授權請求的 `redirect_uri`。參考專案使用另一組 HIS issuer／audience 驗證 JWT Access Token；本站依 OIDC_AUDIENCE 選擇 JWT Access Token 或受保護 UserInfo 取得身分，不複製其他 Client 的 audience、帳密表單或前端 Token 儲存方式。此差異仍須以本 Client 的院內實際登入驗證。
 
-帳密輸入與密碼錯誤提示由院方 `Account/Login` 頁面處理；依使用者確認的流程，密碼錯誤留在院方原頁，成功後才 callback。本站不提供登入提示頁、不將登入失敗導向 `login.html`。院方成功回傳 code 後，本站才核對 state、換 Token 與讀取 UserInfo；串接失敗維持在 callback 回報 400，連線／設定失敗回報 503，不自動重試或誤報密碼錯誤。舊 `login.html` 網址僅相容轉至 `auth/login`，重新進入院方授權流程。
+帳密輸入與密碼錯誤提示由院方 `Account/Login` 頁面處理；依使用者確認的流程，密碼錯誤留在院方原頁，成功後才 callback。本站不提供登入提示頁、不將登入失敗導向 `login.html`。院方成功回傳 code 後，本站才核對 state、換 Token 與驗證身分；串接失敗維持在 callback 回報 400，連線／設定失敗回報 503，不自動重試或誤報密碼錯誤。舊 `login.html` 網址僅相容轉至 `auth/login`，重新進入院方授權流程。
 
 2026-10-14 使用者確認院方允許保留 `state`。授權網址只傳 `response_type=code`、`client_id`、`redirect_uri`、每次新產生的 `state`；不傳 `scope`、`nonce`、`code_challenge` 或 `code_challenge_method`。從本站的 `auth/login` 開始每次登入，不重用舊的授權網址。
 
-FastAPI Backend 透過院方 Discovery 取得 OAuth2 endpoints，由 Authlib 執行 Authorization Code Flow 與一次性 `state` 驗證。後端交換 Access Token，再呼叫受保護的 UserInfo API 取得身分；不依賴 ID Token 或 Token 回應中的未驗證身分欄位。FastAPI 同時提供既有靜態網站；Client Secret、Access Token、Refresh Token、Authorization Code 與完整 ID Token 不會送到前端或存入 `localStorage`。為相容既有部署，`OIDC_*` 環境變數及後端既有類別名稱保留。
+FastAPI Backend 透過院方 Discovery 取得 OAuth2 endpoints，由 Authlib 執行 Authorization Code Flow 與一次性 `state` 驗證。後端交換 Access Token；設定 OIDC_AUDIENCE 時，以 Discovery 的 issuer／JWKS 驗證 RS256 簽章、aud、exp、iat、nbf（若存在）及非空 sub，再建立身分，失敗不降級至 UserInfo。未設定 audience 時沿用受保護的 UserInfo API；不依賴 ID Token 或 Token 回應中的未驗證身分欄位。FastAPI 同時提供既有靜態網站；Client Secret、Access Token、Refresh Token、Authorization Code 與完整 ID Token 不會送到前端或存入 `localStorage`。為相容既有部署，`OIDC_*` 環境變數及後端既有類別名稱保留。
 
 ### 本機設定與啟動
 
@@ -97,7 +97,7 @@ uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
 | `OIDC_CLIENT_ID` | 院方核發的完整 Client ID |
 | `OIDC_CLIENT_SECRET` | 院方核發的 Client Secret，只能存在執行環境 |
 | `OIDC_REDIRECT_URI` | 必須與院方登記值完全一致 |
-| `OIDC_AUDIENCE` | 選填，預留 JWT Access Token 的預期 audience；填院方確認的完整值，留空為未設定。目前僅讀入設定，不會切換 UserInfo 流程或啟用 JWT 驗證 |
+| `OIDC_AUDIENCE` | 選填；填院方確認的 JWT Access Token audience 即啟用 JWT 驗證，字串 aud 必須相符或陣列 aud 必須包含此值；留空沿用 UserInfo |
 | `SESSION_SECRET` | 至少 32 字元的隨機 Session 簽章密鑰 |
 | `APP_BASE_URL` | 本機為 `http://localhost:8000`；正式環境必須使用 HTTPS |
 | `APP_ENV` | 本機 `development`；正式環境設為 `production` |
@@ -124,11 +124,11 @@ Redirect URI 必須與院方 OAuth2 Server 登記的值完全一致。Docker 部
 | PKCE | `plain`、`S256`；本專案依院方需求不傳 PKCE 參數 |
 | ID Token 簽章 | `RS256` |
 
-Discovery 未提供 `end_session_endpoint`，所以第一階段登出只清除本站 Session。程式不把上述 endpoints 寫死，執行時讀取 Discovery 的 Authorization、Token 與 UserInfo endpoints。上表是伺服器曾宣告的能力，不代表本站會要求 scope 或使用 ID Token／JWKS。
+Discovery 未提供 `end_session_endpoint`，所以第一階段登出只清除本站 Session。程式不把上述 endpoints 寫死，執行時讀取 Discovery 的 Authorization、Token，以及所選模式的 UserInfo 或 issuer／JWKS。JWT 模式每次登入重新取得 JWKS，依 kid 選擇唯一 RSA 簽章金鑰；不接受 Token 自帶的金鑰網址。上表是伺服器曾宣告的能力，本站不要求 scope 或使用 ID Token。
 
 ### Claims 確認與權限邊界
 
-Discovery 曾宣告的 `claims_supported` 不代表實際 UserInfo 一定只有這些欄位。尚未使用有效院內帳號完成登入，因此實際 claim 名稱必須在串接後確認，不能先假定 `email`、`department`、`role` 或 `group` 一定存在。後端要求 UserInfo 有非空字串 `sub` 作為穩定身分識別；若院方使用不同欄位，需確認規格後調整，不猜測欄位，也不以未驗證 ID Token 補上身分。
+Discovery 曾宣告的 `claims_supported` 不代表實際 UserInfo 一定只有這些欄位。尚未使用有效院內帳號完成登入，因此實際 claim 名稱必須在串接後確認，不能先假定 `email`、`department`、`role` 或 `group` 一定存在。後端要求經驗證的 JWT Access Token 或 UserInfo 有非空字串 `sub` 作為穩定身分識別；若院方使用不同欄位，需確認規格後調整，不猜測欄位，也不以未驗證 ID Token 補上身分。
 
 登入成功時後端固定只記錄 claim 名稱。若需要短暫檢查候選欄位，可在本機把 `OIDC_DEBUG_CLAIMS=true` 後重新啟動；此時 `/api/me` 會在 `claims` 顯示實際內容，Log 只額外輸出常見候選欄位，不會輸出 Client Secret、Authorization Code、Access Token、Refresh Token 或完整 ID Token。完成欄位確認後應立即改回 `false`。
 

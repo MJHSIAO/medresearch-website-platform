@@ -6,11 +6,14 @@ No hospital credentials, remote requests or real login are used.
 from __future__ import annotations
 
 import os
+import time
+from dataclasses import replace
 from unittest import TestCase
 from unittest.mock import patch
 from urllib.parse import parse_qs, urlencode, urlsplit
 
 import httpx
+from authlib.jose import JsonWebKey, JsonWebToken
 from fastapi.testclient import TestClient
 
 os.environ.update({
@@ -22,6 +25,7 @@ os.environ.update({
     "APP_BASE_URL": "https://site.example/medresearch",
     "APP_ENV": "production",
     "OIDC_DEBUG_CLAIMS": "false",
+    "OIDC_AUDIENCE": "",
 })
 
 from backend import main as backend  # noqa: E402
@@ -35,15 +39,59 @@ METADATA = {
     "code_challenge_methods_supported": ["S256"],
 }
 BASE = "https://site.example/medresearch"
+SIGNING_KEY = JsonWebKey.generate_key("RSA", 2048, is_private=True, options={"kid": "test-key"})
+OTHER_KEY = JsonWebKey.generate_key("RSA", 2048, is_private=True, options={"kid": "test-key"})
 
 
-def check_flow(case: str) -> None:
+def check_flow(case: str, jwt_mode: bool = False) -> None:
     calls: list[str] = []
+    metadata = dict(METADATA)
+    access_token = "test-access-token"
+    if jwt_mode:
+        metadata.pop("userinfo_endpoint")  # JWT flow must not need UserInfo.
+        metadata.update(issuer="https://provider.example", jwks_uri="https://provider.example/keys")
+        now = int(time.time())
+        payload = {"iss": metadata["issuer"], "aud": "test-audience", "sub": "test-subject",
+                   "iat": now - 5, "exp": now + 300, "role": "system_admin"}
+        if case == "aud_list":
+            payload["aud"] = ["another-audience", "test-audience"]
+        elif case == "wrong_aud":
+            payload["aud"] = "other-audience"
+        elif case == "wrong_issuer":
+            payload["iss"] = "https://wrong.example"
+        elif case == "expired":
+            payload["exp"] = now - 60
+        elif case == "future_nbf":
+            payload["nbf"] = now + 300
+        elif case == "future_iat":
+            payload["iat"] = now + 300
+        elif case in {"missing_exp", "missing_iat", "missing_aud", "missing_iss"}:
+            payload.pop(case.removeprefix("missing_"))
+        elif case == "missing_subject":
+            payload.pop("sub")
+        elif case == "blank_subject":
+            payload["sub"] = " "
+        key = OTHER_KEY if case == "bad_signature" else SIGNING_KEY
+        if case == "unknown_kid":
+            key = {**SIGNING_KEY.as_dict(is_private=True), "kid": "unknown"}
+        header = {"alg": "RS256", "kid": "unknown" if case == "unknown_kid" else "test-key"}
+        access_token = JsonWebToken(["RS256"]).encode(header, payload, key).decode()
+        if case == "wrong_algorithm":
+            access_token = JsonWebToken(["HS256"]).encode({"alg": "HS256"}, payload, b"test-only-hmac-key").decode()
+        elif case == "opaque_token":
+            access_token = "not-a-jwt"
 
     async def provider_send(client, request, **kwargs):
         calls.append(request.url.path)
         if request.url.path == "/discovery":
-            return httpx.Response(200, json=METADATA, request=request)
+            return httpx.Response(200, json=metadata, request=request)
+        if request.url.path == "/keys":
+            assert "authorization" not in request.headers
+            if case == "jwks_error":
+                return httpx.Response(503, text="private-response-body", request=request)
+            if case == "jwks_non_json":
+                return httpx.Response(200, text="private-response-body", request=request)
+            return httpx.Response(200, json={"keys": [SIGNING_KEY.as_dict(is_private=False)]}, request=request)
         if request.url.path == "/token":
             assert request.method == "POST"
             body = parse_qs(request.content.decode())
@@ -62,13 +110,14 @@ def check_flow(case: str) -> None:
             if case == "missing_access_token":
                 return httpx.Response(200, json={"token_type": "Bearer"}, request=request)
             return httpx.Response(200, json={
-                "access_token": "test-access-token",
+                "access_token": access_token,
                 "token_type": "Bearer",
                 # Unverified token fields must never be an identity fallback.
                 "id_token": "unverified-id-token",
                 "userinfo": {"sub": "untrusted-sub", "role": "system_admin"},
             }, request=request)
         if request.url.path == "/userinfo":
+            assert not jwt_mode
             assert request.method == "GET"
             assert request.headers["authorization"] == "Bearer test-access-token"
             if case == "userinfo_error":
@@ -81,7 +130,7 @@ def check_flow(case: str) -> None:
             return httpx.Response(200, json=claims, request=request)
         raise AssertionError(f"Unexpected remote request: {request.url}")
 
-    manager = OIDCManager(backend.settings)
+    manager = OIDCManager(replace(backend.settings, oidc_audience="test-audience" if jwt_mode else None))
     # Intercept transport after httpx applies OAuth client/Bearer authentication.
     with patch.object(backend, "oidc", manager), patch.object(httpx.AsyncClient, "_send_single_request", provider_send):
         with TestClient(backend.app, base_url="https://site.example", root_path="/medresearch", follow_redirects=False) as client:
@@ -110,6 +159,15 @@ def check_flow(case: str) -> None:
                 "userinfo_non_json": "userinfo_invalid_response",
                 "missing_subject": "userinfo_missing_sub",
             }
+            if jwt_mode:
+                expected_reasons["missing_subject"] = "access_token_missing_sub"
+                expected_reasons["blank_subject"] = "access_token_missing_sub"
+                expected_reasons["jwks_error"] = "jwks_unavailable"
+                expected_reasons["jwks_non_json"] = "jwks_invalid_response"
+                for invalid in ("wrong_aud", "wrong_issuer", "expired", "future_nbf", "future_iat",
+                                "missing_exp", "missing_iat", "missing_aud", "missing_iss",
+                                "bad_signature", "unknown_kid", "wrong_algorithm", "opaque_token"):
+                    expected_reasons[invalid] = "access_token_invalid"
             if case in expected_reasons:
                 with TestCase().assertLogs("backend.main", level="WARNING") as captured:
                     callback = client.get(callback_url)
@@ -121,7 +179,7 @@ def check_flow(case: str) -> None:
                 callback = client.get(callback_url)
             assert callback.headers["cache-control"] == "no-store"
             me = client.get("/medresearch/api/me").json()
-            if case == "success":
+            if case in {"success", "aud_list"}:
                 assert callback.status_code == 303
                 assert callback.headers["location"] == BASE + "/"
                 assert me["authenticated"] is True
@@ -129,6 +187,7 @@ def check_flow(case: str) -> None:
                 assert me["user"]["role"] == "internal_user"
                 assert me["user"]["unit_id"] is None
                 assert "test-access-token" not in str(me)
+                assert access_token not in str(me)
                 token_count = calls.count("/token")
                 replay = client.get(callback_url)
                 assert replay.status_code == 400
@@ -141,6 +200,9 @@ def check_flow(case: str) -> None:
                 assert "private-description" not in callback.text
             if case in {"missing_state", "wrong_state", "missing_cookie", "provider_error"}:
                 assert "/token" not in calls and "/userinfo" not in calls
+                assert "/keys" not in calls
+            if jwt_mode:
+                assert "/userinfo" not in calls
 
 
 def main() -> None:
@@ -150,6 +212,14 @@ def main() -> None:
         "token_error", "token_non_json", "missing_access_token", "userinfo_error", "userinfo_non_json", "missing_subject",
     ):
         check_flow(case)
+    for case in (
+        "success", "aud_list", "wrong_aud", "wrong_issuer", "expired", "future_nbf", "future_iat",
+        "missing_exp", "missing_iat", "missing_aud", "missing_iss", "bad_signature", "unknown_kid",
+        "wrong_algorithm", "opaque_token", "missing_subject", "blank_subject", "jwks_error", "jwks_non_json",
+        "missing_state", "wrong_state", "missing_cookie", "provider_error",
+    ):
+        check_flow(case, jwt_mode=True)
+    print("PASS RS256 access token, issuer/audience/time/sub checks, JWKS failures; no UserInfo fallback")
     print("PASS OAuth2 four parameters, code/token/UserInfo flow, state rejection/replay and safe failures")
 
 

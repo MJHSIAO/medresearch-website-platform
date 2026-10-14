@@ -154,11 +154,11 @@ node scripts/check-navigation-search.mjs --static-only
 
 後端測試使用示意憑證與模擬 Provider 回應，不會完成院內帳號登入；OAuth2 測試涵蓋四參數授權、Authlib 真實換 Token／UserInfo 流程、state 拒絕與重放、Token／UserInfo 失敗及未驗證身分不可作 fallback。Compose 檢查使用暫存環境檔，不需 Docker daemon。瀏覽器測試方式見 `docs/navigation-search.md`。
 
-2026-10-14 對照參考專案後，`backend/auth.py` 的 Token 交換改採 `client_secret_post`，Client 憑證放在後端表單內。此修正需更新該檔並依上述 Compose 指令重建 `medresearch-app`；既有環境變數無需更名。授權端仍只傳四個參數，密碼錯誤由院方原頁處理，本站不新增失敗轉址。參考專案的 HIS JWT audience 不適用於直接推定本 Client 的設定，本站繼續使用 UserInfo 驗證身分。
+2026-10-14 對照參考專案後，`backend/auth.py` 的 Token 交換改採 `client_secret_post`，Client 憑證放在後端表單內。此修正需更新該檔並依上述 Compose 指令重建 `medresearch-app`；既有環境變數無需更名。授權端仍只傳四個參數，密碼錯誤由院方原頁處理，本站不新增失敗轉址。參考專案的 HIS JWT audience 不適用於直接推定本 Client 的設定，本站依下述 audience 設定選擇身分驗證方式。
 
 ### Callback 診斷
 
-可在 `.env.docker` 加入 `OIDC_AUDIENCE=`，值填院方確認的 JWT Access Token 預期 audience；留空或省略為未設定，不會預設為 Client ID 或其他專案的值。後端讀入 `settings.oidc_audience`，目前僅預留設定，不會因此切換 UserInfo 或解決 `userinfo_missing_sub`。首次需更新 `backend/config.py` 並重建容器；日後只修改環境值也需以 Compose `up -d --force-recreate --no-deps medresearch-app`（沿用上述 project 與兩個 `-f` 參數）重建容器，單純 `restart` 不會重新載入 env_file。
+可在 `.env.docker` 加入 `OIDC_AUDIENCE=`，值填院方確認的 JWT Access Token 預期 audience；留空或省略為未設定，不會預設為 Client ID 或其他專案的值。非空 audience 會啟用 RS256 JWT Access Token 驗證，使用 Discovery 的 issuer／jwks_uri 檢查簽章、audience、效期與 sub，成功不再讀取 UserInfo。留空則維持原 UserInfo 模式。首次需同步更新 `backend/config.py`、`backend/auth.py`、`backend/main.py` 並重建容器；日後只修改環境值也需以 Compose `up -d --force-recreate --no-deps medresearch-app`（沿用上述 project 與兩個 `-f` 參數）重建容器，單純 `restart` 不會重新載入 env_file。
 
 若日誌只有 `OAuth2 callback rejected: OIDCConfigurationError`，舊版尚未區分失敗原因。更新 `backend/auth.py`、`backend/main.py` 並重建本站容器後，從網站重新登入一次；日誌會增加固定的 `reason` 代碼，不輸出 Provider 回應本文、Token、Secret 或使用者資料，也不必開啟 `OIDC_DEBUG_CLAIMS`。
 
@@ -169,7 +169,10 @@ node scripts/check-navigation-search.mjs --static-only
 | `token_invalid_json` | Token 交換流程取得無法解析的 JSON |
 | `token_missing_access_token` | Token 回應缺少 Access Token |
 | `userinfo_invalid_response` | UserInfo 回應無法轉成身分資料 |
-| `userinfo_missing_sub` | UserInfo 缺少非空字串 sub |
+| `userinfo_missing_sub` | UserInfo 缺少非空字串 sub；若已設定 audience 仍見此碼，確認容器已套用新版程式與環境設定 |
+| `jwks_unavailable`／`jwks_invalid_response` | JWKS 無法取得或格式不符 |
+| `access_token_invalid` | JWT 演算法、kid／簽章、issuer、audience 或時間驗證失敗 |
+| `access_token_missing_sub` | 已驗證的 JWT 缺少非空字串 sub |
 
 先依代碼定位，再確認院方契約；不因缺少 sub 就改信任未驗證的 Token 或猜測員工欄位。瀏覽器仍維持原本的通用錯誤訊息，callback 不做失敗轉址。
 
