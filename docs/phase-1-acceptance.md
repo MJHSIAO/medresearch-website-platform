@@ -138,3 +138,13 @@
 
 未修改參考專案，未連線院方或遠端部署；本 Client 的真實 Token／UserInfo 相容性與院方密碼錯誤畫面仍待部署後驗證。
 
+## 2026-10-14 Callback 設定錯誤診斷
+
+使用者提供的線上日誌只有 OIDCConfigurationError，尚不能確認根因。新增固定白名單 reason 代碼，區分 Discovery、Token 與 UserInfo 回應驗證失敗；不輸出例外本文或遠端資料，維持原本的瀏覽器錯誤與無失敗轉址行為。
+
+- 三組後端測試 check_oauth_login、check_backend、check_docker_deployment 通過。新增缺少 Access Token 情境、四種失敗日誌代碼與敏感測試值不得出現在日誌的斷言；不明 reason 會降為固定 configuration_error。
+- 完整導覽搜尋檢查通過：JSON／JS／CSS／HTML 資源／Markdown 連結、15 頁 × 5 寬度無溢出、公開內容篩選、Demo 同步、四角色入口、鍵盤互動；瀏覽器錯誤為 0。
+- git diff --check 通過，僅換行提示；依賴仍有既有棄用提示。
+
+未部署或連線院方。須更新兩個後端檔案並重建容器，再由新 reason 日誌定位線上根因。
+

@@ -6,6 +6,7 @@ No hospital credentials, remote requests or real login are used.
 from __future__ import annotations
 
 import os
+from unittest import TestCase
 from unittest.mock import patch
 from urllib.parse import parse_qs, urlencode, urlsplit
 
@@ -24,7 +25,7 @@ os.environ.update({
 })
 
 from backend import main as backend  # noqa: E402
-from backend.auth import OIDCManager  # noqa: E402
+from backend.auth import OIDCConfigurationError, OIDCManager  # noqa: E402
 
 METADATA = {
     "authorization_endpoint": "https://provider.example/authorize",
@@ -57,7 +58,9 @@ def check_flow(case: str) -> None:
             if case == "token_error":
                 return httpx.Response(400, json={"error": "invalid_grant"}, request=request)
             if case == "token_non_json":
-                return httpx.Response(200, text="not-json", request=request)
+                return httpx.Response(200, text="private-response-body", request=request)
+            if case == "missing_access_token":
+                return httpx.Response(200, json={"token_type": "Bearer"}, request=request)
             return httpx.Response(200, json={
                 "access_token": "test-access-token",
                 "token_type": "Bearer",
@@ -101,7 +104,21 @@ def check_flow(case: str) -> None:
                 client.cookies.clear()
 
             callback_url = "/medresearch/auth/callback?" + urlencode(params)
-            callback = client.get(callback_url)
+            expected_reasons = {
+                "token_non_json": "token_invalid_json",
+                "missing_access_token": "token_missing_access_token",
+                "userinfo_non_json": "userinfo_invalid_response",
+                "missing_subject": "userinfo_missing_sub",
+            }
+            if case in expected_reasons:
+                with TestCase().assertLogs("backend.main", level="WARNING") as captured:
+                    callback = client.get(callback_url)
+                log = "\n".join(captured.output)
+                assert f"OIDCConfigurationError reason={expected_reasons[case]}" in log
+                for private in ("private-response-body", "oauth-test-secret", "test-code", "test-access-token", "test-subject"):
+                    assert private not in log
+            else:
+                callback = client.get(callback_url)
             assert callback.headers["cache-control"] == "no-store"
             me = client.get("/medresearch/api/me").json()
             if case == "success":
@@ -127,9 +144,10 @@ def check_flow(case: str) -> None:
 
 
 def main() -> None:
+    assert OIDCConfigurationError("private", reason="private").reason == "configuration_error"
     for case in (
         "success", "missing_state", "wrong_state", "missing_cookie", "provider_error",
-        "token_error", "token_non_json", "userinfo_error", "userinfo_non_json", "missing_subject",
+        "token_error", "token_non_json", "missing_access_token", "userinfo_error", "userinfo_non_json", "missing_subject",
     ):
         check_flow(case)
     print("PASS OAuth2 four parameters, code/token/UserInfo flow, state rejection/replay and safe failures")

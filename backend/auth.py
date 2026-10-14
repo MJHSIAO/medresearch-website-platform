@@ -38,6 +38,17 @@ DEBUG_VALUE_CLAIMS = {
 class OIDCConfigurationError(RuntimeError):
     """OAuth2 configuration error; keep the legacy name for compatibility."""
 
+    SAFE_REASONS = frozenset({
+        "discovery_invalid_json", "discovery_invalid_object", "discovery_missing_endpoints",
+        "token_invalid_json", "token_missing_access_token", "userinfo_invalid_response",
+        "userinfo_missing_sub",
+    })
+
+    def __init__(self, message: str, *, reason: str = "configuration_error") -> None:
+        super().__init__(message)
+        # Only fixed local codes may reach production logs, never response data.
+        self.reason = reason if reason in self.SAFE_REASONS else "configuration_error"
+
 
 class OIDCManager:
     """Hospital OAuth2 login using Discovery endpoints and verified state.
@@ -66,15 +77,16 @@ class OIDCManager:
                 try:
                     metadata = response.json()
                 except ValueError as error:
-                    raise OIDCConfigurationError("Discovery 回應不是有效 JSON。") from error
+                    raise OIDCConfigurationError("Discovery 回應不是有效 JSON。", reason="discovery_invalid_json") from error
 
             if not isinstance(metadata, dict):
-                raise OIDCConfigurationError("Discovery 回應必須是 JSON 物件。")
+                raise OIDCConfigurationError("Discovery 回應必須是 JSON 物件。", reason="discovery_invalid_object")
 
             missing = sorted(key for key in REQUIRED_METADATA if not metadata.get(key))
             if missing:
                 raise OIDCConfigurationError(
-                    f"OAuth2 Discovery 缺少必要欄位：{', '.join(missing)}"
+                    f"OAuth2 Discovery 缺少必要欄位：{', '.join(missing)}",
+                    reason="discovery_missing_endpoints",
                 )
 
             self.oauth.register(
@@ -111,16 +123,16 @@ class OIDCManager:
         try:
             token = await client.authorize_access_token(request)
         except ValueError as error:
-            raise OIDCConfigurationError("Token 回應不是有效 JSON。") from error
+            raise OIDCConfigurationError("Token 回應不是有效 JSON。", reason="token_invalid_json") from error
         if not token.get("access_token"):
-            raise OIDCConfigurationError("登入結果缺少 Access Token。")
+            raise OIDCConfigurationError("登入結果缺少 Access Token。", reason="token_missing_access_token")
         try:
             userinfo = await client.userinfo(token=token)
         except (ValueError, TypeError) as error:
-            raise OIDCConfigurationError("UserInfo 回應不是有效的身分資料。") from error
+            raise OIDCConfigurationError("UserInfo 回應不是有效的身分資料。", reason="userinfo_invalid_response") from error
         claims = dict(userinfo)
         if not isinstance(claims.get("sub"), str) or not claims["sub"].strip():
-            raise OIDCConfigurationError("UserInfo 缺少有效的 sub 身分識別。")
+            raise OIDCConfigurationError("UserInfo 缺少有效的 sub 身分識別。", reason="userinfo_missing_sub")
 
         profile = initial_access_profile(claims)
         user = {

@@ -95,7 +95,8 @@ async def auth_login(request: Request):
     try:
         return await oidc.login(request)
     except (httpx.HTTPError, OIDCConfigurationError) as error:
-        LOGGER.error("Unable to start OAuth2 login: %s", type(error).__name__)
+        reason = error.reason if isinstance(error, OIDCConfigurationError) else "unavailable"
+        LOGGER.error("Unable to start OAuth2 login: %s reason=%s", type(error).__name__, reason)
         raise HTTPException(status_code=503, detail="目前無法連接院內登入服務，請稍後再試。") from error
 
 
@@ -112,7 +113,8 @@ async def auth_callback(request: Request):
         }
         error_code = getattr(error, "error", None)
         category = error_code if isinstance(error_code, str) and error_code in known_errors else type(error).__name__
-        LOGGER.warning("OAuth2 callback rejected: %s", category)
+        reason = error.reason if isinstance(error, OIDCConfigurationError) else "see_category"
+        LOGGER.warning("OAuth2 callback rejected: %s reason=%s", category, reason)
         # Password errors belong to the hospital's Account/Login screen.
         # A callback error is an integration failure, not a password error.
         raise HTTPException(status_code=400, detail="本站登入串接驗證失敗，請從院內人員登入重新開始。") from error

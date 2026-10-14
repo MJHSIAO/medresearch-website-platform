@@ -156,4 +156,19 @@ node scripts/check-navigation-search.mjs --static-only
 
 2026-10-14 對照參考專案後，`backend/auth.py` 的 Token 交換改採 `client_secret_post`，Client 憑證放在後端表單內。此修正需更新該檔並依上述 Compose 指令重建 `medresearch-app`；既有環境變數無需更名。授權端仍只傳四個參數，密碼錯誤由院方原頁處理，本站不新增失敗轉址。參考專案的 HIS JWT audience 不適用於直接推定本 Client 的設定，本站繼續使用 UserInfo 驗證身分。
 
+### Callback 診斷
+
+若日誌只有 `OAuth2 callback rejected: OIDCConfigurationError`，舊版尚未區分失敗原因。更新 `backend/auth.py`、`backend/main.py` 並重建本站容器後，從網站重新登入一次；日誌會增加固定的 `reason` 代碼，不輸出 Provider 回應本文、Token、Secret 或使用者資料，也不必開啟 `OIDC_DEBUG_CLAIMS`。
+
+| reason | 意義 |
+| --- | --- |
+| `discovery_invalid_json`／`discovery_invalid_object` | Discovery 回應格式不符 |
+| `discovery_missing_endpoints` | Discovery 缺少必要端點 |
+| `token_invalid_json` | Token 交換流程取得無法解析的 JSON |
+| `token_missing_access_token` | Token 回應缺少 Access Token |
+| `userinfo_invalid_response` | UserInfo 回應無法轉成身分資料 |
+| `userinfo_missing_sub` | UserInfo 缺少非空字串 sub |
+
+先依代碼定位，再確認院方契約；不因缺少 sub 就改信任未驗證的 Token 或猜測員工欄位。瀏覽器仍維持原本的通用錯誤訊息，callback 不做失敗轉址。
+
 本文件的 Server 指令是部署與驗證步驟，不代表已在遠端執行。實際本機檢查結果記錄於 `docs/phase-1-acceptance.md`。目前無遠端 server 連線與完整 Nginx template，遠端 TLS／WAF、容器 Build／啟動及院內實際 OAuth2 登入仍需部署後驗證。
