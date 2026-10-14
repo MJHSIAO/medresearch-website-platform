@@ -83,6 +83,8 @@
 
 ## 2026-10-14 登入失敗畫面驗證
 
+歷史紀錄：此節的本站登入提示頁與失敗轉址已依使用者更正撤回，現行結果見本文件最後的「撤回本站登入提示頁」紀錄。
+
 本節記錄當日首次修改：新增 `login.html` 與後端失敗轉址；當時尚待使用者確認 state。後續已確認可保留 state，OAuth2 改版及追加測試見下節。未 commit、push 或部署，也未操作原 `ai-center-website-demo`。
 
 | 實際執行的檢查 | 結果 |
@@ -112,4 +114,17 @@
 ## 維持第一版範圍
 
 驗收不包含正式登入、CMS、資料庫、權限驗證、上傳、寄信或院內身分整合。這些項目不得因第一版驗收完成而自動開始開發。
+
+## 2026-10-14 撤回本站登入提示頁
+
+依使用者更正，院方 Account/Login 已處理密碼錯誤，不應另外跳至本站 login.html。刪除本站提示頁及後端失敗轉址；callback 串接錯誤回報 400，服務連線／設定失敗回報 503，均不發出 Location。舊 login.html 網址相容轉至 auth/login，即使 server 殘留舊檔亦不顯示該頁；成功 callback 與四參數 OAuth2 保持原流程。
+
+| 實際執行的檢查 | 結果 |
+| --- | --- |
+| check_oauth_login、check_backend、check_docker_deployment | 通過；登入成功、各類 callback 失敗皆不轉址、state 拒絕及重放、匿名狀態、根網址與 HTTPS 子路徑的舊頁相容轉址、Cookie 與登出 |
+| Python AST、git diff --check | 通過 |
+| 全部 JSON、JS 語法、CSS 括號、HTML 資源與 Markdown 連結 | 重跑通過；首次被 AI 子站既有重複 buildNavigation 中的非 async await 阻擋，移除重複區塊後通過 |
+| 完整導覽／搜尋腳本，CHECK_SITE_PREFIX=/medresearch/ | 通過；15 頁 × 5 種寬度共 75 組無水平溢出，公開內容篩選、單位資料同步、四角色入口、鍵盤互動及登入／登出連結；Console／pageerror／HTTP 錯誤為 0 |
+
+本次只操作本平台；未操作原 ai-center-website-demo、未使用院內帳密、未連線院方或部署／commit／push。院方密碼錯誤原頁提示是使用者提供的行為，並非本機測試已驗證院方頁面。
 

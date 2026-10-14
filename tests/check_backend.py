@@ -56,18 +56,20 @@ def main() -> None:
         ):
             with patch.object(oidc, "complete_login", AsyncMock(side_effect=error)):
                 failure = client.get("/auth/callback?code=private-code&error_description=private-detail")
-            assert failure.status_code == 303
-            assert failure.headers["location"] == "http://localhost:8000/login.html"
+            assert failure.status_code == 400
+            assert "location" not in failure.headers
             assert failure.headers["cache-control"] == "no-store"
-            assert "private" not in failure.text + failure.headers["location"]
+            assert "private" not in failure.text
             assert client.get("/api/me").json() == {"authenticated": False}
 
         with patch.object(oidc, "login", AsyncMock(side_effect=httpx.ConnectError("private-detail"))):
-            assert client.get("/auth/login").headers["location"] == "http://localhost:8000/login.html"
+            failure = client.get("/auth/login")
+            assert failure.status_code == 503
+            assert "location" not in failure.headers
         retry = client.get("/login.html")
-        assert retry.status_code == 200
-        assert "登入未完成" in retry.text and 'href="auth/login"' in retry.text
-        assert "密碼錯誤" not in retry.text
+        assert retry.status_code == 303
+        assert retry.headers["location"] == "http://localhost:8000/auth/login"
+        assert retry.headers["cache-control"] == "no-store"
 
         session_id = sessions.create(
             {

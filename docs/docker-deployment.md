@@ -130,7 +130,9 @@ curl -fsS https://aics.femh.org.tw/medresearch/data/units.json >/dev/null
 
 完成院方登記後，以瀏覽器實際登入、callback、重整與登出；Cookie 應為 Secure，Session Cookie 應為 HttpOnly，Path 均為 `/medresearch`。前端角色切換與 `localStorage` 仍只是 UI Demo，不是正式安全控制。最後檢查既有 voice/chat 入口與原本健康檢查均可用。
 
-本站登入服務或 callback 驗證失敗時應導向 `/medresearch/login.html`，顯示登入未完成與重新登入按鈕，不回首頁、不顯示原始 JSON／Provider 錯誤內容。院方帳密頁的密碼錯誤提示需由院方處理；本站尚未取得可辨識密碼錯誤的正式回應規格。2026-10-14 使用者確認可保留 state，本版授權網址只傳 `response_type`、`client_id`、`redirect_uri`、`state`；已移除 scope／nonce／PKCE。沿用既有 `OIDC_*` 環境變數，更新映像並重啟本站容器後才會套用。
+使用者確認院方 `Account/Login` 已在密碼錯誤時保留原頁並提示，成功才回本站 callback。本站已撤回 `login.html` 提示頁及所有失敗轉址；callback 串接失敗回報 400，登入服務連線／設定失敗回報 503，不自動重試、不誤報密碼錯誤。舊 `/medresearch/login.html` 網址會轉至 `/medresearch/auth/login`，即使 server 留有舊 HTML 檔也不會顯示本站登入頁。此次登入轉址修正需更新 `backend/main.py` 並重建本站容器；另同步 `ai-center/js/main.js` 修正此次驗證發現的重複程式／語法錯誤。新的完整專案已移除 `login.html`。
+
+授權網址仍只傳 `response_type`、`client_id`、`redirect_uri`、`state`；已移除 scope／nonce／PKCE。沿用既有 `OIDC_*` 環境變數，更新映像並重啟本站容器後才會套用。
 
 ## 更新與回復
 

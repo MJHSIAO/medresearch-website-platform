@@ -24,8 +24,6 @@ for (const file of files) {
       const url = match[1];
       if (/^(?:[a-z]+:|#|\/\/)/i.test(url)) continue;
       const path = decodeURIComponent(url.split(/[?#]/)[0]);
-      // FastAPI routes are real internal links but have no static file.
-      if (resolve(dirname(file), path) === resolve(root, 'auth/login')) continue;
       if (path) assert.ok(await stat(resolve(dirname(file), path)).catch(() => null), `${file}: ${url}`);
     }
   }
@@ -73,26 +71,6 @@ try {
   const context = await browser.newContext({ reducedMotion: 'reduce' });
   const page = await context.newPage();
   const errors = [];
-  for (const width of [320, 1440]) {
-    await page.setViewportSize({ width, height: 900 });
-    await page.goto(base + 'login.html');
-    const retry = page.locator('#auth-retry');
-    assert.equal(await retry.evaluate(el => el.href), new URL('auth/login', base).href);
-    assert.ok(await page.locator('[role="alert"]').textContent().then(text => text.includes('登入未完成')));
-    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
-    let focused = false;
-    for (let count = 0; count < 25; count++) {
-      await page.keyboard.press('Tab');
-      focused = await retry.evaluate(el => document.activeElement === el);
-      if (focused) break;
-    }
-    assert.ok(focused, 'Retry link reachable with Tab');
-    await context.route(`**${prefix}auth/login`, route => route.fulfill({ contentType: 'text/html', body: '<h1>測試登入入口</h1>' }));
-    await page.keyboard.press('Enter');
-    await page.waitForURL(base + 'auth/login');
-    await context.unroute(`**${prefix}auth/login`);
-  }
-  console.log('PASS login failure screen at 320/1440px, keyboard retry and subpath links');
   // Both anonymous and authenticated navigation must stay under the mount prefix.
   for (const path of ['index.html', 'ai-center/index.html']) {
     await page.goto(base + path);

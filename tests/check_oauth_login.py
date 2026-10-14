@@ -99,10 +99,10 @@ def check_flow(case: str) -> None:
 
             callback_url = "/medresearch/auth/callback?" + urlencode(params)
             callback = client.get(callback_url)
-            assert callback.status_code == 303
             assert callback.headers["cache-control"] == "no-store"
             me = client.get("/medresearch/api/me").json()
             if case == "success":
+                assert callback.status_code == 303
                 assert callback.headers["location"] == BASE + "/"
                 assert me["authenticated"] is True
                 assert me["user"]["id"] == "test-subject"
@@ -111,12 +111,14 @@ def check_flow(case: str) -> None:
                 assert "test-access-token" not in str(me)
                 token_count = calls.count("/token")
                 replay = client.get(callback_url)
-                assert replay.headers["location"] == BASE + "/login.html"
+                assert replay.status_code == 400
+                assert "location" not in replay.headers
                 assert calls.count("/token") == token_count
             else:
-                assert callback.headers["location"] == BASE + "/login.html"
+                assert callback.status_code == 400
+                assert "location" not in callback.headers
                 assert me == {"authenticated": False}
-                assert "private-description" not in callback.text + callback.headers["location"]
+                assert "private-description" not in callback.text
             if case in {"missing_state", "wrong_state", "missing_cookie", "provider_error"}:
                 assert "/token" not in calls and "/userinfo" not in calls
 

@@ -48,10 +48,13 @@ def main():
 
         with patch.object(oidc, "complete_login", AsyncMock(side_effect=OAuthError(error="access_denied"))):
             failure = client.get("/medresearch/auth/callback?error=access_denied")
-        assert failure.status_code == 303
-        assert failure.headers["location"] == "https://aics.femh.org.tw/medresearch/login.html"
+        assert failure.status_code == 400
+        assert "location" not in failure.headers
         assert failure.headers["cache-control"] == "no-store"
-        assert "登入未完成" in client.get("/medresearch/login.html").text
+        legacy = client.get("/medresearch/login.html")
+        assert legacy.status_code == 303
+        assert legacy.headers["location"] == "https://aics.femh.org.tw/medresearch/auth/login"
+        assert legacy.headers["cache-control"] == "no-store"
         assert client.get("/medresearch/api/me").json() == {"authenticated": False}
 
         with patch.object(oidc, "complete_login", mock_complete_login):

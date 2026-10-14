@@ -19,7 +19,7 @@ from .config import get_settings
 
 LOGGER = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-PUBLIC_HTML_FILES = frozenset(path.name for path in PROJECT_ROOT.glob("*.html"))
+PUBLIC_HTML_FILES = frozenset(path.name for path in PROJECT_ROOT.glob("*.html") if path.name != "login.html")
 SESSION_TTL_SECONDS = 8 * 60 * 60
 
 
@@ -85,7 +85,7 @@ async def add_security_headers(request: Request, call_next):
     root_path = request.scope.get("root_path", "").rstrip("/")
     if root_path and path.startswith(f"{root_path}/"):
         path = path[len(root_path):]
-    if path.startswith(("/api/", "/auth/")):
+    if path.startswith(("/api/", "/auth/")) or path == "/login.html":
         response.headers["Cache-Control"] = "no-store"
     return response
 
@@ -96,7 +96,7 @@ async def auth_login(request: Request):
         return await oidc.login(request)
     except (httpx.HTTPError, OIDCConfigurationError) as error:
         LOGGER.error("Unable to start OAuth2 login: %s", type(error).__name__)
-        return RedirectResponse(url=f"{settings.app_base_url}/login.html", status_code=303)
+        raise HTTPException(status_code=503, detail="目前無法連接院內登入服務，請稍後再試。") from error
 
 
 @app.get("/auth/callback", include_in_schema=False)
@@ -113,7 +113,9 @@ async def auth_callback(request: Request):
         error_code = getattr(error, "error", None)
         category = error_code if isinstance(error_code, str) and error_code in known_errors else type(error).__name__
         LOGGER.warning("OAuth2 callback rejected: %s", category)
-        return RedirectResponse(url=f"{settings.app_base_url}/login.html", status_code=303)
+        # Password errors belong to the hospital's Account/Login screen.
+        # A callback error is an integration failure, not a password error.
+        raise HTTPException(status_code=400, detail="本站登入串接驗證失敗，請從院內人員登入重新開始。") from error
 
     request.session.clear()
     request.session["session_id"] = sessions.create(user, claims)
@@ -167,6 +169,13 @@ async def healthz():
 @app.get("/", include_in_schema=False)
 async def website_home():
     return FileResponse(PROJECT_ROOT / "index.html")
+
+
+@app.get("/login.html", include_in_schema=False)
+async def legacy_login_page():
+    # Old bookmarks/images may retain the removed local login page.
+    # Always enter the hospital authorization flow through a fresh state.
+    return RedirectResponse(url=f"{settings.app_base_url}/auth/login", status_code=303)
 
 
 @app.get("/{page_name}.html", include_in_schema=False)
