@@ -42,3 +42,29 @@
 5. 確認圖片、附件、資料分類與個資／機密防護要求。
 6. 進行正式系統架構、資安與無障礙驗證。
 
+## Phase 1.5：院內 OAuth2 登入最小版本
+
+- [x] 登入服務／callback 失敗回到本站登入提示頁，提供重新登入入口（2026-10-14）。
+- [x] 依院方需求移除 scope／nonce／PKCE，使用者確認可保留 state，完成四參數 OAuth2 離線流程測試（2026-10-14）。
+- [ ] 院方帳密輸入頁密碼錯誤保留原畫面的行為，需由院方登入服務確認。
+
+- [x] 保留既有原生前端，由 FastAPI 同源提供明確允許的公開靜態檔案。
+- [x] 依 Discovery 動態設定 Authlib Authorization Code Flow、state 與受保護的 UserInfo；不依賴 ID Token。
+- [x] 建立登入、callback、`/api/me`、本站登出與後端記憶體 Session。
+- [x] 主站與人工智慧中心導覽顯示登入狀態，不保存 OAuth Token。
+- [x] 預留 `internal_user`、`unit_admin`、`site_admin`、`system_admin`，但不臆測 claim 對應。
+- [ ] 使用資訊處登記的 Client 完成院內實際登入，確認 UserInfo 的 claim 名稱。
+- [ ] 由院方核定 claim、角色與單位 allowlist，並為每個敏感 API 實作後端授權。
+- [ ] 正式部署前改用可供多 worker 共用的 Session Store，完成 HTTPS、Secret 管理及資安檢核。
+
+## Docker 整合（2026-10-12）
+
+- [x] FastAPI＋靜態網站 Dockerfile、非 root、Healthcheck 與 Build Context 排除規則。
+- [x] 接入現有 app_internal 的 Compose 補充檔，不新增 Host Port。
+- [x] `/medresearch/` 子路徑：Nginx 分流範例、Uvicorn root_path、相對登入連結與 Cookie Path。
+- [x] `.env.docker.example` 與部署／更新／回復文件。
+- [ ] 遠端 Build、容器啟動、現有 Nginx／WAF 核對與 TLS 驗證。
+- [ ] 院方登記正式 callback 並完成真實 OAuth2 登入。
+
+部署保留目前單程序 Session；尚未加入多 worker Session Store、資料庫或正式 CMS。
+

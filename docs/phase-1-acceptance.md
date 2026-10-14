@@ -60,6 +60,55 @@
 
 人工檢視桌機首頁與單位 Sidebar、320px 首頁／收合目錄截圖，確認既有綠白風格、可讀性與無側欄首頁。未進行完整 CSS validator、WCAG／螢幕閱讀器或跨瀏覽器認證；未檢查外部院方連結的即時可用性。未部署，線上新版仍待使用者 Commit/Push。功能範圍與搜尋限制見 navigation-search.md。
 
+## 2026-10-12 Docker 與子路徑整合驗證
+
+保留開始時已有的未提交 OIDC／導覽變更；本次未 commit、push 或操作原 `ai-center-website-demo`。
+
+| 實際執行的檢查 | 結果 |
+| --- | --- |
+| 使用提供的 `C:/Users/ai/Downloads/docker-compose.yml` 執行 Compose config 合併比較 | 通過；既有 chat/voice 服務、網路、Secrets 與 Ports 完全相同，新服務沒有 Host Port |
+| 既有 `tests/check_backend.py` | 通過；根路徑公開頁、匿名 API、Session、登出及非公開檔案 404；未啟用真實 Discovery 測試 |
+| 新增 `tests/check_docker_deployment.py` | 通過；HTTPS `/medresearch` 下公開資源、目錄轉址、no-store、Cookie Path/Secure/HttpOnly、模擬 callback 與登出 |
+| JSON、全部 JavaScript 語法、CSS 括號及 HTML 本機資源／連結 | 通過；新增 Markdown 文件連結一併檢查 |
+| `/medresearch/` 前綴，320、375、768、1024、1440px × 15 頁 | 75 組通過，沒有整頁水平溢出，Sticky Header 與六個單位目錄通過 |
+| 主站與 AI 子站的登入、API、Demo 及登出連結 | 通過；匿名及模擬已登入狀態均保持在 `/medresearch/` 下 |
+| 搜尋排除 internal/draft/pending_review/archived、Demo 資料覆寫與排序 | 通過 |
+| 四角色入口與後台表單儲存後首頁、AI 子站及搜尋同步 | 通過；隔離瀏覽器的測試資料於結束前重設 |
+| 燈箱 Enter/Space/Escape／焦點返回、手機選單 Tab/Escape、初始錨點與 Observer fallback | 通過；首次燈箱捲動檢查遇到 resize 排版時序，測試加入等待後，以 `--interactions-only` 重跑通過 |
+| Python 語法、靜態 build 與 git diff --check | 通過；Git 僅提示 Windows 換行正規化 |
+
+瀏覽器使用隔離無頭 Microsoft Edge，不使用使用者帳號／儲存資料。互動重跑的 Console/pageerror/HTTP 錯誤為 0，截圖留於系統暫存目錄。Authlib 1.8 顯示相容整合層的 DeprecationWarning，後端測試仍通過。
+
+本機 Docker CLI 可用，但 daemon 未啟動；未執行 image Build、容器啟動或 Nginx 語法／Reload。沒有連線遠端 server，未驗證現有 WAF、TLS、院方 DNS/CA、真實 OIDC 登入或遠端 voice/chat 路由。部署與回復步驟見 [Docker 部署說明](docker-deployment.md)。
+
+## 2026-10-14 登入失敗畫面驗證
+
+本節記錄當日首次修改：新增 `login.html` 與後端失敗轉址；當時尚待使用者確認 state。後續已確認可保留 state，OAuth2 改版及追加測試見下節。未 commit、push 或部署，也未操作原 `ai-center-website-demo`。
+
+| 實際執行的檢查 | 結果 |
+| --- | --- |
+| `python -m tests.check_backend` | 通過；模擬 scope／授權拒絕、state 錯誤、連線及設定失敗，303 返回登入提示頁，匿名狀態維持、錯誤內容不外洩；原有 Session／登出檢查通過 |
+| `python -m tests.check_docker_deployment` | 通過；HTTPS `/medresearch` 下失敗回到同前綴登入頁，原有 Cookie 與模擬成功登入／登出檢查通過 |
+| Python AST 語法檢查 | backend／tests 的 Python 檔案通過 |
+| `CHECK_SITE_PREFIX=/medresearch/` 的完整導覽／搜尋腳本 | JSON、JS 語法、CSS 括號、HTML 資源與文件連結通過；登入提示頁 320／1440px 無水平溢出，Tab／Enter 可重新登入（入口以本機 mock 驗證） |
+| 既有 15 頁 × 5 種寬度與主要互動 | 75 組通過；公開搜尋排除非公開內容、後台儲存至公開預覽同步、四角色入口及鍵盤互動通過；所測頁面 Console／pageerror／HTTP 錯誤為 0 |
+| `git diff --check` | 通過，僅既有 Windows 換行提示 |
+
+測試使用 bundled Python／Node、暫存安裝的既有 requirements 依賴與隔離無頭 Edge。原 `.venv` 指向不存在的 Python，未修改；暫存依賴的 Windows 權限使第一次後端測試未能載入 Authlib，改以相同安裝權限重跑後通過。依賴顯示 Starlette／Authlib 相容層棄用提示。未啟用真實 Discovery 檢查，未驗證院內帳密或院方登入頁的密碼錯誤行為。
+
+## 2026-10-14 OAuth2 四參數改版追加驗證
+
+使用者後續確認院方可使用 state。已移除 scope／nonce／PKCE，授權端只傳 response_type、client_id、redirect_uri、state；沿用既有 OIDC_* 環境設定。後端以受保護的 UserInfo 建立身分，不依賴未驗證 ID Token，角色仍僅為 internal_user。
+
+| 實際執行的檢查 | 結果 |
+| --- | --- |
+| 新增 `python -m tests.check_oauth_login` | 通過；使用 Authlib 真實流程與離線 HTTP mock，精確檢查四個授權參數、Token 請求不含 scope／code_verifier、Client／Bearer 認證及 UserInfo 身分 |
+| state 與回應失敗 | 通過；缺少／錯誤 state、缺少 Cookie、成功回應重放均不再交換 Token；院方拒絕、Token 錯誤／非 JSON、UserInfo 401／非 JSON／缺少 sub 都回到提示頁，不建立新登入 |
+| `python -m tests.check_backend`、`python -m tests.check_docker_deployment` | 通過；根路徑及 HTTPS 子路徑、成功／失敗轉址、Session、Cookie、登出及非公開檔案檢查 |
+| Python AST 語法、完整導覽／搜尋腳本、`git diff --check` | 通過；JSON／JavaScript／CSS／本機資源與連結，320／1440px 登入頁及 Tab／Enter 重新登入，15 頁 × 5 寬度無水平溢出、公開篩選、單位同步、四角色入口與主要鍵盤互動通過；所測 Console／pageerror／HTTP 錯誤為 0 |
+
+首次 OAuth2 mock 在 httpx 套用認證前攔截，導致測試認證斷言失敗；改為攔截底層 HTTP 傳送後重跑通過。未修改正式依賴版本。未連線院方、未使用真實帳密、未部署／commit／push；實際 UserInfo sub 與院方密碼錯誤留在原頁的行為仍需正式環境確認。
+
 ## 維持第一版範圍
 
 驗收不包含正式登入、CMS、資料庫、權限驗證、上傳、寄信或院內身分整合。這些項目不得因第一版驗收完成而自動開始開發。

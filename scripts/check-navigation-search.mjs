@@ -11,7 +11,7 @@ import { execFileSync } from 'node:child_process';
 const root = resolve('.');
 async function walk(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
-  return (await Promise.all(entries.filter(e => !['.git', 'dist', 'node_modules'].includes(e.name)).map(e => e.isDirectory() ? walk(join(dir, e.name)) : join(dir, e.name)))).flat();
+  return (await Promise.all(entries.filter(e => !['.git', 'dist', 'node_modules', '.venv', '__pycache__'].includes(e.name)).map(e => e.isDirectory() ? walk(join(dir, e.name)) : join(dir, e.name)))).flat();
 }
 const files = await walk(root);
 for (const file of files) {
@@ -24,14 +24,25 @@ for (const file of files) {
       const url = match[1];
       if (/^(?:[a-z]+:|#|\/\/)/i.test(url)) continue;
       const path = decodeURIComponent(url.split(/[?#]/)[0]);
+      // FastAPI routes are real internal links but have no static file.
+      if (resolve(dirname(file), path) === resolve(root, 'auth/login')) continue;
+      if (path) assert.ok(await stat(resolve(dirname(file), path)).catch(() => null), `${file}: ${url}`);
+    }
+  }
+  if (file.endsWith('.md')) {
+    for (const match of source.matchAll(/\[[^\]]+\]\(([^)]+)\)/g)) {
+      const url = match[1];
+      if (/^(?:[a-z]+:|#|\/\/)/i.test(url)) continue;
+      const path = decodeURIComponent(url.split(/[?#]/)[0]);
       if (path) assert.ok(await stat(resolve(dirname(file), path)).catch(() => null), `${file}: ${url}`);
     }
   }
 }
-console.log('PASS JSON, JavaScript syntax, CSS braces, static HTML local resources');
+console.log('PASS JSON, JavaScript syntax, CSS braces, static HTML resources and Markdown local links');
+if (process.argv.includes('--static-only')) process.exit(0);
 if (!process.argv[2] || !process.argv[3]) throw new Error('Provide Playwright module and browser executable paths for browser tests.');
 const { chromium } = await import(pathToFileURL(resolve(process.argv[2])).href);
-const prefix = '/medresearch-website-platform/';
+const prefix = process.env.CHECK_SITE_PREFIX || '/medresearch-website-platform/';
 const server = createServer(async (req, res) => {
   try {
     let pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
@@ -54,6 +65,48 @@ try {
   const context = await browser.newContext({ reducedMotion: 'reduce' });
   const page = await context.newPage();
   const errors = [];
+  for (const width of [320, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(base + 'login.html');
+    const retry = page.locator('#auth-retry');
+    assert.equal(await retry.evaluate(el => el.href), new URL('auth/login', base).href);
+    assert.ok(await page.locator('[role="alert"]').textContent().then(text => text.includes('登入未完成')));
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+    let focused = false;
+    for (let count = 0; count < 25; count++) {
+      await page.keyboard.press('Tab');
+      focused = await retry.evaluate(el => document.activeElement === el);
+      if (focused) break;
+    }
+    assert.ok(focused, 'Retry link reachable with Tab');
+    await context.route(`**${prefix}auth/login`, route => route.fulfill({ contentType: 'text/html', body: '<h1>測試登入入口</h1>' }));
+    await page.keyboard.press('Enter');
+    await page.waitForURL(base + 'auth/login');
+    await context.unroute(`**${prefix}auth/login`);
+  }
+  console.log('PASS login failure screen at 320/1440px, keyboard retry and subpath links');
+  // Both anonymous and authenticated navigation must stay under the mount prefix.
+  for (const path of ['index.html', 'ai-center/index.html']) {
+    await page.goto(base + path);
+    const login = page.locator('.auth-navigation a').first();
+    await login.waitFor();
+    assert.equal(await login.evaluate(el => el.href), new URL('auth/login', base).href);
+  }
+  await context.route(`**${prefix}api/me`, route => route.fulfill({
+    contentType: 'application/json',
+    body: JSON.stringify({ authenticated: true, user: { id: 'test', name: '測試', role: 'internal_user' } }),
+  }));
+  await context.addCookies([{ name: 'medresearch_auth', value: '1', url: base }]);
+  for (const path of ['index.html', 'ai-center/index.html']) {
+    await page.goto(base + path);
+    const logout = page.locator('.auth-navigation a').last();
+    await page.waitForFunction(() => document.querySelector('.auth-navigation')?.textContent.includes('登出'));
+    assert.equal(await logout.evaluate(el => el.href), new URL('auth/logout', base).href);
+    assert.equal(await page.locator('.auth-navigation a').first().evaluate(el => el.href), new URL('admin-demo/', base).href);
+  }
+  await context.unroute(`**${prefix}api/me`);
+  await context.clearCookies();
+  console.log('PASS subpath login, api/me, admin and logout links on main and AI pages');
   page.on('pageerror', e => errors.push(e.message));
   page.on('console', msg => { if (msg.type() === 'error') errors.push(`${msg.text()} (${msg.location().url})`); });
   page.on('response', response => { if (response.status() >= 400) errors.push(`${response.status()}: ${response.url()}`); });
@@ -178,6 +231,11 @@ try {
   await page.waitForFunction(() => document.querySelector('[data-lightbox-image]').naturalWidth > 0);
   assert.ok(await page.locator('[data-lightbox-image]').evaluate(img => Math.abs(img.width - img.naturalWidth) < 1));
   await page.setViewportSize({ width: 320, height: 600 });
+  // Viewport changes are applied asynchronously; wait for the mobile layout.
+  await page.waitForFunction(() => {
+    const viewport = document.querySelector('.image-lightbox-viewport');
+    return viewport && (viewport.scrollWidth > viewport.clientWidth || viewport.scrollHeight > viewport.clientHeight);
+  });
   const scrollable = await page.locator('.image-lightbox-viewport').evaluate(el => {
     el.scrollTop = 100; el.scrollLeft = 100;
     return el.scrollTop > 0 || el.scrollLeft > 0;
