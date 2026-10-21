@@ -46,7 +46,7 @@ async function renderAuthNavigation() {
     internal.className = "nav-link";
     internal.href = "../admin-demo/";
     internal.textContent = "院內專區";
-    internal.title = "目前連結至行政後台 UI Demo，敏感功能仍須由後端驗證權限";
+    internal.title = "管理功能建置中，尚未啟用正式內容儲存與授權";
     const logout = document.createElement("a");
     logout.className = "nav-link";
     logout.href = "../auth/logout";
@@ -96,7 +96,7 @@ function buildFooter() {
             <li><a href="../index.html" target="_blank" rel="noopener">醫學研究部首頁 ↗</a></li>
             <li><a href="../units.html" target="_blank" rel="noopener">醫學研究部隸屬單位 ↗</a></li>
             <li><a href="../search.html" target="_blank" rel="noopener">全站搜尋 ↗</a></li>
-            <li><a href="../admin-demo/">內容管理 Demo</a></li>
+            <li><a href="../admin-demo/">內容管理</a></li>
           </ul>
         </div>
         <div>
@@ -104,7 +104,7 @@ function buildFooter() {
           <ul class="footer-links">
             <li>基本介紹與聯絡資訊由醫研部共用資料同步</li>
             <li>申請條件及正式流程仍以院方公告為準</li>
-            <li>表單為前端展示，不會送出或儲存資料</li>
+            <li>線上洽詢尚未開放，請依聯繫窗口資訊洽詢</li>
           </ul>
         </div>
       </div>

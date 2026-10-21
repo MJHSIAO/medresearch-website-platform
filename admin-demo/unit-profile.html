@@ -1,7 +1,7 @@
 ﻿<!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="單位基本資料表單 UI Demo。"><title>修改單位介紹｜內容管理 Demo</title>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="單位基本資料表單。"><title>修改單位介紹｜內容管理</title>
   <link rel="stylesheet" href="../assets/css/base.css"><link rel="stylesheet" href="../assets/css/layout.css"><link rel="stylesheet" href="../assets/css/components.css"><link rel="stylesheet" href="../assets/css/admin.css"><link rel="stylesheet" href="../assets/css/responsive.css">
 </head>
 <body class="admin-body" data-root=".." data-admin-page="unit-profile">
@@ -22,11 +22,11 @@
         <div class="field"><label for="contact-phone">聯絡電話</label><input id="contact-phone" name="contact_phone"></div>
         <div class="field"><label for="contact-email">電子郵件</label><input id="contact-email" name="contact_email" type="email"></div>
         <div class="field"><label for="contact-address">地址</label><input id="contact-address" name="contact_address"></div>
-        <div class="field"><label for="hero-file">主視覺圖片</label><input id="hero-file" name="hero_file" type="file" accept="image/jpeg,image/png,image/webp"><small>UI Demo 僅顯示瀏覽器端檔案選擇；未上傳至伺服器。</small></div>
+        <div class="field"><label for="hero-file">主視覺圖片</label><input id="hero-file" name="hero_file" type="file" accept="image/jpeg,image/png,image/webp"><small>目前僅提供本機檔案選擇，尚未啟用上傳功能。</small></div>
         <div class="field"><label for="hero-alt">圖片替代文字 <span class="required">必填</span></label><input id="hero-alt" name="hero_alt" required></div>
         <div class="field"><label for="updated-at">最後更新時間</label><input id="updated-at" name="updated_at" readonly></div>
       </div>
-      <div class="callout"><strong>資料保存說明</strong><p>localStorage 只供 UI Demo 使用，不是正式資料庫或權限系統。不得輸入病人資料、個資或院內機密。</p></div>
+      <div class="callout"><strong>資料保存說明</strong><p>目前僅儲存在此瀏覽器，不會更新伺服器內容，也不提供身分或權限驗證。不得輸入病人資料、個資或院內機密。</p></div>
       <div class="button-row"><button class="button" type="submit">儲存變更</button><a class="button secondary" href="../ai-center/index.html" target="_blank" rel="noopener">預覽</a><a class="button ghost" href="index.html">取消</a></div>
       <p class="status-message" id="unit-save-status" role="status" tabindex="-1" hidden></p>
     </form>

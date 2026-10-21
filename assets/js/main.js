@@ -42,7 +42,7 @@
       const internal = document.createElement('a');
       internal.href = assetUrl('admin-demo/');
       internal.textContent = '院內專區';
-      internal.title = '目前連結至行政後台 UI Demo，敏感功能仍須由後端驗證權限';
+      internal.title = '管理功能建置中，尚未啟用正式內容儲存與授權';
       const logout = document.createElement('a');
       logout.href = assetUrl('auth/logout');
       logout.textContent = '登出';

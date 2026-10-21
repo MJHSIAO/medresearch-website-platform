@@ -243,12 +243,14 @@ try {
   await page.goto(base + 'ai-center/about.html'); await page.waitForLoadState('networkidle');
   assert.equal(await page.locator('.site-footer a[href="../search.html"]').getAttribute('target'), '_blank');
   await page.setViewportSize({ width: 1440, height: 900 });
-  for (const role of ['unit-editor', 'unit-admin', 'department-admin', 'system-admin']) {
+  for (const role of ['unit-admin', 'department-admin', 'system-admin']) {
     await page.evaluate(role => localStorage.setItem('medresearch_demo_role', role), role);
     await page.goto(base + 'admin-demo/index.html'); await page.waitForLoadState('networkidle');
     assert.equal(await page.locator('.admin-nav a[href="index.html#system-demo"]').count(), role === 'system-admin' ? 1 : 0);
-    assert.equal(await page.locator('#department-demo').isVisible(), role === 'department-admin');
-    assert.equal(await page.locator('.admin-nav a[href="unit-profile.html"]').count(), role === 'system-admin' ? 0 : 1);
+    assert.equal(await page.locator('#department-demo').isVisible(), ['department-admin', 'system-admin'].includes(role));
+    assert.equal(await page.locator('.admin-nav a[href="unit-profile.html"]').count(), 1);
+    assert.equal(await page.locator('#role-switcher option').count(), 3);
+    assert.equal(await page.locator('#role-switcher option[value="unit-editor"]').count(), 0);
   }
   await page.evaluate(() => window.MedData.resetDemo());
   await page.goto(base + 'admin-demo/unit-profile.html'); await page.waitForLoadState('networkidle');
@@ -295,7 +297,7 @@ try {
       await page.screenshot({ path: join(screenshotDir, 'mobile-directory.png') });
     }
   }
-  console.log('PASS news image paths and four role entry-point checks; screenshots:', screenshotDir);
+  console.log('PASS news image paths and three role entry-point checks; screenshots:', screenshotDir);
   assert.deepEqual(errors, []);
   console.log('PASS blank/no results, lightbox Enter/Space/Escape/focus return, mobile menu Tab/Escape, AI nested search link, browser errors = 0');
 } finally {

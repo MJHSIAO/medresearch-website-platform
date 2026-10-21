@@ -3,10 +3,9 @@
 
   const D = window.MedData;
   const roles = {
-    'unit-editor': { label: '人工智慧中心編輯者', ownUnit: true, publish: false, allUnits: false, department: false, system: false },
     'unit-admin': { label: '人工智慧中心管理員', ownUnit: true, publish: true, allUnits: false, department: false, system: false },
     'department-admin': { label: '醫學研究部總管理員', ownUnit: true, publish: true, allUnits: true, department: true, system: false },
-    'system-admin': { label: '系統管理員', ownUnit: false, publish: false, allUnits: true, department: false, system: true }
+    'system-admin': { label: '系統管理員', ownUnit: true, publish: true, allUnits: true, department: true, system: true }
   };
 
   const navItems = [
@@ -20,8 +19,8 @@
     { href: 'index.html#system-demo', label: '版型與系統設定', permission: 'system' }
   ];
 
-  function getRoleId() { return localStorage.getItem(D.keys.role) || 'unit-editor'; }
-  function getRole() { return roles[getRoleId()] || roles['unit-editor']; }
+  function getRoleId() { const id = localStorage.getItem(D.keys.role); return Object.hasOwn(roles, id) ? id : 'unit-admin'; }
+  function getRole() { return roles[getRoleId()] || roles['unit-admin']; }
   function allowed(permission) {
     const role = getRole();
     if (permission === 'any') return true;
@@ -36,16 +35,16 @@
     const sidebar = document.getElementById('admin-sidebar');
     if (!header || !sidebar) return;
     const current = location.pathname.split('/').pop() || 'index.html';
-    header.innerHTML = `<div class="admin-topbar"><div class="container admin-topbar-row"><a class="admin-brand" href="index.html">醫學研究部｜內容管理 Demo</a><div class="button-row"><span class="admin-demo-label">此為 UI Demo，不代表正式權限驗證</span><button class="button secondary admin-mobile-toggle" id="admin-menu-toggle" type="button" aria-expanded="false" aria-controls="admin-sidebar">管理選單</button></div></div></div>`;
-    sidebar.innerHTML = `<div class="role-box"><label for="role-switcher">示意角色切換</label><select id="role-switcher">${Object.entries(roles).map(([id, role]) => `<option value="${id}"${id === getRoleId() ? ' selected' : ''}>${role.label}</option>`).join('')}</select><small>切換只改變畫面示意，不是正式授權。</small></div><nav class="admin-nav" aria-label="後台功能"><ul>${navItems.filter((item) => allowed(item.permission)).map((item) => `<li><a href="${item.href}"${current === item.href.split('?')[0] ? ' aria-current="page"' : ''}${item.external ? ' target="_blank" rel="noopener"' : ''}>${item.label}</a></li>`).join('')}</ul></nav><p><button class="button ghost" id="reset-demo" type="button">重設示意資料</button></p>`;
+    header.innerHTML = `<div class="admin-topbar"><div class="container admin-topbar-row"><a class="admin-brand" href="index.html">醫學研究部｜內容管理</a><div class="button-row"><span class="admin-demo-label">管理功能建置中 · 尚未啟用正式授權</span><button class="button secondary admin-mobile-toggle" id="admin-menu-toggle" type="button" aria-expanded="false" aria-controls="admin-sidebar">管理選單</button></div></div></div>`;
+    sidebar.innerHTML = `<div class="role-box"><label for="role-switcher">功能視角預覽</label><select id="role-switcher">${Object.entries(roles).map(([id, role]) => `<option value="${id}"${id === getRoleId() ? ' selected' : ''}>${role.label}</option>`).join('')}</select><small>此預覽不會授予帳號權限；正式角色將由伺服器決定。</small></div><nav class="admin-nav" aria-label="後台功能"><ul>${navItems.filter((item) => allowed(item.permission)).map((item) => `<li><a href="${item.href}"${current === item.href.split('?')[0] ? ' aria-current="page"' : ''}${item.external ? ' target="_blank" rel="noopener"' : ''}>${item.label}</a></li>`).join('')}</ul></nav><p><button class="button ghost" id="reset-demo" type="button">清除本機預覽資料</button></p>`;
     const switcher = document.getElementById('role-switcher');
     switcher.addEventListener('change', () => {
       localStorage.setItem(D.keys.role, switcher.value);
-      D.addAudit(`切換示意角色為「${roles[switcher.value].label}」`);
+      D.addAudit(`切換預覽角色為「${roles[switcher.value].label}」`);
       location.reload();
     });
     document.getElementById('reset-demo').addEventListener('click', () => {
-      if (window.confirm('確定要清除所有瀏覽器內的 Demo 修改嗎？')) {
+      if (window.confirm('確定要清除此瀏覽器的預覽修改嗎？不會變更伺服器內容。')) {
         D.resetDemo();
         location.href = 'index.html';
       }
@@ -61,7 +60,7 @@
 
   function permissionBanner() {
     const target = document.getElementById('permission-note');
-    if (target) target.innerHTML = `<strong>目前角色：${D.escapeHTML(getRole().label)}</strong><br>${getRole().allUnits ? '可查看全部單位範圍。' : '管理範圍僅限人工智慧中心。'}正式系統必須由後端驗證權限。`;
+    if (target) target.innerHTML = `<strong>目前預覽角色：${D.escapeHTML(getRole().label)}</strong><br>${getRole().allUnits ? '可查看全部單位範圍。' : '管理範圍僅限人工智慧中心。'}目前尚未啟用後端授權，這不是您的實際帳號權限。`;
   }
 
   async function renderDashboard() {
@@ -73,28 +72,28 @@
     if (departmentDemo) departmentDemo.hidden = !role.department;
     if (systemDemo) systemDemo.hidden = !role.system;
     const contentActions = [
-      ['新增最新消息', 'news-edit.html', '建立草稿或送出確認'],
+      ['新增最新消息', 'news-edit.html', '建立草稿與預覽發布結果'],
       ['管理最新消息', 'news-list.html', '查找與管理消息狀態'],
       ['修改單位介紹', 'unit-profile.html', '同步更新單位公開資訊'],
-      ['圖片與附件', 'media.html', '瀏覽器端預覽示意'],
+      ['圖片與附件', 'media.html', '本機預覽，尚未啟用上傳'],
       ['修改服務項目', 'unit-profile.html#services', '維護單位服務內容'],
       ['管理成員', 'unit-profile.html#members', '維護主管及成員資料'],
       ['修改聯絡資訊', 'unit-profile.html#contact', '維護公開聯絡窗口'],
       ['預覽單位網站', '../ai-center/index.html', '檢視目前資料呈現']
     ];
     const systemActions = [
-      ['版型管理', '#system-demo', '系統管理員示意入口'],
-      ['帳號及角色', '#system-demo', '正式階段才會實作'],
-      ['系統設定', '#system-demo', '正式階段才會實作'],
-      ['操作紀錄', 'audit-log.html', '查看全站示意紀錄']
+      ['版型管理', '#system-demo', '尚未啟用'],
+      ['帳號及角色', '#system-demo', '尚未啟用'],
+      ['系統設定', '#system-demo', '尚未啟用'],
+      ['操作紀錄', 'audit-log.html', '查看本機全站預覽紀錄']
     ];
     const departmentActions = [
-      ['管理醫研部首頁', '#department-demo', '推薦內容與首頁設定示意'],
-      ['調整單位排序', '#department-demo', '結構性欄位示意'],
+      ['管理醫研部首頁', '#department-demo', '首頁設定尚未啟用'],
+      ['調整單位排序', '#department-demo', '排序設定尚未啟用'],
       ['推薦消息至主站', 'news-list.html', '檢視全站消息'],
-      ['全站操作紀錄', 'audit-log.html', '查看所有示意紀錄']
+      ['全站操作紀錄', 'audit-log.html', '查看本機全站預覽紀錄']
     ];
-    const set = role.system ? systemActions : (role.department ? [...contentActions.slice(0, 4), ...departmentActions] : contentActions);
+    const set = role.system ? [...contentActions, ...departmentActions, ...systemActions] : (role.department ? [...contentActions, ...departmentActions] : contentActions);
     actions.innerHTML = set.map(([title, href, description]) => `<article class="card admin-action interactive"><h2><a href="${href}">${title}</a></h2><p>${description}</p></article>`).join('');
     const scope = document.getElementById('unit-scope');
     if (scope) {
@@ -167,7 +166,7 @@
     if (existing) {
       const values = { title: existing.title, category: existing.category, summary: existing.summary, content: existing.content.join('\n\n'), cover_alt: existing.cover_alt, published_at: dateInput(existing.published_at), event_date: dateInput(existing.event_date), expires_at: dateInput(existing.expires_at), visibility: existing.visibility, status: existing.status };
       Object.entries(values).forEach(([name, value]) => { if (form.elements[name]) form.elements[name].value = value || ''; });
-      form.elements.owner_unit.value = existing.owner_unit_id === 'medresearch' ? '醫學研究部（由登入身分帶入）' : '人工智慧中心（由登入身分帶入）';
+      form.elements.owner_unit.value = existing.owner_unit_id === 'medresearch' ? '醫學研究部（本機預覽範圍）' : '人工智慧中心（本機預覽範圍）';
     }
     document.querySelector('[data-publish-button]').hidden = !getRole().publish;
     form.addEventListener('click', (event) => {
@@ -176,7 +175,7 @@
       event.preventDefault();
       const action = button.dataset.saveAction;
       if (action === 'cancel') { location.href = 'news-list.html'; return; }
-      if (action === 'preview') { showStatus('news-save-status', '預覽示意：請先儲存草稿，再從消息列表開啟。'); return; }
+      if (action === 'preview') { showStatus('news-save-status', '預覽：請先儲存草稿，再從消息列表開啟。'); return; }
       const required = ['title', 'summary', 'content'];
       const invalid = required.filter((name) => !form.elements[name].value.trim());
       form.querySelectorAll('[aria-invalid="true"]').forEach((control) => control.removeAttribute('aria-invalid'));
@@ -186,13 +185,13 @@
         form.elements[invalid[0]].focus();
         return;
       }
-      let status = action === 'publish' && getRole().publish ? 'published' : action === 'review' ? 'pending_review' : 'draft';
+      const status = action === 'publish' && getRole().publish ? 'published' : 'draft';
       const now = new Date().toISOString();
       const ownerId = existing?.owner_unit_id || 'ai-center';
       const item = { ...(existing || {}), id: existing?.id || `demo-news-${Date.now()}`, owner_unit_id: ownerId, related_unit_ids: existing?.related_unit_ids || [], category: form.elements.category.value, title: form.elements.title.value.trim(), summary: form.elements.summary.value.trim(), content: form.elements.content.value.split(/\n\s*\n/).filter(Boolean), cover_image: '', cover_alt: form.elements.cover_alt.value.trim() || '消息封面示意圖', attachments: existing?.attachments || [], visibility: form.elements.visibility.value, status, published_at: status === 'published' ? (form.elements.published_at.value || now) : (existing?.published_at || ''), event_date: form.elements.event_date.value, expires_at: form.elements.expires_at.value, created_at: existing?.created_at || now, updated_at: now, created_by: existing?.created_by || getRole().label, updated_by: getRole().label, featured: existing?.featured || false };
       D.saveNews(item);
       form.elements.status.value = status;
-      showStatus('news-save-status', `已${status === 'published' ? '發布' : status === 'pending_review' ? '送出確認' : '儲存草稿'}；資料保留於此瀏覽器的 localStorage。`);
+      showStatus('news-save-status', `已儲存${status === 'published' ? '發布預覽' : '草稿'}於此瀏覽器；尚未寫入伺服器或正式發布。`);
     });
   }
 
@@ -205,7 +204,7 @@
       const preview = document.getElementById('media-preview');
       if (!file) { preview.hidden = true; return; }
       const max = 5 * 1024 * 1024;
-      if (file.size > max) { showStatus('media-status', '檔案超過 5 MB 示意限制，尚未上傳。', true); input.value = ''; return; }
+      if (file.size > max) { showStatus('media-status', '檔案超過 5 MB 預覽限制，尚未上傳。', true); input.value = ''; return; }
       preview.hidden = false;
       preview.querySelector('[data-file-name]').textContent = file.name;
       preview.querySelector('[data-file-meta]').textContent = `${file.type || '未知格式'} · ${(file.size / 1024).toFixed(1)} KB`;
@@ -226,8 +225,8 @@
     const entries = D.readLocal(D.keys.audit, []);
     const role = getRole();
     const visible = role.allUnits ? entries : entries.filter((entry) => ['unit-editor', 'unit-admin'].includes(entry.role));
-    body.innerHTML = visible.length ? visible.map((entry) => `<tr><td>${D.formatDate(entry.time)} ${new Date(entry.time).toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'})}</td><td>${D.escapeHTML(roles[entry.role]?.label || entry.role)}</td><td>${D.escapeHTML(entry.action)}</td><td>localStorage Demo</td></tr>`).join('') : '<tr><td colspan="4">目前沒有示意操作紀錄。</td></tr>';
-    document.getElementById('audit-scope').textContent = role.allUnits ? '顯示全站示意紀錄' : '僅顯示自己的單位示意紀錄';
+    body.innerHTML = visible.length ? visible.map((entry) => `<tr><td>${D.formatDate(entry.time)} ${new Date(entry.time).toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'})}</td><td>${D.escapeHTML(roles[entry.role]?.label || entry.role)}</td><td>${D.escapeHTML(entry.action)}</td><td>本機瀏覽器暫存</td></tr>`).join('') : '<tr><td colspan="4">目前沒有本機預覽操作紀錄。</td></tr>';
+    document.getElementById('audit-scope').textContent = role.allUnits ? '顯示本機全站預覽紀錄' : '僅顯示本機單位預覽紀錄';
   }
 
   function lines(value) { return value.split('\n').map((item) => item.trim()).filter(Boolean); }
@@ -243,7 +242,7 @@
     } catch (error) {
       console.error(error);
       const main = document.querySelector('.admin-main-inner');
-      if (main) main.insertAdjacentHTML('afterbegin', '<div class="status-message error" role="alert">Demo 資料暫時無法載入，請重新整理。</div>');
+      if (main) main.insertAdjacentHTML('afterbegin', '<div class="status-message error" role="alert">資料暫時無法載入，請重新整理。</div>');
     }
   });
 })();

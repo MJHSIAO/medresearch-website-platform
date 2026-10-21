@@ -167,3 +167,16 @@ OIDC_AUDIENCE 非空時改驗證 JWT Access Token，不呼叫 UserInfo；未設�
 - check_oauth_login、check_backend、check_docker_deployment 全部通過，驗證既有拒絕情境的新代碼與敏感值不出現在日誌。測試初次發現 Authlib 將未來 iat 歸類為 not_yet_valid，調整預期；非 JWT 格式加入明確前置檢查後重跑通過。
 - 完整網站檢查通過：JSON／JS／CSS／資源與連結、15 頁 × 5 寬度無溢出、公開篩選、Demo 同步、四角色入口與鍵盤操作；瀏覽器錯誤為 0。
 - git diff --check 通過，依賴仍有既有棄用提示。尚未部署或以院方帳號驗證；需更新 backend/auth.py 並從新的登入流程取得細分代碼。
+
+## 2026-10-16 正式版起始：介面名稱與角色規則
+
+依使用者要求移除對外標題、導覽與提示中的 Demo 品牌文字。未核定的內容仍保留示意／待確認標記；原路徑、儲存鍵及歷史紀錄保留。取消單位編輯者，系統管理員可使用全部內容與系統功能；目前只更新功能預覽，尚未完成後端授權。
+
+實際執行結果：
+
+- 靜態檢查通過：全部 JSON 解析、JavaScript 語法、CSS 括號、HTML 本機資源與 Markdown 連結。首次在受限環境因 Node 子程序 EPERM 未能執行，獲執行環境允許後重跑通過。
+- 完整 check-navigation-search.mjs 以 /medresearch/ 前綴通過：15 頁 × 320／375／768／1024／1440px 共 75 組無整頁水平溢出、公開內容排除、單位覆寫同步、三種角色入口與主要鍵盤操作；瀏覽器錯誤為 0。測試輸出當時仍沿用 four role 文案，已改為 three，實際迴圈為三種角色。
+- 本機瀏覽器另外確認系統管理員包含內容、醫研部與系統入口，消息表單顯示發布預覽且沒有送出確認按鈕；兩個聯絡頁的未開放表單均不能輸入。
+- 靜態 build 與 git diff --check 通過（僅既有換行格式提示）。
+
+未修改 backend、data 或原 ai-center-website-demo，未執行院方真實登入、遠端部署、commit 或 push。未宣稱正式授權、上傳、寄信或持久化內容管理已完成。本機官網預覽由 dist/client 提供，不能用來測試院方登入。

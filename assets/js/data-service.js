@@ -24,7 +24,7 @@
       const value = localStorage.getItem(key);
       return value ? JSON.parse(value) : fallback;
     } catch (error) {
-      console.warn('Demo 資料讀取失敗，改用預設資料。', error);
+      console.warn('本機預覽資料讀取失敗，改用預設資料。', error);
       return fallback;
     }
   }
@@ -64,7 +64,7 @@
 
   function addAudit(action) {
     const entries = readLocal(keys.audit, []);
-    const role = localStorage.getItem(keys.role) || 'unit-editor';
+    const role = localStorage.getItem(keys.role) || 'unit-admin';
     entries.unshift({ id: `audit-${Date.now()}`, action, role, time: new Date().toISOString() });
     writeLocal(keys.audit, entries.slice(0, 50));
   }
