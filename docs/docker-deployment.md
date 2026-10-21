@@ -185,3 +185,9 @@ node scripts/check-navigation-search.mjs --static-only
 先依代碼定位，再確認院方契約；不因缺少 sub 就改信任未驗證的 Token 或猜測員工欄位。瀏覽器仍維持原本的通用錯誤訊息，callback 不做失敗轉址。
 
 本文件的 Server 指令是部署與驗證步驟，不代表已在遠端執行。實際本機檢查結果記錄於 `docs/phase-1-acceptance.md`。目前無遠端 server 連線與完整 Nginx template，遠端 TLS／WAF、容器 Build／啟動及院內實際 OAuth2 登入仍需部署後驗證。
+
+## 2026-10-21 登入後授權更新
+
+已加入登入後院內專區、本人身分確認與系統管理員環境名單。登入成功改至 internal；admin 與舊 admin-demo 管理路徑由後端驗證 Session，非管理員回傳 403。後端不再提供舊角色切換編輯頁。這取代前述「後端固定 internal_user／管理頁尚未保護」的階段限制；內容寫入與單位授權管理仍未開放。
+
+[設定與驗證步驟](login-authorization.md)。

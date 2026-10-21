@@ -186,7 +186,7 @@ def check_flow(case: str, jwt_mode: bool = False) -> None:
             me = client.get("/medresearch/api/me").json()
             if case in {"success", "aud_list"}:
                 assert callback.status_code == 303
-                assert callback.headers["location"] == BASE + "/"
+                assert callback.headers["location"] == BASE + "/internal"
                 assert me["authenticated"] is True
                 assert me["user"]["id"] == "test-subject"
                 assert me["user"]["role"] == "internal_user"

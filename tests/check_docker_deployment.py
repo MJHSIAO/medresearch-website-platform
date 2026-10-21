@@ -33,7 +33,7 @@ async def mock_complete_login(request):
 def main():
     assert settings.cookie_path == "/medresearch"
     with TestClient(app, base_url="https://aics.femh.org.tw", root_path="/medresearch", follow_redirects=False) as client:
-        for path in ("/", "/ai-center/", "/admin-demo/", "/data/units.json", "/assets/js/main.js"):
+        for path in ("/", "/ai-center/", "/data/units.json", "/assets/js/main.js"):
             assert client.get(f"/medresearch{path}").status_code == 200, path
         assert client.get("/medresearch/healthz").json() == {"status": "ok"}
         anonymous = client.get("/medresearch/api/me")
@@ -41,7 +41,7 @@ def main():
         assert anonymous.headers["cache-control"] == "no-store"
         for path in ("/.env", "/.env.docker", "/backend/config.py", "/.git/config", "/Dockerfile"):
             assert client.get(f"/medresearch{path}").status_code == 404, path
-        for directory in ("ai-center", "admin-demo"):
+        for directory in ("ai-center",):
             redirect = client.get(f"/medresearch/{directory}")
             assert redirect.status_code == 307
             assert redirect.headers["location"] == f"https://aics.femh.org.tw/medresearch/{directory}/"
@@ -60,7 +60,7 @@ def main():
         with patch.object(oidc, "complete_login", mock_complete_login):
             callback = client.get("/medresearch/auth/callback")
         assert callback.status_code == 303
-        assert callback.headers["location"] == "https://aics.femh.org.tw/medresearch/"
+        assert callback.headers["location"] == "https://aics.femh.org.tw/medresearch/internal"
         assert callback.headers["cache-control"] == "no-store"
         cookies = callback.headers.get_list("set-cookie")
         assert len(cookies) == 2

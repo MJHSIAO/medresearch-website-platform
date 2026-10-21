@@ -88,7 +88,7 @@ try {
     const logout = page.locator('.auth-navigation a').last();
     await page.waitForFunction(() => document.querySelector('.auth-navigation')?.textContent.includes('登出'));
     assert.equal(await logout.evaluate(el => el.href), new URL('auth/logout', base).href);
-    assert.equal(await page.locator('.auth-navigation a').first().evaluate(el => el.href), new URL('admin-demo/', base).href);
+    assert.equal(await page.locator('.auth-navigation a').first().evaluate(el => el.href), new URL('internal', base).href);
   }
   await context.unroute(`**${prefix}api/me`);
   await context.clearCookies();

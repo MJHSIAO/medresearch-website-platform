@@ -40,9 +40,9 @@
       name.className = 'auth-user-name';
       name.textContent = result.user.name || result.user.id || '院內使用者';
       const internal = document.createElement('a');
-      internal.href = assetUrl('admin-demo/');
+      internal.href = assetUrl('internal');
       internal.textContent = '院內專區';
-      internal.title = '管理功能建置中，尚未啟用正式內容儲存與授權';
+      internal.title = '查看登入身分與可用的管理入口';
       const logout = document.createElement('a');
       logout.href = assetUrl('auth/logout');
       logout.textContent = '登出';

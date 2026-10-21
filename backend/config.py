@@ -29,6 +29,8 @@ class Settings:
     app_env: str
     oidc_debug_claims: bool
     oidc_audience: str | None = None
+    admin_identity_claim: str = ""
+    system_admin_ids: tuple[str, ...] = ()
 
     @property
     def is_production(self) -> bool:
@@ -72,9 +74,13 @@ def get_settings() -> Settings:
         app_base_url=required["APP_BASE_URL"].rstrip("/"),
         app_env=app_env,
         oidc_debug_claims=_as_bool(os.getenv("OIDC_DEBUG_CLAIMS")),
+        admin_identity_claim=os.getenv("ADMIN_IDENTITY_CLAIM", "").strip(),
+        system_admin_ids=tuple(v.strip() for v in os.getenv("SYSTEM_ADMIN_IDS", "").split(",") if v.strip()),
         oidc_audience=os.getenv("OIDC_AUDIENCE", "").strip() or None,
     )
 
+    if settings.system_admin_ids and not settings.admin_identity_claim:
+        raise ConfigurationError("SYSTEM_ADMIN_IDS requires ADMIN_IDENTITY_CLAIM")
     if settings.is_production and not settings.secure_cookie:
         raise ConfigurationError("production 的 APP_BASE_URL 必須使用 HTTPS，以啟用 Secure Cookie。")
     return settings

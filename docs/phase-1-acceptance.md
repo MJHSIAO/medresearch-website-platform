@@ -180,3 +180,13 @@ OIDC_AUDIENCE 非空時改驗證 JWT Access Token，不呼叫 UserInfo；未設�
 - 靜態 build 與 git diff --check 通過（僅既有換行格式提示）。
 
 未修改 backend、data 或原 ai-center-website-demo，未執行院方真實登入、遠端部署、commit 或 push。未宣稱正式授權、上傳、寄信或持久化內容管理已完成。本機官網預覽由 dist/client 提供，不能用來測試院方登入。
+
+## 2026-10-21 登入後身分確認與後端管理入口
+
+新增 /internal、/admin 與 SYSTEM_ADMIN_IDS／ADMIN_IDENTITY_CLAIM 設定。callback 成功改至院內專區；所有舊 admin-demo 路徑由後端驗證並提供新管理入口，不再供應 localStorage 編輯頁。未設定欄位及名單時不授予任何管理權限。
+
+實際驗證：check_backend、check_oauth_login、check_docker_deployment、check_portal 四組離線測試通過。包含真實測試 JWT 驗簽、原 state 防重放、新角色精確字串比對、假前端角色無效、匿名轉登入、一般人員 403、系統管理員 200、撤除設定、登出、callback Session 輪替、HTML 跳脫、Token 值不顯示與部署前綴。
+
+完整 check-navigation-search.mjs（/medresearch/）通過：JSON、JS、資源／文件連結、15 頁 × 5 寬度、公開內容排除、單位本機預覽同步、既有三角色介面與鍵盤互動；瀏覽器錯誤為 0。新伺服器產生頁使用虛構身分另外檢查 320／1440px 無水平溢出及 Tab 可到導覽；這是畫面驗證，不代表院方登入實測。git diff --check 通過。
+
+測試沿用暫存依賴，仍有既有 Authlib／Starlette 棄用提示。未連線院方、未啟動遠端服務，未將真實員編寫入程式／環境範例或公開資料。正式內容保存、單位角色分派與授權管理表單尚未實作；本版只啟用系統管理員名單及管理頁邊界。

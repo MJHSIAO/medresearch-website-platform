@@ -20,3 +20,11 @@ def initial_access_profile(claims: dict[str, Any]) -> dict[str, str | None]:
         "unit_id": None,
         "role": "internal_user",
     }
+
+
+def resolved_role(claims: dict[str, Any], settings) -> str:
+    """Match only an explicitly configured verified string claim."""
+    value = claims.get(settings.admin_identity_claim) if settings.admin_identity_claim else None
+    if isinstance(value, str) and value and value in settings.system_admin_ids:
+        return "system_admin"
+    return "internal_user"

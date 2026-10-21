@@ -9,12 +9,14 @@ from typing import Any
 import httpx
 from authlib.integrations.base_client.errors import OAuthError
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
 from .auth import OIDCConfigurationError, OIDCManager
 from .config import get_settings
+from .permissions import resolved_role
+from .portal import portal_html
 
 
 LOGGER = logging.getLogger(__name__)
@@ -85,7 +87,7 @@ async def add_security_headers(request: Request, call_next):
     root_path = request.scope.get("root_path", "").rstrip("/")
     if root_path and path.startswith(f"{root_path}/"):
         path = path[len(root_path):]
-    if path.startswith(("/api/", "/auth/")) or path == "/login.html":
+    if path.startswith(("/api/", "/auth/", "/internal", "/admin")) or path == "/login.html":
         response.headers["Cache-Control"] = "no-store"
     return response
 
@@ -119,9 +121,10 @@ async def auth_callback(request: Request):
         # A callback error is an integration failure, not a password error.
         raise HTTPException(status_code=400, detail="本站登入串接驗證失敗，請從院內人員登入重新開始。") from error
 
+    sessions.delete(request.session.get("session_id"))
     request.session.clear()
     request.session["session_id"] = sessions.create(user, claims)
-    response = RedirectResponse(url=f"{settings.app_base_url}/", status_code=303)
+    response = RedirectResponse(url=f"{settings.app_base_url}/internal", status_code=303)
     # Non-sensitive UI hint only. Authorization always uses the HttpOnly session.
     response.set_cookie(
         "medresearch_auth",
@@ -142,6 +145,7 @@ async def api_me(request: Request):
         return JSONResponse({"authenticated": False})
 
     user = dict(record["user"])
+    user["role"] = resolved_role(record["claims"], settings)
     user["claims"] = (
         record["claims"]
         if settings.oidc_debug_claims and not settings.is_production
@@ -161,6 +165,25 @@ async def auth_logout(request: Request):
         secure=settings.secure_cookie, samesite="lax",
     )
     return response
+
+
+async def protected_portal(request: Request, admin: bool = False):
+    record = sessions.get(request.session.get("session_id"))
+    if not record:
+        return RedirectResponse(f"{settings.app_base_url}/auth/login", status_code=303)
+    role = resolved_role(record["claims"], settings)
+    denied = admin and role != "system_admin"
+    return HTMLResponse(portal_html(record, role, settings, admin, denied), status_code=403 if denied else 200)
+
+
+@app.api_route("/internal", methods=["GET", "HEAD"], include_in_schema=False)
+async def internal_portal(request: Request):
+    return await protected_portal(request)
+
+
+@app.api_route("/admin", methods=["GET", "HEAD"], include_in_schema=False)
+async def admin_portal(request: Request):
+    return await protected_portal(request, admin=True)
 
 
 @app.get("/healthz", include_in_schema=False)
@@ -192,5 +215,10 @@ async def website_page(page_name: str):
 # expose .env, .git, backend source, or other non-public files.
 app.mount("/assets", StaticFiles(directory=PROJECT_ROOT / "assets"), name="assets")
 app.mount("/data", StaticFiles(directory=PROJECT_ROOT / "data"), name="data")
-app.mount("/admin-demo", StaticFiles(directory=PROJECT_ROOT / "admin-demo", html=True), name="admin-demo")
+# Retire the browser-local role switcher from backend deployment.
+@app.api_route("/admin-demo", methods=["GET", "HEAD"], include_in_schema=False)
+@app.api_route("/admin-demo/{legacy_path:path}", methods=["GET", "HEAD"], include_in_schema=False)
+async def legacy_admin(request: Request, legacy_path: str = ""):
+    return await protected_portal(request, admin=True)
+
 app.mount("/ai-center", StaticFiles(directory=PROJECT_ROOT / "ai-center", html=True), name="ai-center")
