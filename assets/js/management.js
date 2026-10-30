@@ -24,6 +24,49 @@
     if(['news','people'].includes(kind))button('新增'+(kind==='news'?'消息':'成員'),()=>edit(kind,{value:{id:(kind==='news'?'news-':'person-')+crypto.randomUUID(),...(kind==='news'?{title:'',summary:'',category:'',content:[],visibility:'public',status:'draft',attachments:[],cover_image:'',cover_alt:'',published_at:'',expires_at:''}:{name:'',title:'',bio:'',visibility:'public'})},revision:null}));
     for(const entry of result.items){const row=document.createElement('article');row.className='item';row.innerHTML=`<h3>${esc(entry.value.name||entry.value.title||names[kind])}</h3><p>${esc(entry.value.status||'')} ${esc(entry.value.visibility||'')}</p>`;button('編輯',()=>edit(kind,entry),row);workspace.append(row);}
   }
+  async function legacyNews() {
+    if (!window.MedLegacyNews) await new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = new URL('assets/js/legacy-news.js', base);
+      script.onload = resolve;
+      script.onerror = () => reject(Error('無法載入舊消息匯入功能，請重新載入或確認部署。'));
+      document.head.append(script);
+    });
+    // Migration reads existing records only; all new writes use the authenticated API.
+    let raw;
+    try { raw = window.localStorage.getItem('medresearch_demo_news'); }
+    catch { throw Error('瀏覽器禁止讀取舊資料；不影響新版消息保存，請由維運協助取回舊資料。'); }
+    const {items, skipped} = window.MedLegacyNews.parse(raw);
+    const saved = await api('manage/content/news');
+    const existing = new Set(saved.items.map(entry => entry.value.id));
+    const authorized = new Set(session.units.map(unit => unit.id));
+    if (session.profile.role !== 'unit_admin') authorized.add('medresearch');
+    workspace.innerHTML = '<h2>匯入舊消息到伺服器</h2><p>這裡只讀取此瀏覽器原有的舊消息。請先預覽，再匯入為伺服器草稿；確認內容後可於「消息與發布」發布。匯入不會刪除舊資料，也不會自動覆蓋已有消息。</p>';
+    if (skipped) { const p=document.createElement('p');p.textContent=`有 ${skipped} 筆格式不完整或重複資料未列入，原資料仍保留。`;workspace.append(p); }
+    if (!items.length) { const p=document.createElement('p');p.textContent='這個瀏覽器找不到可匯入的舊消息。請用原本發布時的電腦、瀏覽器及使用者設定檔開啟本管理中心。';workspace.append(p); }
+    for (const item of items) {
+      const row=document.createElement('article');row.className='item';
+      row.innerHTML=`<h3>${esc(item.title)}</h3><p>原消息編號：${esc(item.id)}</p>`;
+      if (existing.has(item.id)) { const p=document.createElement('p');p.textContent='伺服器已有此消息，將保留現有內容。';row.append(p); }
+      else if (item.owner_unit_id && !authorized.has(item.owner_unit_id)) { const p=document.createElement('p');p.textContent='此消息所屬單位不在您的授權範圍，請由系統管理員處理。';row.append(p); }
+      else button('預覽並匯入', () => previewLegacyNews(item), row);
+      workspace.append(row);
+    }
+  }
+  function previewLegacyNews(item) {
+    const preferred = session.units.some(unit => unit.id === item.owner_unit_id) ||
+      (session.profile.role !== 'unit_admin' && item.owner_unit_id === 'medresearch') ? item.owner_unit_id : undefined;
+    workspace.innerHTML=`<h2>匯入舊消息：${esc(item.title)}</h2><p>${esc(item.summary || '')}</p>${item.content.map(p=>`<p>${esc(p)}</p>`).join('')}<p>匯入後保留原消息編號及原發布日期，先存為草稿；圖片與附件請在發布前核對，僅有瀏覽器預覽的檔案需要重新上傳。</p><form id="legacy-import"><label>所屬單位<select name="unit">${unitOptions(preferred)}</select></label><button type="submit">匯入為伺服器草稿</button></form>`;
+    const form=document.getElementById('legacy-import');
+    submit(form,async()=>{
+      const result=await api(`manage/content/news/${encodeURIComponent(item.id)}`,'PUT',{
+        value:item, unit:form.elements.unit.value, revision:null
+      });
+      message('舊消息已保存到伺服器，原網址編號保留。請核對內容，再選擇發布。');
+      await edit('news',result);
+    });
+    button('返回舊消息列表',legacyNews);
+  }
   async function edit(kind,entry){
     const v=entry.value; const editable={}; const lists={services:'主要業務（每行一項）',goals:'發展目標（每行一項）',research_fields:'研究領域（每行一項）'};
     const labels={name:'名稱',title:'標題',summary:'摘要',short_description:'簡介',full_description:'完整介紹',purpose:'成立宗旨',bio:'簡介',category:'分類',cover_image:'封面圖片路徑',cover_alt:'圖片替代文字',notice:'網站頂端公告',description:'說明',display_order:'排序',published_at:'發布日期',expires_at:'截止日期',accent:'主色（例如 #125c4b）',width:'版面寬度（1100、1200、1320）'};
@@ -76,6 +119,7 @@
     session=await api('manage');document.getElementById('identity').textContent=`${session.profile.identity} · ${session.label}`;
     const tabs=document.getElementById('tabs');
     for(const kind of session.kinds)button(names[kind],()=>list(kind),tabs);
+    button('匯入舊消息',legacyNews,tabs);
     if(session.profile.role!=='unit_admin')button('人員權限',grants,tabs);
     button('圖片與附件',media,tabs);button('操作紀錄',async()=>{const result=await api('manage/audit');workspace.innerHTML='<h2>操作紀錄</h2>';for(const a of result.items){const p=document.createElement('p');p.textContent=`${a.time} · ${a.actor} · ${a.action} · ${a.kind}/${a.id}`;workspace.append(p);}},tabs);
     await list('units');

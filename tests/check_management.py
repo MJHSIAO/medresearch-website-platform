@@ -91,6 +91,26 @@ def main():
         assert a.get('/api/manage').status_code == 403
         assert a.get(url).status_code == 403
         assert a.get('/api/me').json()['user']['role'] == 'internal_user'
+        # Import preserves the old URL ID, persists on disk and never overwrites on retry.
+        legacy_id = 'demo-news-1234567890000'
+        legacy_payload = {'value': {'title': 'Legacy recovery fixture', 'summary': 'Recovered body',
+                                   'content': ['Original paragraph'], 'status': 'draft', 'visibility': 'public',
+                                   'published_at': '2026-10-01T09:00:00+08:00', 'attachments': []},
+                          'unit': 'ai-center', 'revision': None}
+        assert a.put(f'/api/manage/content/news/{legacy_id}', json=legacy_payload).status_code == 403
+        imported = root.put(f'/api/manage/content/news/{legacy_id}', json=legacy_payload)
+        assert imported.status_code == 200, imported.text
+        from backend.store import Store
+        fresh_store = Store(directory, store.source)
+        recovered = next(i for i in fresh_store.collection(fresh_store.read(), 'news') if i['id'] == legacy_id)
+        assert recovered['content'] == ['Original paragraph'] and recovered['status'] == 'draft'
+        assert recovered['published_at'] == '2026-10-01T09:00:00+08:00'
+        assert legacy_id not in TestClient(app).get('/data/news.json').text
+        assert root.put(f'/api/manage/content/news/{legacy_id}', json=legacy_payload).status_code == 409
+        publish = imported.json(); publish['value']['status'] = 'published'
+        assert root.put(f'/api/manage/content/news/{legacy_id}', json=publish).status_code == 200
+        assert legacy_id in TestClient(app).get('/data/news.json').text
+        assert any(i['value']['id'] == legacy_id for i in dept.get('/api/manage/content/news').json()['items'])
         assert Path(directory,'state.json').exists()
         # Runtime reload preserves grants and content, and bootstrap account cannot be removed.
         from backend.store import Store

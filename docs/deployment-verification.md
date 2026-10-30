@@ -21,7 +21,7 @@ docker compose -p femh-genai-wwservice \
   up -d --build --force-recreate --no-deps medresearch-app
 ```
 
-本次修正版的公開版本端點是 `/medresearch/api/version`，必須回傳 `version: "2026.10.30.4"` 及 `management: "server_authorized"`。任何頁面亦帶有 `X-Medresearch-Version` 回應標頭。`healthz` 成功只表示服務存活，不代表已更新到此版。
+本次修正版的公開版本端點是 `/medresearch/api/version`，必須回傳 `version: "2026.10.30.5"` 及 `management: "server_authorized"`。任何頁面亦帶有 `X-Medresearch-Version` 回應標頭。`healthz` 成功只表示服務存活，不代表已更新到此版。
 
 若版本端點仍為 404，請確認重建的服務、build context、執行映像，以及反向代理是否把整個 `/medresearch/` 指到同一個 `medresearch-app:8000`。不要只複製前端檔案或只重啟舊映像。
 

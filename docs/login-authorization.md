@@ -25,6 +25,6 @@ SYSTEM_ADMIN_IDS=管理者實際回傳的sub值
 
 ## 驗證
 
-`/api/version` 應回傳 `2026.10.30.4`。登入後核對目前角色與可用功能，不再透過網頁展示身分欄位。維運診斷不得輸出完整 Token、Cookie 或 Secret。單程序 Session 與部署限制不變。
+`/api/version` 應回傳 `2026.10.30.5`。登入後核對目前角色與可用功能，不再透過網頁展示身分欄位。維運診斷不得輸出完整 Token、Cookie 或 Secret。單程序 Session 與部署限制不變。
 
 `python -m tests.check_portal` 驗證 sub 名單比對、一般人員拒絕、撤權、診斷區不外露、登出與子路徑。

@@ -14,8 +14,8 @@ def main():
     assert resolved_role({'employee_id': 'TEST001'}, configured) == 'system_admin'
     with patch('backend.main.settings', configured), TestClient(app, follow_redirects=False) as client:
         version = client.get('/api/version')
-        assert version.json() == {'version': '2026.10.30.4', 'management': 'server_authorized'}
-        assert version.headers['x-medresearch-version'] == '2026.10.30.4'
+        assert version.json() == {'version': '2026.10.30.5', 'management': 'server_authorized'}
+        assert version.headers['x-medresearch-version'] == '2026.10.30.5'
         assert version.headers['cache-control'] == 'no-store'
         assert client.get('/assets/js/main.js').headers['cache-control'] == 'no-cache'
         legacy_paths = ('/admin-demo', '/admin-demo/', '/admin-demo/index.html', '/admin-demo/news-edit.html', '/admin-demo/../admin-demo/index.html', '/admin-demo/?role=system-admin', '/admin/')
