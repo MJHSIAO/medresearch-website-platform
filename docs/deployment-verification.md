@@ -21,7 +21,7 @@ docker compose -p femh-genai-wwservice \
   up -d --build --force-recreate --no-deps medresearch-app
 ```
 
-本次修正版的公開版本端點是 `/medresearch/api/version`，必須回傳 `version: "2026.10.30.2"` 及 `management: "server_authorized"`。任何頁面亦帶有 `X-Medresearch-Version` 回應標頭。`healthz` 成功只表示服務存活，不代表已更新到此版。
+本次修正版的公開版本端點是 `/medresearch/api/version`，必須回傳 `version: "2026.10.30.3"` 及 `management: "server_authorized"`。任何頁面亦帶有 `X-Medresearch-Version` 回應標頭。`healthz` 成功只表示服務存活，不代表已更新到此版。
 
 若版本端點仍為 404，請確認重建的服務、build context、執行映像，以及反向代理是否把整個 `/medresearch/` 指到同一個 `medresearch-app:8000`。不要只複製前端檔案或只重啟舊映像。
 
@@ -29,15 +29,13 @@ docker compose -p femh-genai-wwservice \
 
 ## 第一位系統管理員
 
-部署後先登入院方帳號，於 `/medresearch/internal` 確認哪個經驗證欄位是員編。不能假定 `sub` 就是員編，也不以姓名或前端選項授權。
-
-由維運人員於伺服器私有 `.env.docker` 設定：
+院方識別欄位已確認為 `sub`，身分欄位確認表格已移除。維運於伺服器私有 `.env.docker` 設定：
 
 ```dotenv
-ADMIN_IDENTITY_CLAIM=經院方確認的員編欄位名稱
-SYSTEM_ADMIN_IDS=該欄位中管理者的完整識別值
+ADMIN_IDENTITY_CLAIM=sub
+SYSTEM_ADMIN_IDS=管理者實際回傳的sub值
 ```
 
-實際員編只填入正式伺服器，不提交 Git。環境設定完成後，使用上面的 force-recreate 指令重建容器，再重新登入。成功時直接進入管理中心，顯示「系統管理員」，可操作全部單位與人員授權；不需要兼任醫研部總管理員，沒有目前身分切換功能。
+名單採完整、區分大小寫的比對；若 sub 是員編則填員編，若是 UID 則填 UID。真實值只存伺服器，不提交 Git。環境檔修改後沿用上面的 force-recreate 指令，再重新登入。
 
-一般人員只能進入院內專區。前端登入提示 Cookie、localStorage、角色欄位均不能提升權限。每次操作由後端依登入身分重新判定。
+系統管理員登入後直接進管理中心；一般院內人員進 `/internal`。院內專區不再顯示 Token 欄位、候選值或身分診斷資料。詳見 [登入與授權設定](login-authorization.md)。

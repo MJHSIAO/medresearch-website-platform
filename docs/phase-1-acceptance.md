@@ -1,3 +1,11 @@
+# 2026-10-30 身分確認區退役
+
+使用者已確認院方識別欄位為 sub，移除 /internal 的候選欄位、UID 值、claims 名稱及首次設定診斷提示。院內專區、消息、管理入口與拒絕存取行為保留。範例環境檔使用 ADMIN_IDENTITY_CLAIM=sub，真實管理員名單仍僅存伺服器。版本為 2026.10.30.3。
+
+已執行 check_portal（新增 sub 授權與原始欄位不出現在 HTML 的驗證）、check_management、check_docker_deployment 及 static-only，均通過。沒有修改消息資料或正式伺服器設定。
+
+---
+
 # 2026-10-30 正式站舊部署與頁尾修正
 
 - 正式站唯讀查詢：/admin-demo/ 回傳舊內容管理後台 Demo；舊 admin-demo.js 仍有角色切換；/admin 與 /internal 回傳 404。正式站尚未運行 Git 新版後端。

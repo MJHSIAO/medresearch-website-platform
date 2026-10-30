@@ -14,8 +14,8 @@ def main():
     assert resolved_role({'employee_id': 'TEST001'}, configured) == 'system_admin'
     with patch('backend.main.settings', configured), TestClient(app, follow_redirects=False) as client:
         version = client.get('/api/version')
-        assert version.json() == {'version': '2026.10.30.2', 'management': 'server_authorized'}
-        assert version.headers['x-medresearch-version'] == '2026.10.30.2'
+        assert version.json() == {'version': '2026.10.30.3', 'management': 'server_authorized'}
+        assert version.headers['x-medresearch-version'] == '2026.10.30.3'
         assert version.headers['cache-control'] == 'no-store'
         assert client.get('/assets/js/main.js').headers['cache-control'] == 'no-cache'
         for path in ('/internal', '/admin', '/admin-demo/', '/admin-demo/news-edit.html'):
@@ -32,6 +32,9 @@ def main():
         assert response.status_code == 200
         assert '<script>bad()' not in response.text and '&lt;script&gt;' in response.text
         assert 'never-show-this' not in response.text
+        assert '登入身分確認' not in response.text
+        assert '本次回傳欄位名稱' not in response.text
+        assert 'employee_id' not in response.text
         assert client.get('/api/me').json()['user']['role'] == 'internal_user'
         for path in ('/admin', '/admin-demo/', '/admin-demo/news-edit.html', '/admin-demo/../admin-demo/index.html'):
             assert client.get(path).status_code == 403
@@ -64,7 +67,20 @@ def main():
         page = client.get('/internal')
         assert 'https://example.test/medresearch/admin' in page.text
         assert page.headers['cache-control'] == 'no-store'
-    print('PASS portal: anonymous, denied, exact identity, escaping, no token exposure, revocation, logout, prefix')
+    # Confirmed subject-based authorization survives retirement of the diagnostic UI.
+    subject_settings = replace(configured, admin_identity_claim='sub', system_admin_ids=('TEST-SUBJECT-001',))
+    with patch('backend.main.settings', subject_settings), TestClient(app, follow_redirects=False) as client:
+        sid = sessions.create({'name': 'Verified user'}, {'sub': 'TEST-SUBJECT-001', 'private_field': 'hidden-subject-data'})
+        client.cookies.set('medresearch_session', signed_session_cookie(sid))
+        page = client.get('/internal')
+        assert '系統管理員' in page.text and '/admin' in page.text
+        assert 'TEST-SUBJECT-001' not in page.text and 'hidden-subject-data' not in page.text
+        assert '登入身分確認' not in page.text
+        assert client.get('/api/me').json()['user']['role'] == 'system_admin'
+        assert client.get('/admin').status_code == 200
+        sessions.get(sid)['claims']['sub'] = 'OTHER-SUBJECT'
+        assert client.get('/admin').status_code == 403
+    print('PASS portal: anonymous, denied, exact identity, escaping, no claims UI, sub authorization, revocation, logout, prefix')
 
 
 if __name__ == '__main__':
