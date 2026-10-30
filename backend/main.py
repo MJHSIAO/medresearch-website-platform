@@ -20,6 +20,7 @@ from .permissions import resolved_role
 from .portal import portal_html
 from .store import Store
 from .management import install, profile, MANAGERS
+from .version import APP_VERSION
 
 
 LOGGER = logging.getLogger(__name__)
@@ -85,15 +86,19 @@ install(app, sys.modules[__name__], store)
 
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
-    response = await call_next(request)
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    # Mounts may mutate scope/root_path; capture the external route first.
     path = request.url.path
     root_path = request.scope.get("root_path", "").rstrip("/")
     if root_path and path.startswith(f"{root_path}/"):
         path = path[len(root_path):]
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers['X-Medresearch-Version'] = APP_VERSION
     if path.startswith(("/api/", "/auth/", "/internal", "/admin")) or path == "/login.html":
         response.headers["Cache-Control"] = "no-store"
+    elif path.startswith(('/assets/', '/ai-center/')) or path == '/' or path.endswith('.html'):
+        response.headers['Cache-Control'] = 'no-cache'
     return response
 
 
@@ -129,7 +134,9 @@ async def auth_callback(request: Request):
     sessions.delete(request.session.get("session_id"))
     request.session.clear()
     request.session["session_id"] = sessions.create(user, claims)
-    response = RedirectResponse(url=f"{settings.app_base_url}/internal", status_code=303)
+    access = profile(claims, settings, store.read())
+    destination = 'admin' if access['role'] in MANAGERS else 'internal'
+    response = RedirectResponse(url=f"{settings.app_base_url}/{destination}", status_code=303)
     # Non-sensitive UI hint only. Authorization always uses the HttpOnly session.
     response.set_cookie(
         "medresearch_auth",
@@ -198,6 +205,11 @@ async def admin_portal(request: Request):
 @app.get("/healthz", include_in_schema=False)
 async def healthz():
     return {"status": "ok"}
+
+
+@app.get('/api/version', include_in_schema=False)
+async def application_version():
+    return {'version': APP_VERSION, 'management': 'server_authorized'}
 
 
 @app.get("/", include_in_schema=False)

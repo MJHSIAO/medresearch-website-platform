@@ -1,3 +1,13 @@
+# 2026-10-30 正式站舊部署與頁尾修正
+
+- 正式站唯讀查詢：/admin-demo/ 回傳舊內容管理後台 Demo；舊 admin-demo.js 仍有角色切換；/admin 與 /internal 回傳 404。正式站尚未運行 Git 新版後端。
+- 新增 /api/version 與 X-Medresearch-Version：2026.10.30.2；敏感頁 no-store、公開 HTML／腳本 no-cache，避免更新後保留舊資源。
+- 經授權管理員登入成功直接導向 /admin，一般人員仍進 /internal；首頁共用 copyright 改為「© 2026 亞東紀念醫院 醫學研究部 人工智慧中心」。
+- 已通過 check_backend、check_oauth_login、check_portal、check_management、check_docker_deployment 與 static-only。check_portal 驗證版本端點、快取標頭、舊路徑無角色切換或 Demo 標籤。
+- 未修改消息資料；未更新正式伺服器或任命真實帳號。使用者確認需由維運人員操作正式伺服器，部署與首次授權見 deployment-verification.md。
+
+---
+
 # 2026-10-30 移機後上傳前核對
 
 - 已重新執行 check_backend、check_oauth_login、check_portal、check_management、check_docker_deployment 與 static-only，均通過。

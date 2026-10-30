@@ -13,6 +13,11 @@ def main():
     assert resolved_role({'sub': 'TEST001'}, configured) == 'internal_user'
     assert resolved_role({'employee_id': 'TEST001'}, configured) == 'system_admin'
     with patch('backend.main.settings', configured), TestClient(app, follow_redirects=False) as client:
+        version = client.get('/api/version')
+        assert version.json() == {'version': '2026.10.30.2', 'management': 'server_authorized'}
+        assert version.headers['x-medresearch-version'] == '2026.10.30.2'
+        assert version.headers['cache-control'] == 'no-store'
+        assert client.get('/assets/js/main.js').headers['cache-control'] == 'no-cache'
         for path in ('/internal', '/admin', '/admin-demo/', '/admin-demo/news-edit.html'):
             response = client.get(path)
             assert response.status_code == 303
@@ -34,6 +39,8 @@ def main():
         assert client.get('/api/me').json()['user']['role'] == 'system_admin'
         assert client.get('/admin').status_code == 200
         assert 'role-switcher' not in client.get('/admin-demo/').text
+        assert '內容管理 Demo' not in client.get('/admin-demo/').text
+        assert '此為 UI Demo' not in client.get('/admin-demo/').text
         assert client.head('/admin-demo/news-edit.html').status_code == 200
         with patch('backend.main.settings', replace(configured, system_admin_ids=())):
             assert client.get('/admin').status_code == 403
@@ -42,7 +49,7 @@ def main():
             {'sub': 'verified', 'employee_id': 'TEST001'}
         ))):
             callback = client.get('/auth/callback')
-        assert callback.headers['location'].endswith('/internal')
+        assert callback.headers['location'].endswith('/admin')
         assert sessions.get(sid) is None
         assert client.get('/api/me').json()['user']['role'] == 'system_admin'
         assert client.get('/admin').status_code == 200

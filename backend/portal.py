@@ -20,6 +20,8 @@ def portal_html(record, role, settings, admin=False, denied=False):
     link = f'<a class="button" href="{base}/admin">進入管理中心</a>' if role in {'system_admin', 'site_admin', 'unit_admin'} and not admin else ''
     message = ('您的登入已完成，但尚未取得管理授權。請先確認下方身分，再由伺服器管理者設定授權。'
                if denied else '已透過院方登入驗證。以下僅顯示您自己的身分確認資訊。')
+    if not configured:
+        message += ' 伺服器尚未設定員工識別欄位，需由維運人員完成首次管理員設定。'
     management = ''
     return f'''<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
     <title>{title}｜醫學研究部</title><link rel="stylesheet" href="{base}/assets/css/base.css"><link rel="stylesheet" href="{base}/assets/css/components.css">

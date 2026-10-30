@@ -1,0 +1,43 @@
+# 正式站版本與管理員啟用
+
+2026-10-30 實測正式站：`/medresearch/admin-demo/` 仍提供「內容管理後台 Demo」，舊 JavaScript 仍含角色切換；`/medresearch/admin` 與 `/medresearch/internal` 均為 404。Git 上傳不會取代正在執行的舊容器，必須在正式伺服器重新建置並建立本站容器。
+
+## 保留現有資料
+
+更新前備份目前伺服器的 `data/news.json`、新聞圖片與附件，以及整個既有 `DATA_DIRECTORY`／資料卷。若消息直接在伺服器改過，先比對、保留並合併，不能直接用本機舊檔覆蓋，也不要使用 hard reset。備份存於公開靜態目錄之外。
+
+本版不會將正式內容清空或重設為展示資料；新版管理內容保存在持久化資料卷。不可使用 `docker compose down -v`。公開／院內消息仍依發布狀態與範圍過濾。
+
+## 更新正在執行的服務
+
+在正式伺服器的專案目錄先確認目前分支與 Git 更新，目標為 `feature/medresearch-platform-v1`。處理完本機內容差異後，才以 fast-forward 方式取得 Git 新版。不要重建其他服務。
+
+回到現有主 Compose 目錄，沿用原來相同的 project name 及主 Compose（下例 project name 須與現有 stack 相同）：
+
+```bash
+docker compose -p femh-genai-wwservice \
+  -f docker-compose.yml \
+  -f medresearch-website-platform/deployment/docker-compose.medresearch.yml \
+  up -d --build --force-recreate --no-deps medresearch-app
+```
+
+本次修正版的公開版本端點是 `/medresearch/api/version`，必須回傳 `version: "2026.10.30.2"` 及 `management: "server_authorized"`。任何頁面亦帶有 `X-Medresearch-Version` 回應標頭。`healthz` 成功只表示服務存活，不代表已更新到此版。
+
+若版本端點仍為 404，請確認重建的服務、build context、執行映像，以及反向代理是否把整個 `/medresearch/` 指到同一個 `medresearch-app:8000`。不要只複製前端檔案或只重啟舊映像。
+
+未登入開啟 `/medresearch/admin`、`/medresearch/internal` 或舊 `/medresearch/admin-demo/`，都應導向登入，不應直接看到角色選擇或編輯頁。
+
+## 第一位系統管理員
+
+部署後先登入院方帳號，於 `/medresearch/internal` 確認哪個經驗證欄位是員編。不能假定 `sub` 就是員編，也不以姓名或前端選項授權。
+
+由維運人員於伺服器私有 `.env.docker` 設定：
+
+```dotenv
+ADMIN_IDENTITY_CLAIM=經院方確認的員編欄位名稱
+SYSTEM_ADMIN_IDS=該欄位中管理者的完整識別值
+```
+
+實際員編只填入正式伺服器，不提交 Git。環境設定完成後，使用上面的 force-recreate 指令重建容器，再重新登入。成功時直接進入管理中心，顯示「系統管理員」，可操作全部單位與人員授權；不需要兼任醫研部總管理員，沒有目前身分切換功能。
+
+一般人員只能進入院內專區。前端登入提示 Cookie、localStorage、角色欄位均不能提升權限。每次操作由後端依登入身分重新判定。

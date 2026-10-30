@@ -124,7 +124,7 @@
         <div><h2>${D.escapeHTML(site.name)}</h2><p>${D.escapeHTML(site.description)}</p><p><strong>資料說明：</strong>本版依醫學研究部原官網整理，最新規章、表單及聯絡資訊仍以官方來源為準。</p></div>
         <div><h3>網站導覽</h3><ul>${site.navigation.map((item) => `<li><a href="${root()}/${item.href}">${D.escapeHTML(item.label)}</a></li>`).join('')}</ul></div>
         <div><h3>聯絡資訊</h3><ul><li>${D.escapeHTML(site.contact.unit)}</li><li>${D.escapeHTML(site.contact.address)}</li><li>${D.escapeHTML(site.contact.phone)}</li><li><a href="${D.escapeHTML(site.source_url)}" target="_blank" rel="noopener">醫學研究部原官網 ↗</a></li></ul></div>
-      </div><div class="container footer-bottom">© 2026 亞東紀念醫院 醫學研究部網站平台｜資料查核：${D.escapeHTML(site.source_checked_at)}</div></div>`;
+      </div><div class="container footer-bottom">© 2026 亞東紀念醫院 醫學研究部 人工智慧中心</div></div>`;
     }
   }
 
