@@ -31,6 +31,8 @@ services:
     networks:
       - app_internal
     read_only: true
+    volumes:
+      - medresearch-data:/app/var
     tmpfs:
       - /tmp:rw,noexec,nosuid,size=16m
     cap_drop:
@@ -46,3 +48,6 @@ services:
         max-size: 10m
         max-file: "5"
     restart: unless-stopped
+
+volumes:
+  medresearch-data:

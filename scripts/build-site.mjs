@@ -13,7 +13,7 @@ await mkdir(serverRoot, { recursive: true });
 
 const rootEntries = await readdir(projectRoot, { withFileTypes: true });
 for (const entry of rootEntries) {
-  if (entry.isFile() && entry.name.endsWith(".html")) {
+  if (entry.isFile() && (entry.name.endsWith(".html") || entry.name === "theme.css")) {
     await cp(join(projectRoot, entry.name), join(clientRoot, entry.name));
   }
 }

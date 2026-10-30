@@ -1,3 +1,28 @@
+# 2026-10-30 移機後上傳前核對
+
+- 已重新執行 check_backend、check_oauth_login、check_portal、check_management、check_docker_deployment 與 static-only，均通過。
+- 已 fetch 遠端，目標分支仍為 0a68bd8，沒有其他尚未合併的遠端提交。
+- 與遠端 data/news.json 逐筆比對：7 筆公開已發布／歷史消息所有欄位完全相同；僅移除 news-internal-demo 與 news-draft-demo 測試資料。
+- 本次僅提交及推送程式，未登入或更新正式伺服器。若正式伺服器有未回存 Git 的 news.json、圖片或附件，實際部署前須備份並合併；不可用本地舊資料直接覆蓋。
+- 新版私有管理資料由 DATA_DIRECTORY 與持久化資料卷保留。既有伺服器若使用其他儲存位置，應在部署時先確認掛載及移轉，不得清空資料卷。
+
+---
+
+# 2026-10-22 正式管理驗證
+
+已執行並通過：
+- check_backend：既有後端登入端點與安全錯誤回報。
+- check_oauth_login：OAuth2 state、JWT 驗證與離線回呼流程。
+- check_portal：管理頁存取、偽造角色拒絕、撤權、登出與子路徑。
+- check_management：三種管理角色、跨單位限制、人員授權保存與撤銷、最後一位系統管理員保護、CSRF／Origin、版本衝突、歷史回復、公開／院內內容分流、上傳與下載權限、私有檔案無法直接讀取。
+- check_docker_deployment：HTTPS 子路徑、Cookie scope、靜態資源與離線回呼。
+- static-only：JSON 解析、全部 JavaScript 語法、CSS 括號、HTML 資源與 Markdown 本機連結。
+- 瀏覽器隔離環境：新增虛構單位管理員、表單保存發布消息並於公開單位頁顯示；桌機 1440px 與手機 320px 管理頁／AI 主視覺無整頁水平溢出；Enter 可開啟新增授權表單。
+
+尚未驗證：院方真實登入、伺服器實際第一位管理員設定、正式 Docker build／啟動與主 Compose 合併。本機未提供實際主 Compose；不將此項列為通過。隔離 UI 伺服器與虛構帳號未納入正式程式。
+
+---
+
 # 第一版驗收紀錄
 
 本文件分成「可由程式檢查」與「需瀏覽器實測」兩部分。驗證日期及結果只在實際執行後填寫，不能以預期結果代替。

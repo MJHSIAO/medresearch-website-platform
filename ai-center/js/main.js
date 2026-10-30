@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   buildFooter();
   setupMobileNavigation();
   await renderManagedContent();
-  setupDemoContactForm();
+  setupContactForm();
   setupRevealAnimation();
   updateYear();
 });
@@ -96,7 +96,7 @@ function buildFooter() {
             <li><a href="../index.html" target="_blank" rel="noopener">醫學研究部首頁 ↗</a></li>
             <li><a href="../units.html" target="_blank" rel="noopener">醫學研究部隸屬單位 ↗</a></li>
             <li><a href="../search.html" target="_blank" rel="noopener">全站搜尋 ↗</a></li>
-            <li><a href="../admin-demo/">內容管理</a></li>
+            <li><a href="../admin">內容管理</a></li>
           </ul>
         </div>
         <div>
@@ -144,13 +144,7 @@ async function loadPlatformUnit() {
     const units = await response.json();
     const base = units.find((unit) => unit.id === "ai-center");
     if (!base) return null;
-    let override = {};
-    try {
-      override = JSON.parse(localStorage.getItem("medresearch_demo_unit_ai-center") || "{}");
-    } catch (error) {
-      console.warn("人工智慧中心示意覆寫資料格式錯誤，已改用預設資料。", error);
-    }
-    return { ...base, ...override, contact: { ...base.contact, ...(override.contact || {}) } };
+    return base;
   } catch (error) {
     console.warn("目前無法同步醫學研究部單位資料，已使用子站預設內容。", error);
     return null;
@@ -192,8 +186,8 @@ function setText(selector, value) {
   document.querySelectorAll(selector).forEach((element) => { element.textContent = value; });
 }
 
-function setupDemoContactForm() {
-  const form = document.querySelector("[data-demo-form]");
+function setupContactForm() {
+  const form = document.querySelector("[data-contact-form]");
   const message = document.querySelector("[data-form-message]");
   if (!form || !message) return;
   form.addEventListener("submit", (event) => {

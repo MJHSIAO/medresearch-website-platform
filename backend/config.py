@@ -31,6 +31,7 @@ class Settings:
     oidc_audience: str | None = None
     admin_identity_claim: str = ""
     system_admin_ids: tuple[str, ...] = ()
+    data_directory: str = 'var'
 
     @property
     def is_production(self) -> bool:
@@ -75,6 +76,7 @@ def get_settings() -> Settings:
         app_env=app_env,
         oidc_debug_claims=_as_bool(os.getenv("OIDC_DEBUG_CLAIMS")),
         admin_identity_claim=os.getenv("ADMIN_IDENTITY_CLAIM", "").strip(),
+        data_directory=os.getenv('DATA_DIRECTORY', 'var'),
         system_admin_ids=tuple(v.strip() for v in os.getenv("SYSTEM_ADMIN_IDS", "").split(",") if v.strip()),
         oidc_audience=os.getenv("OIDC_AUDIENCE", "").strip() or None,
     )

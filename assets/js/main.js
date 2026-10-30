@@ -239,7 +239,7 @@
     if (serviceGrid) {
       serviceGrid.innerHTML = services.map((service) => `<article class="card service-card interactive"><span class="service-number">${D.escapeHTML(service.icon)} / RESOURCE</span><div><h3><a href="${root()}/${service.href}">${D.escapeHTML(service.title)}</a></h3><p>${D.escapeHTML(service.description)}</p></div></article>`).join('');
     }
-    const homeNews = D.publicNews(rawNews, false).sort((a, b) => String(b.published_at).localeCompare(String(a.published_at))).slice(0, 3);
+    const homeNews = D.publicNews(rawNews, false).sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)) || String(b.published_at).localeCompare(String(a.published_at))).slice(0, 3);
     if (newsGrid) newsGrid.innerHTML = homeNews.map((item) => newsCard(item, units)).join('');
     if (unitGrid) {
       unitGrid.innerHTML = units
@@ -303,3 +303,5 @@
   window.MedUI = { newsCard, renderShell, assetUrl, setupPageNavigation };
 })();
 
+
+(function(){const base=new URL('../../',document.currentScript.src);const link=document.createElement('link');link.rel='stylesheet';link.href=new URL('theme.css',base);document.head.append(link);})();

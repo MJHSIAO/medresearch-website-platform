@@ -126,7 +126,7 @@
       ${coverMarkup}
       <div class="prose">${item.content.map((paragraph) => `<p>${D.escapeHTML(paragraph)}</p>`).join('')}</div>
       ${galleryMarkup}
-      ${item.attachments?.length ? `<section><h2>附件</h2><ul class="attachment-list">${item.attachments.map((file) => `<li><span><strong>${D.escapeHTML(file.name)}</strong><br><small>${D.escapeHTML(file.type)} · ${D.escapeHTML(file.size)}</small></span></li>`).join('')}</ul></section>` : ''}
+      ${item.attachments?.length ? `<section><h2>附件</h2><ul class="attachment-list">${item.attachments.map((file) => `<li><span>${file.href ? `<a href="${root()}/${D.escapeHTML(file.href)}">${D.escapeHTML(file.name)}</a>` : `<strong>${D.escapeHTML(file.name)}</strong>`}<br><small>${D.escapeHTML(file.type)} · ${D.escapeHTML(file.size)}</small></span></li>`).join('')}</ul></section>` : ''}
       <div class="callout"><strong>資料核對</strong><p>本頁為原官網內容摘要，詳細資訊、附件及後續異動請以前往官方來源查閱為準。</p></div>
       <div class="button-row"><a class="button secondary" href="${root()}/news.html">返回列表</a>${item.source_url ? `<a class="button" href="${D.escapeHTML(item.source_url)}" target="_blank" rel="noopener">前往官方來源 ↗</a>` : ''}</div>
     </article><aside><div class="card"><h2>相關消息</h2>${related.length ? related.map((entry) => `<p><a href="${root()}/news-detail.html?id=${encodeURIComponent(entry.id)}">${D.escapeHTML(entry.title)}</a><br><small>${D.formatDate(entry.published_at)}</small></p>`).join('') : '<p>目前沒有相關消息。</p>'}</div></aside>

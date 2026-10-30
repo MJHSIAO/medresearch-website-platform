@@ -1,0 +1,178 @@
+/* AI center keeps its original governance artwork inside the shared unit template. */
+.ai-original-hero{--color-primary-dark:#07483f;--color-primary:#087566;--color-accent:#148c91;color:#123f50;overflow:hidden}
+.ai-hero{background:linear-gradient(rgba(9,87,71,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(9,87,71,.035) 1px,transparent 1px),radial-gradient(circle at 82% 38%,rgba(20,140,145,.14),transparent 28%),linear-gradient(135deg,#fbfdfc,#edf5f2);background-size:46px 46px,46px 46px,auto,auto}
+.ai-hero .hero__grid{display:grid;grid-template-columns:minmax(0,1.16fr) minmax(390px,.84fr);gap:60px;align-items:center;min-height:720px;padding-block:64px;max-width:1320px}
+.ai-hero h1{color:#07483f;font-size:clamp(3rem,6.2vw,5.4rem);letter-spacing:.02em;margin:0 0 12px;line-height:1.2}
+.ai-hero .eyebrow{color:#007b80;letter-spacing:.12em;font-size:.78rem;font-weight:800;margin-bottom:28px}
+.ai-hero .hero__slogan{color:#087566;font-size:clamp(1.35rem,2.8vw,2.05rem);font-weight:850;line-height:1.45;margin:0 0 22px}
+.ai-hero .lead{font-size:1.08rem;line-height:1.8;margin-bottom:30px}
+.ai-hero .button-group{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.ai-hero .button{background:#087566;color:white;border:1px solid #087566}
+.ai-hero .button--outline,.ai-hero .button--text{background:transparent;color:#007b80}
+.ai-hero .button--text{border-color:transparent}
+/* 純 CSS 資料節點圖，不需圖片或外部素材 */
+.governance-map {
+  position: relative;
+  width: min(100%, 480px);
+  aspect-ratio: 1;
+  margin-inline: auto;
+  border: 1px solid rgba(12, 111, 91, 0.2);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 31%, transparent 31.5%),
+    radial-gradient(circle, transparent 0 57%, rgba(10, 111, 91, 0.08) 57.3% 57.8%, transparent 58%),
+    rgba(238, 247, 244, 0.66);
+}
+
+.governance-map::before,
+.governance-map::after {
+  position: absolute;
+  border: 1px solid rgba(15, 122, 110, 0.12);
+  border-radius: 50%;
+  content: "";
+  inset: 13%;
+}
+
+.governance-map::after {
+  inset: 26%;
+}
+
+.governance-map__center {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: 150px;
+  height: 150px;
+  place-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  color: #fff;
+  background: linear-gradient(145deg, var(--color-primary-dark), var(--color-primary));
+  box-shadow: 0 14px 30px rgba(7, 72, 59, 0.18);
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.governance-map__center span,
+.governance-map__center strong {
+  display: block;
+}
+
+.governance-map__center span {
+  color: #a8dbd0;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.governance-map__center strong {
+  margin-top: 4px;
+  font-size: 1.18rem;
+}
+
+.governance-node {
+  position: absolute;
+  z-index: 3;
+  min-width: 112px;
+  padding: 11px 14px;
+  border: 1px solid #c6ded7;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 5px 14px rgba(6, 64, 53, 0.07);
+  text-align: center;
+}
+
+.governance-node small,
+.governance-node strong {
+  display: block;
+}
+
+.governance-node small {
+  color: var(--color-accent);
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.governance-node strong {
+  font-size: 0.95rem;
+}
+
+.governance-node--clinical {
+  top: 4%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.governance-node--admin {
+  top: 48%;
+  right: -1%;
+  transform: translateY(-50%);
+}
+
+.governance-node--research {
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.governance-node--it {
+  top: 48%;
+  left: -2%;
+  transform: translateY(-50%);
+}
+
+.governance-map__line {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 35%;
+  background: linear-gradient(var(--color-accent), rgba(23, 140, 145, 0.1));
+  transform-origin: top;
+}
+
+.governance-map__line--one {
+  transform: rotate(180deg);
+}
+
+.governance-map__line--two {
+  transform: rotate(90deg);
+}
+
+.governance-map__line--three {
+  transform: rotate(0deg);
+}
+
+.governance-map__line--four {
+  transform: rotate(-90deg);
+}
+
+.governance-map__status {
+  position: absolute;
+  right: 4%;
+  bottom: 16%;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid #c7ded8;
+  border-radius: 999px;
+  color: var(--color-primary-dark);
+  background: #fff;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.governance-map__status span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+@media(max-width:1000px){.ai-hero .hero__grid{grid-template-columns:1fr;gap:40px;min-height:0}.governance-map{width:min(90%,440px)}}
+@media(max-width:480px){.ai-hero .hero__grid{padding-block:40px}.ai-hero h1{font-size:2.6rem}.governance-map{width:100%;margin-block:15px}.governance-map__center{width:100px;height:100px}.governance-map__center strong{font-size:1rem}.governance-node{min-width:70px;padding:6px}.governance-node strong{font-size:.8rem}.governance-map__status{bottom:12%;right:0;font-size:.6rem;padding:4px}.governance-node--it{left:0}.governance-node--admin{right:0}.ai-hero .button{width:100%}}

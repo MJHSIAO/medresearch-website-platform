@@ -20,6 +20,7 @@ COPY assets/ ./assets/
 COPY data/ ./data/
 COPY admin-demo/ ./admin-demo/
 COPY ai-center/ ./ai-center/
+RUN mkdir -p /app/var && chown 10001:10001 /app/var
 
 USER 10001:10001
 EXPOSE 8000

@@ -11,7 +11,7 @@ import { execFileSync } from 'node:child_process';
 const root = resolve('.');
 async function walk(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
-  return (await Promise.all(entries.filter(e => !['.git', 'dist', 'node_modules', '.venv', '__pycache__'].includes(e.name)).map(e => e.isDirectory() ? walk(join(dir, e.name)) : join(dir, e.name)))).flat();
+  return (await Promise.all(entries.filter(e => !['.git', 'dist', 'node_modules', '.venv', 'var', '__pycache__'].includes(e.name)).map(e => e.isDirectory() ? walk(join(dir, e.name)) : join(dir, e.name)))).flat();
 }
 const files = await walk(root);
 for (const file of files) {
@@ -24,7 +24,7 @@ for (const file of files) {
       const url = match[1];
       if (/^(?:[a-z]+:|#|\/\/)/i.test(url)) continue;
       const path = decodeURIComponent(url.split(/[?#]/)[0]);
-      if (path) assert.ok(await stat(resolve(dirname(file), path)).catch(() => null), `${file}: ${url}`);
+      if (path && !/(^|\/)(admin|internal|auth\/login)$/.test(path)) assert.ok(await stat(resolve(dirname(file), path)).catch(() => null), `${file}: ${url}`);
     }
   }
   if (file.endsWith('.md')) {
@@ -32,7 +32,7 @@ for (const file of files) {
       const url = match[1];
       if (/^(?:[a-z]+:|#|\/\/)/i.test(url)) continue;
       const path = decodeURIComponent(url.split(/[?#]/)[0]);
-      if (path) assert.ok(await stat(resolve(dirname(file), path)).catch(() => null), `${file}: ${url}`);
+      if (path && !/(^|\/)(admin|internal|auth\/login)$/.test(path)) assert.ok(await stat(resolve(dirname(file), path)).catch(() => null), `${file}: ${url}`);
     }
   }
   if (file.endsWith('.md')) {
@@ -40,7 +40,7 @@ for (const file of files) {
       const url = match[1];
       if (/^(?:[a-z]+:|#|\/\/)/i.test(url)) continue;
       const path = decodeURIComponent(url.split(/[?#]/)[0]);
-      if (path) assert.ok(await stat(resolve(dirname(file), path)).catch(() => null), `${file}: ${url}`);
+      if (path && !/(^|\/)(admin|internal|auth\/login)$/.test(path)) assert.ok(await stat(resolve(dirname(file), path)).catch(() => null), `${file}: ${url}`);
     }
   }
 }

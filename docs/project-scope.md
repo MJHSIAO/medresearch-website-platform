@@ -1,3 +1,5 @@
+> 2026-10-22 更新：以下保留初始架構參考。正式管理已改用後端授權與私有 JSON 保存，舊 localStorage 預覽退役；AI 中心首頁已統一為 unit.html?unit=ai-center，保留原主視覺。現行操作以 [正式管理指南](management-guide.md) 為準。
+
 # 專案範圍
 
 ## 定位

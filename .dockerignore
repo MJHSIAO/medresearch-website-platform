@@ -5,6 +5,7 @@
 !*.html
 !backend/
 !backend/*.py
+!backend/*.html
 !assets/
 !assets/**
 !data/

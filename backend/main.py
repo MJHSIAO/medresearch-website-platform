@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import secrets
 import time
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -17,6 +18,8 @@ from .auth import OIDCConfigurationError, OIDCManager
 from .config import get_settings
 from .permissions import resolved_role
 from .portal import portal_html
+from .store import Store
+from .management import install, profile, MANAGERS
 
 
 LOGGER = logging.getLogger(__name__)
@@ -76,6 +79,8 @@ app.add_middleware(
     https_only=settings.secure_cookie,
     path=settings.cookie_path,
 )
+store = Store(settings.data_directory, PROJECT_ROOT / 'data')
+install(app, sys.modules[__name__], store)
 
 
 @app.middleware("http")
@@ -145,7 +150,9 @@ async def api_me(request: Request):
         return JSONResponse({"authenticated": False})
 
     user = dict(record["user"])
-    user["role"] = resolved_role(record["claims"], settings)
+    access = profile(record['claims'], settings, store.read())
+    user['role'] = access['role']
+    user['units'] = access['units']
     user["claims"] = (
         record["claims"]
         if settings.oidc_debug_claims and not settings.is_production
@@ -171,8 +178,10 @@ async def protected_portal(request: Request, admin: bool = False):
     record = sessions.get(request.session.get("session_id"))
     if not record:
         return RedirectResponse(f"{settings.app_base_url}/auth/login", status_code=303)
-    role = resolved_role(record["claims"], settings)
-    denied = admin and role != "system_admin"
+    role = profile(record['claims'], settings, store.read())['role']
+    denied = admin and role not in MANAGERS
+    if admin and not denied:
+        return FileResponse(PROJECT_ROOT / 'backend' / 'admin.html', headers={'Cache-Control': 'no-store'})
     return HTMLResponse(portal_html(record, role, settings, admin, denied), status_code=403 if denied else 200)
 
 
@@ -214,7 +223,7 @@ async def website_page(page_name: str):
 # Mount only known public directories. Never mount PROJECT_ROOT: doing so could
 # expose .env, .git, backend source, or other non-public files.
 app.mount("/assets", StaticFiles(directory=PROJECT_ROOT / "assets"), name="assets")
-app.mount("/data", StaticFiles(directory=PROJECT_ROOT / "data"), name="data")
+# /data is served exclusively by the filtering API; never expose raw runtime/source JSON.
 # Retire the browser-local role switcher from backend deployment.
 @app.api_route("/admin-demo", methods=["GET", "HEAD"], include_in_schema=False)
 @app.api_route("/admin-demo/{legacy_path:path}", methods=["GET", "HEAD"], include_in_schema=False)

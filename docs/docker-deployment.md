@@ -1,3 +1,11 @@
+# 2026-10-22 持久化管理更新
+
+Compose 已新增 `medresearch-data:/app/var` 資料卷。`DATA_DIRECTORY=/app/var` 保存授權、內容、歷史與附件，容器維持唯讀根檔案系統且資料卷可寫。更新時使用既有部署命令 rebuild/recreate；勿使用 `down -v`，否則會刪除正式管理資料。備份請停止服務後備份整個資料卷，還原亦須停機；新部署先確認 UID 10001 可寫資料卷。
+
+院方員工識別欄位與 SYSTEM_ADMIN_IDS 保持於私有 env。登入後從 `/internal` 進 `/admin` 授權其他人，不再使用角色切換。應用程式仍限制單 worker／單實例。其餘反向代理、登入設定與部署命令見下文。
+
+---
+
 # Docker 部署與既有 Server 整合
 
 ## 部署位置與流量

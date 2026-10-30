@@ -1,12 +1,12 @@
-﻿/**
+/**
  * 人工智慧中心｜公開消息
- * 與醫學研究部共用 data/news.json 及內容管理 Demo 的瀏覽器覆寫資料。
+ * 與醫學研究部共用 data/news.json 的正式發布資料。
  */
 (function () {
   "use strict";
 
   const UNIT_ID = "ai-center";
-  const LOCAL_NEWS_KEY = "medresearch_demo_news";
+
 
   document.addEventListener("DOMContentLoaded", async () => {
     try {
@@ -25,15 +25,7 @@
     const response = await fetch("../data/news.json");
     if (!response.ok) throw new Error("無法讀取醫學研究部消息資料");
     const base = await response.json();
-    let added = [];
-    try {
-      added = JSON.parse(localStorage.getItem(LOCAL_NEWS_KEY) || "[]");
-      if (!Array.isArray(added)) added = [];
-    } catch (error) {
-      console.warn("消息示意覆寫資料格式錯誤，已改用預設資料。", error);
-    }
-    const addedIds = new Set(added.map((item) => item.id));
-    return [...added, ...base.filter((item) => !addedIds.has(item.id))]
+    return base
       .filter((item) => ["public", "both"].includes(item.visibility))
       .filter((item) => ["published", "expired"].includes(item.status))
       .filter((item) => item.owner_unit_id === UNIT_ID || item.related_unit_ids?.includes(UNIT_ID))
