@@ -21,11 +21,11 @@ docker compose -p femh-genai-wwservice \
   up -d --build --force-recreate --no-deps medresearch-app
 ```
 
-本次修正版的公開版本端點是 `/medresearch/api/version`，必須回傳 `version: "2026.10.30.3"` 及 `management: "server_authorized"`。任何頁面亦帶有 `X-Medresearch-Version` 回應標頭。`healthz` 成功只表示服務存活，不代表已更新到此版。
+本次修正版的公開版本端點是 `/medresearch/api/version`，必須回傳 `version: "2026.10.30.4"` 及 `management: "server_authorized"`。任何頁面亦帶有 `X-Medresearch-Version` 回應標頭。`healthz` 成功只表示服務存活，不代表已更新到此版。
 
 若版本端點仍為 404，請確認重建的服務、build context、執行映像，以及反向代理是否把整個 `/medresearch/` 指到同一個 `medresearch-app:8000`。不要只複製前端檔案或只重啟舊映像。
 
-未登入開啟 `/medresearch/admin`、`/medresearch/internal` 或舊 `/medresearch/admin-demo/`，都應導向登入，不應直接看到角色選擇或編輯頁。
+正式管理網址為 `/medresearch/admin`。舊 `/medresearch/admin-demo/` 及其內頁會先以 HTTP 308 轉到正式 `/medresearch/admin`，網址列不再保留 demo；正式管理入口及 `/medresearch/internal` 在未登入時導向登入，不應直接看到角色選擇或編輯頁。
 
 ## 第一位系統管理員
 

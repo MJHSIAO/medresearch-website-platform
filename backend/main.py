@@ -202,6 +202,11 @@ async def admin_portal(request: Request):
     return await protected_portal(request, admin=True)
 
 
+@app.api_route('/admin/', methods=['GET', 'HEAD'], include_in_schema=False)
+async def canonical_admin():
+    return RedirectResponse(url=f'{settings.app_base_url}/admin', status_code=308)
+
+
 @app.get("/healthz", include_in_schema=False)
 async def healthz():
     return {"status": "ok"}
@@ -240,6 +245,8 @@ app.mount("/assets", StaticFiles(directory=PROJECT_ROOT / "assets"), name="asset
 @app.api_route("/admin-demo", methods=["GET", "HEAD"], include_in_schema=False)
 @app.api_route("/admin-demo/{legacy_path:path}", methods=["GET", "HEAD"], include_in_schema=False)
 async def legacy_admin(request: Request, legacy_path: str = ""):
-    return await protected_portal(request, admin=True)
+    # Old bookmarks must update the address bar, not render under the retired URL.
+    # Authentication and authorization remain enforced at the canonical route.
+    return RedirectResponse(url=f'{settings.app_base_url}/admin', status_code=308)
 
 app.mount("/ai-center", StaticFiles(directory=PROJECT_ROOT / "ai-center", html=True), name="ai-center")

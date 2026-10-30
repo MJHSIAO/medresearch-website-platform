@@ -1,3 +1,11 @@
+# 2026-10-30 正式管理網址統一
+
+正式入口固定為 /admin。舊 /admin-demo（含尾斜線、舊內頁與 query）一律以 308 轉址至相同部署前綴的 /admin；/admin/ 亦正規化為 /admin。舊路徑不再直接渲染管理頁，網址列不保留 demo。正式頁面的資源路徑只依 canonical admin 路徑產生。版本為 2026.10.30.4。
+
+已執行 check_portal（匿名舊址轉向、一般人員轉址後 403、管理員轉址後 200、HEAD、子路徑）、check_management、check_docker_deployment 與 static-only，均通過。消息及授權資料未修改。
+
+---
+
 # 2026-10-30 身分確認區退役
 
 使用者已確認院方識別欄位為 sub，移除 /internal 的候選欄位、UID 值、claims 名稱及首次設定診斷提示。院內專區、消息、管理入口與拒絕存取行為保留。範例環境檔使用 ADMIN_IDENTITY_CLAIM=sub，真實管理員名單仍僅存伺服器。版本為 2026.10.30.3。

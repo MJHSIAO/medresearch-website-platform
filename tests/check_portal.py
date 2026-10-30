@@ -14,11 +14,17 @@ def main():
     assert resolved_role({'employee_id': 'TEST001'}, configured) == 'system_admin'
     with patch('backend.main.settings', configured), TestClient(app, follow_redirects=False) as client:
         version = client.get('/api/version')
-        assert version.json() == {'version': '2026.10.30.3', 'management': 'server_authorized'}
-        assert version.headers['x-medresearch-version'] == '2026.10.30.3'
+        assert version.json() == {'version': '2026.10.30.4', 'management': 'server_authorized'}
+        assert version.headers['x-medresearch-version'] == '2026.10.30.4'
         assert version.headers['cache-control'] == 'no-store'
         assert client.get('/assets/js/main.js').headers['cache-control'] == 'no-cache'
-        for path in ('/internal', '/admin', '/admin-demo/', '/admin-demo/news-edit.html'):
+        legacy_paths = ('/admin-demo', '/admin-demo/', '/admin-demo/index.html', '/admin-demo/news-edit.html', '/admin-demo/../admin-demo/index.html', '/admin-demo/?role=system-admin', '/admin/')
+        for path in legacy_paths:
+            response = client.get(path)
+            assert response.status_code == 308
+            assert response.headers['location'] == f'{configured.app_base_url}/admin'
+            assert response.headers['cache-control'] == 'no-store'
+        for path in ('/internal', '/admin'):
             response = client.get(path)
             assert response.status_code == 303
             assert response.headers['location'].endswith('/auth/login')
@@ -36,15 +42,20 @@ def main():
         assert '本次回傳欄位名稱' not in response.text
         assert 'employee_id' not in response.text
         assert client.get('/api/me').json()['user']['role'] == 'internal_user'
-        for path in ('/admin', '/admin-demo/', '/admin-demo/news-edit.html', '/admin-demo/../admin-demo/index.html'):
-            assert client.get(path).status_code == 403
+        assert client.get('/admin').status_code == 403
+        for path in legacy_paths:
+            assert client.get(path).status_code == 308
+            assert client.get(path, follow_redirects=True).status_code == 403
         sessions.get(sid)['claims']['employee_id'] = 'TEST001'
         assert client.get('/api/me').json()['user']['role'] == 'system_admin'
         assert client.get('/admin').status_code == 200
-        assert 'role-switcher' not in client.get('/admin-demo/').text
-        assert '內容管理 Demo' not in client.get('/admin-demo/').text
-        assert '此為 UI Demo' not in client.get('/admin-demo/').text
-        assert client.head('/admin-demo/news-edit.html').status_code == 200
+        redirected = client.get('/admin-demo/', follow_redirects=True)
+        assert redirected.status_code == 200 and redirected.url.path == '/admin'
+        assert 'role-switcher' not in redirected.text
+        assert '內容管理 Demo' not in redirected.text
+        assert '此為 UI Demo' not in redirected.text
+        assert client.head('/admin-demo/news-edit.html').status_code == 308
+        assert client.head('/admin').status_code == 200
         with patch('backend.main.settings', replace(configured, system_admin_ids=())):
             assert client.get('/admin').status_code == 403
         with patch.object(oidc, 'complete_login', AsyncMock(return_value=(
@@ -62,6 +73,8 @@ def main():
     prefixed = replace(configured, app_base_url='https://example.test/medresearch')
     with patch('backend.main.settings', prefixed), TestClient(app, follow_redirects=False, root_path='/medresearch') as client:
         assert client.get('/internal').headers['location'] == 'https://example.test/medresearch/auth/login'
+        for path in ('/admin-demo', '/admin-demo/', '/admin-demo/news-edit.html', '/admin/'):
+            assert client.get(path).headers['location'] == 'https://example.test/medresearch/admin'
         sid = sessions.create({'name': 'Test'}, {'sub': 'test', 'employee_id': 'TEST001'})
         client.cookies.set('medresearch_session', signed_session_cookie(sid))
         page = client.get('/internal')
