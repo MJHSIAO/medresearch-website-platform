@@ -30,11 +30,12 @@ def main():
                 {'id': identifier, 'title': title, 'summary': 'Server fixture summary', 'content': ['Server fixture body'],
                  'category': '一般公告', 'owner_unit_id': unit, 'related_unit_ids': [], 'status': status,
                  'visibility': 'public', 'published_at': '2026-11-01T09:00:00+08:00' if status == 'published' else '',
-                 'updated_at': '2026-11-01T09:00:00+08:00', 'attachments': [], 'cover_image': '', 'cover_alt': ''}
+                 'updated_at': '2026-11-01T09:00:00+08:00', 'featured': unit == 'core-laboratory', 'attachments': [], 'cover_image': '', 'cover_alt': ''}
                 for identifier, title, unit, status in [
                     ('server-ai-public', 'SERVER-AI-PUBLISHED', 'ai-center', 'published'),
                     ('server-ai-draft', 'SERVER-AI-DRAFT', 'ai-center', 'draft'),
                     ('server-core-public', 'SERVER-CORE-PUBLISHED', 'core-laboratory', 'published')]]
+            state['content']['news'][2]['published_at'] = '2026-10-01T09:00:00+08:00'
 
         @runtime.app.get('/__fixture_login/{role}')
         async def fixture_login(role: str):
@@ -45,6 +46,7 @@ def main():
             sid = runtime.sessions.create({'name': 'Fixture account'}, {'sub': subjects[role]})
             response = RedirectResponse('/medresearch/admin', status_code=303)
             response.set_cookie('medresearch_session', signed_session_cookie(sid), httponly=True, path='/medresearch', samesite='lax')
+            response.set_cookie('medresearch_auth', '1', path='/medresearch', samesite='lax')
             return response
 
         outer = FastAPI(docs_url=None, redoc_url=None)

@@ -23,8 +23,28 @@ try{
   assert.ok(ready,'fixture ready');
   browser=await chromium.launch({executablePath:process.argv[3],headless:true});
   const errors=[];
+  async function checkPublic(page,role,firstTitle){
+    await page.goto(base+'index.html');await page.locator('#home-news .card').first().waitFor();
+    if(role!=='visitor')await page.locator('.account-actions .auth-user-name').waitFor();
+    assert.equal(await page.locator('.account-actions').getByText('院內專區',{exact:true}).count(),['system','site','unit','multi'].includes(role)?1:0);
+    assert.equal(await page.locator('.account-actions').getByText('院內人員登入',{exact:true}).count(),role==='visitor'?1:0);
+    assert.equal(await page.locator('.main-nav .auth-user-name,.main-nav .account-actions').count(),0);
+    assert.match(await page.locator('#home-news .card').first().innerText(),new RegExp(firstTitle));
+    assert.doesNotMatch(await page.locator('#home-news').innerText(),/SERVER-AI-DRAFT/);
+    for(const width of [1440,768,320]){
+      await page.setViewportSize({width,height:1000});
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'public '+role+' '+width);
+    }
+    await page.setViewportSize({width:1440,height:1000});
+  }
+  const visitorContext=await browser.newContext();const visitor=await visitorContext.newPage();
+  await checkPublic(visitor,'visitor','SERVER-AI-PUBLISHED');
+  // The browser hint cookie never grants a management link or role.
+  await visitorContext.addCookies([{name:'medresearch_auth',value:'1',url:base}]);
+  await checkPublic(visitor,'visitor','SERVER-AI-PUBLISHED');
   async function account(role){const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});const page=await context.newPage();page.on('pageerror',error=>errors.push(error.message));await page.goto(base+'__fixture_login/'+role);if(role!=='ordinary')await page.locator('#role-label').filter({hasText:/管理員/}).waitFor();return {context,page};}
   const {context:rootContext,page}=await account('system');
+  await checkPublic(page,'system','SERVER-AI-PUBLISHED');await page.goto(base+'admin');
   await page.getByRole('heading',{name:'管理工作台',exact:true}).waitFor();
   assert.equal(await page.locator('#role-label').textContent(),'系統管理員');
   assert.equal(await page.locator('#unit-label').textContent(),'全部單位');
@@ -65,6 +85,7 @@ try{
   await page.locator('[data-route=news]').click();await page.getByRole('button',{name:'匯入舊消息',exact:true}).click();await page.getByRole('button',{name:'預覽並匯入',exact:true}).click();await page.getByRole('button',{name:'匯入為伺服器草稿',exact:true}).click();
   await page.locator('#news-editor [name=title]').filter({visible:true}).waitFor();assert.equal(await page.locator('#news-editor [name=title]').inputValue(),'SERVER-LEGACY-IMPORT');assert.equal(await page.evaluate(()=>localStorage.getItem('medresearch_demo_news')),raw);
   const {context:unitContext,page:unit}=await account('unit');await unit.getByRole('heading',{name:'管理工作台',exact:true}).waitFor();
+  await checkPublic(unit,'unit','SERVER-SAVED-THROUGH-FORM');await unit.goto(base+'admin');await unit.getByRole('heading',{name:'管理工作台',exact:true}).waitFor();
   assert.equal(await unit.locator('#role-label').textContent(),'單位管理員');assert.equal(await unit.locator('#unit-label').textContent(),'人工智慧中心');
   assert.equal(await unit.locator('[data-route=grants],[data-route=theme],[data-route=site],[data-route=pages],[data-route=services]').count(),0);
   await unit.locator('[data-route=news]').click();await unit.locator('#news-table tbody').waitFor();assert.doesNotMatch(await unit.locator('#news-table').innerText(),/SERVER-CORE/);
@@ -74,6 +95,7 @@ try{
   assert.equal((await unit.request.get(new URL(foreign.url,base).href)).status(),403);
   await unit.goto(base+'admin#theme');await unit.getByRole('heading',{name:'管理工作台',exact:true}).waitFor();assert.equal(await unit.locator('[data-route=theme]').count(),0);
   const {context:siteContext,page:site}=await account('site');await site.getByRole('heading',{name:'管理工作台',exact:true}).waitFor();assert.equal(await site.locator('#role-label').textContent(),'醫研部總管理員');
+  await checkPublic(site,'site','SERVER-SAVED-THROUGH-FORM');await site.goto(base+'admin');await site.getByRole('heading',{name:'管理工作台',exact:true}).waitFor();
   assert.equal(await site.locator('[data-route=theme]').count(),0);assert.equal(await site.locator('[data-route=grants]').count(),1);
   await site.locator('[data-route=grants]').click();await site.getByRole('button',{name:'新增授權',exact:true}).click();assert.equal(await site.locator('#grant [name=role] option').count(),1);
   const {context:multiContext,page:multi}=await account('multi');const multiScope=await multi.locator('#unit-label').textContent();assert.ok(multiScope.includes('人工智慧中心')&&multiScope.includes('共同研究室'));
@@ -86,7 +108,9 @@ try{
   }
   await unit.locator('#menu-toggle').focus();await unit.keyboard.press('Enter');assert.equal(await unit.locator('#menu-toggle').getAttribute('aria-expanded'),'true');await unit.keyboard.press('Escape');assert.equal(await unit.locator('#menu-toggle').getAttribute('aria-expanded'),'false');
   assert.deepEqual(errors,[]);
-  await Promise.all([rootContext.close(),unitContext.close(),siteContext.close(),multiContext.close()]);
+  const {context:ordinaryContext,page:ordinary}=await account('ordinary');await checkPublic(ordinary,'ordinary','SERVER-SAVED-THROUGH-FORM');
+  await Promise.all([rootContext.close(),unitContext.close(),siteContext.close(),multiContext.close(),visitorContext.close(),ordinaryContext.close()]);
+  console.log('PASS public navigation: visitor, ordinary, three managers, untrusted cookie, latest date before featured, draft excluded, 320/768/1440px');
   console.log('PASS live management UI: real API data, three roles and multi-unit scope, CRUD, uploads/library, grants, theme, legacy import, subpath, mobile navigation, 320/768/1440px');
   console.log('Screenshots:',screenshots);
 }finally{

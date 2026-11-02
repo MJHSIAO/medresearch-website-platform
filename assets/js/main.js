@@ -12,15 +12,12 @@
     return file || 'index.html';
   }
 
-  async function renderAuthNavigation(list) {
-    if (!list) return;
-    const item = document.createElement('li');
-    item.className = 'auth-navigation';
+  async function renderAuthNavigation(item) {
+    if (!item) return;
     const login = document.createElement('a');
     login.href = assetUrl('auth/login');
-    login.textContent = '院內人員登入';
+    login.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M15 3h5v18h-5M3 12h12m-4-4 4 4-4 4"/></svg><span>院內人員登入</span>';
     item.append(login);
-    list.append(item);
 
     // Avoid requesting a backend endpoint on the static-only GitHub Pages demo.
     // This cookie is only a UI hint; /api/me remains the source of truth.
@@ -39,14 +36,18 @@
       const name = document.createElement('span');
       name.className = 'auth-user-name';
       name.textContent = result.user.name || result.user.id || '院內使用者';
-      const internal = document.createElement('a');
-      internal.href = assetUrl('internal');
-      internal.textContent = '院內專區';
-      internal.title = '查看登入身分與可用的管理入口';
+      item.append(name);
+      if (['unit_admin', 'site_admin', 'system_admin'].includes(result.user.role)) {
+        const internal = document.createElement('a');
+        internal.href = assetUrl('internal');
+        internal.textContent = '院內專區';
+        internal.title = '查看可用的管理入口';
+        item.append(internal);
+      }
       const logout = document.createElement('a');
       logout.href = assetUrl('auth/logout');
       logout.textContent = '登出';
-      item.append(name, internal, logout);
+      item.append(logout);
     } catch {
       // GitHub Pages and other static-only hosts have no /api/me endpoint.
     }
@@ -64,6 +65,7 @@
         return `<li><a href="${root()}/${item.href}"${active ? ' aria-current="page"' : ''}>${D.escapeHTML(item.label)}</a></li>`;
       }).join('');
       header.innerHTML = `
+        <div class="utility-bar"><div class="container utility-row"><div class="account-actions" aria-label="院內登入與帳號"></div></div></div>
         <div class="site-header"><div class="container header-row">
           <a class="brand" href="${root()}/index.html" aria-label="${D.escapeHTML(site.name)}首頁">
             <span class="brand-mark" aria-hidden="true">研</span>
@@ -72,7 +74,7 @@
           <button class="menu-toggle" type="button" aria-label="開啟主選單" aria-expanded="false" aria-controls="main-navigation"><span aria-hidden="true">☰</span><span class="menu-label">選單</span></button>
           <nav class="main-nav" id="main-navigation" aria-label="主要導覽"><ul>${links}</ul></nav>
         </div></div>`;
-      renderAuthNavigation(header.querySelector('.main-nav ul'));
+      renderAuthNavigation(header.querySelector('.account-actions'));
       // Keep the source notice in normal flow so it does not occupy the sticky header.
       header.insertAdjacentHTML('beforebegin', `<p class="demo-notice">${D.escapeHTML(site.notice)}</p>`);
       header.dataset.ready = 'true';
@@ -239,7 +241,7 @@
     if (serviceGrid) {
       serviceGrid.innerHTML = services.map((service) => `<article class="card service-card interactive"><span class="service-number">${D.escapeHTML(service.icon)} / RESOURCE</span><div><h3><a href="${root()}/${service.href}">${D.escapeHTML(service.title)}</a></h3><p>${D.escapeHTML(service.description)}</p></div></article>`).join('');
     }
-    const homeNews = D.publicNews(rawNews, false).sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)) || String(b.published_at).localeCompare(String(a.published_at))).slice(0, 3);
+    const homeNews = D.publicNews(rawNews, false).sort((a, b) => (Date.parse(b.published_at) || 0) - (Date.parse(a.published_at) || 0)).slice(0, 3);
     if (newsGrid) newsGrid.innerHTML = homeNews.map((item) => newsCard(item, units)).join('');
     if (unitGrid) {
       unitGrid.innerHTML = units
