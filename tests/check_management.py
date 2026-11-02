@@ -111,6 +111,23 @@ def main():
         assert root.put(f'/api/manage/content/news/{legacy_id}', json=publish).status_code == 200
         assert legacy_id in TestClient(app).get('/data/news.json').text
         assert any(i['value']['id'] == legacy_id for i in dept.get('/api/manage/content/news').json()['items'])
+        # News form can append a new upload to older attachment metadata without losing it.
+        legacy_attachment = root.put('/api/manage/content/news/attachment-shape-fixture', json={
+            'value': {'title': 'Attachment compatibility', 'summary': 'Fixture', 'content': ['Body'],
+                      'visibility': 'public', 'status': 'draft', 'published_at': '2026-10-15T09:31:45+08:00',
+                      'gallery': [{'src': 'assets/images/news/research-integrity-66-statistics.png', 'alt': 'Existing image'}],
+                      'attachments': [{'name': 'Original attachment', 'href': 'assets/original.pdf', 'legacy_note': 'preserve'}]},
+            'unit': 'ai-center', 'revision': None})
+        assert legacy_attachment.status_code == 200, legacy_attachment.text
+        updated = legacy_attachment.json()
+        updated['value']['attachments'].append({'name': 'New attachment', 'href': url.lstrip('/'), 'type': 'PDF', 'mime': 'application/pdf', 'size': '1 KB'})
+        updated['value']['status'] = 'published'
+        result = root.put('/api/manage/content/news/attachment-shape-fixture', json=updated)
+        assert result.status_code == 200, result.text
+        assert result.json()['value']['published_at'] == '2026-10-15T09:31:45+08:00'
+        assert result.json()['value']['attachments'][0]['legacy_note'] == 'preserve'
+        assert len(result.json()['value']['gallery']) == 1
+        assert 'attachment-shape-fixture' in TestClient(app).get('/data/news.json').text
         assert Path(directory,'state.json').exists()
         # Runtime reload preserves grants and content, and bootstrap account cannot be removed.
         from backend.store import Store

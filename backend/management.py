@@ -214,6 +214,10 @@ def install(app, runtime, store):
                         continue
                     if key not in after:
                         raise HTTPException(422, f'缺少欄位：{key}')
+                    # Existing and newly uploaded files may carry different optional metadata.
+                    # Validate these collections below instead of treating the first old file as a schema.
+                    if before is old and kind == 'news' and key in {'attachments', 'gallery'}:
+                        continue
                     shape(child, after[key])
             elif isinstance(before, list):
                 if not isinstance(after, list):

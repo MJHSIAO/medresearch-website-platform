@@ -68,6 +68,15 @@
     button('返回舊消息列表',legacyNews);
   }
   async function edit(kind,entry){
+    if(kind==='news') {
+      if(!window.MedNewsEditor)await new Promise((resolve,reject)=>{
+        const script=document.createElement('script');script.src=new URL('assets/js/news-editor.js',base);
+        script.onload=resolve;script.onerror=()=>reject(Error('無法載入消息表單，請重新載入或確認部署。'));document.head.append(script);
+      });
+      window.MedNewsEditor.mount({target:workspace,entry,session,base,api,message,
+        onSaved:result=>edit('news',result),onBack:()=>list('news'),onHistory:()=>showHistory('news',entry)});
+      return;
+    }
     const v=entry.value; const editable={}; const lists={services:'主要業務（每行一項）',goals:'發展目標（每行一項）',research_fields:'研究領域（每行一項）'};
     const labels={name:'名稱',title:'標題',summary:'摘要',short_description:'簡介',full_description:'完整介紹',purpose:'成立宗旨',bio:'簡介',category:'分類',cover_image:'封面圖片路徑',cover_alt:'圖片替代文字',notice:'網站頂端公告',description:'說明',display_order:'排序',published_at:'發布日期',expires_at:'截止日期',accent:'主色（例如 #125c4b）',width:'版面寬度（1100、1200、1320）'};
     let fields='';
@@ -95,10 +104,17 @@
       message('已儲存至伺服器。公開內容將於重新載入網站後更新。');await edit(kind,result);
     });
     const actions=document.getElementById('edit-actions');button('返回列表',()=>list(kind),actions);
-    if(entry.revision)button('查看歷史版本',async()=>{
-      const versions=await api(`manage/history/${kind}/${encodeURIComponent(v.id)}`);const target=document.getElementById('versions');target.innerHTML='<h3>歷史版本</h3><p>先檢視內容，再載入編輯表單並按儲存完成回復。</p>';
-      for(const h of versions.items.reverse()){const d=document.createElement('details');d.innerHTML=`<summary>${esc(h.time)}</summary><pre>${esc(JSON.stringify(h.value,null,2))}</pre>`;button('載入此版本',()=>edit(kind,{value:h.value,revision:entry.revision}),d);target.append(d);}
-    },actions);
+    if(entry.revision)button('查看歷史版本',()=>showHistory(kind,entry),actions);
+  }
+  async function showHistory(kind,entry){
+    const versions=await api(`manage/history/${kind}/${encodeURIComponent(entry.value.id)}`);
+    let target=workspace.querySelector('#versions');
+    if(!target){target=document.createElement('div');target.id='versions';workspace.append(target);}
+    target.innerHTML='<h3>歷史版本</h3><p>先檢視內容，再載入編輯表單並按儲存完成回復。</p>';
+    for(const h of versions.items.reverse()){
+      const d=document.createElement('details');d.innerHTML=`<summary>${esc(h.time)}</summary><pre>${esc(JSON.stringify(h.value,null,2))}</pre>`;
+      button('載入此版本',()=>edit(kind,{value:h.value,revision:entry.revision}),d);target.append(d);
+    }
   }
   async function grants(){
     const result=await api('manage/grants');workspace.innerHTML='<h2>人員權限</h2><p>輸入院方驗證欄位對應的員編／識別值，指定角色及單位。儲存後立即生效。</p>';
