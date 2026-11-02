@@ -5,7 +5,7 @@ import json
 import re
 import secrets
 from datetime import datetime, timezone
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, unquote
 from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse, FileResponse, Response
 
@@ -345,15 +345,41 @@ def install(app, runtime, store):
         if mime not in signatures or not data.startswith(signatures[mime][0]):
             raise HTTPException(422, '只接受 PNG、JPEG 或 PDF，且內容須與格式一致')
         identifier = secrets.token_hex(16) + signatures[mime][1]
+        filename = unquote(request.headers.get('x-file-name', ''), errors='replace').replace('\\', '/').rsplit('/', 1)[-1]
+        filename = ''.join(c for c in filename if ord(c) >= 32 and ord(c) != 127)[:255] or identifier
         with store.transaction() as state:
             actor, _ = context(request, state, write=True)
             if not allowed(actor, 'news', {'owner_unit_id': unit}):
                 raise HTTPException(403)
             store.directory.mkdir(parents=True, exist_ok=True)
             (store.directory / identifier).write_bytes(data)
-            state['files'][identifier] = {'unit': unit, 'mime': mime}
+            state['files'][identifier] = {'unit': unit, 'mime': mime, 'name': filename, 'size': len(data), 'uploaded_at': now()}
             audit(state, actor, '上傳檔案', 'files', identifier, unit)
         return {'url': f'media/{identifier}', 'size': len(data)}
+
+    @app.get('/api/manage/files')
+    async def file_library(request: Request):
+        state = store.read()
+        actor, _ = context(request, state)
+        # Recover readable names for older uploads from content the actor may manage.
+        names = {}
+        for item in store.collection(state, 'news'):
+            if allowed(actor, 'news', item):
+                for attachment in item.get('attachments', []):
+                    if isinstance(attachment, dict) and isinstance(attachment.get('name'), str) and isinstance(attachment.get('href'), str):
+                        names[attachment['href'].lstrip('/')] = attachment['name']
+        items = []
+        for identifier, metadata in state['files'].items():
+            if not allowed(actor, 'news', {'owner_unit_id': metadata['unit']}):
+                continue
+            path = store.directory / identifier
+            if not path.is_file():
+                continue
+            url = f'media/{identifier}'
+            items.append({'id': identifier, 'url': url, 'unit': metadata['unit'], 'mime': metadata['mime'],
+                          'name': metadata.get('name') or names.get(url) or identifier,
+                          'size': metadata.get('size', path.stat().st_size), 'uploaded_at': metadata.get('uploaded_at', '')})
+        return {'items': sorted(items, key=lambda item: item['uploaded_at'], reverse=True)}
 
     @app.get('/media/{identifier}')
     async def download(identifier: str, request: Request):
@@ -369,8 +395,8 @@ def install(app, runtime, store):
             internal = any(ref in json.dumps(i) and i.get('status') in {'published', 'expired'} and i.get('visibility') in {'internal', 'both'} for i in store.collection(state, 'news'))
             if not internal and not allowed(actor, 'news', {'owner_unit_id': metadata['unit']}):
                 raise HTTPException(403)
-        return FileResponse(store.directory / identifier, media_type=metadata['mime'],
-                            headers={'Content-Disposition': f'attachment; filename="{identifier}"', 'Cache-Control': 'no-store', 'Content-Security-Policy': "sandbox; default-src 'none'"})
+        return FileResponse(store.directory / identifier, media_type=metadata['mime'], filename=metadata.get('name') or identifier,
+                            headers={'Cache-Control': 'no-store', 'Content-Security-Policy': "sandbox; default-src 'none'"})
 
     @app.get('/theme.css')
     async def theme():

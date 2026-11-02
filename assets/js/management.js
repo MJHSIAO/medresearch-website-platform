@@ -5,26 +5,30 @@
   const status = document.getElementById('status');
   const names = {units:'單位資料',news:'消息與發布',people:'單位成員',pages:'一般內容頁',services:'首頁服務',site:'網站資訊與導覽',theme:'共用外觀設定'};
   const roles = {unit_admin:'單位管理員',site_admin:'醫研部總管理員',system_admin:'系統管理員'};
-  let session;
+  let session, shell, views;
   const esc = value => String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const message = (text, error=false) => {status.textContent=text;status.className=error?'error':'';};
+  const message = (text, error=false) => {status.textContent=text;status.className=error?'status-message error':'status-message';status.hidden=!text;};
   async function api(path, method='GET', data) {
     const response = await fetch(new URL('api/'+path,base), {method,headers:{'Content-Type':'application/json','X-CSRF-Token':session?.csrf||''},body:data===undefined?undefined:JSON.stringify(data)});
+    if(!response.headers.get('content-type')?.includes('application/json'))throw Error('伺服器暫時無法使用，請稍後再試。');
     const result=await response.json();
     if(!response.ok)throw Error(typeof result.detail==='string'?result.detail:'操作失敗，請檢查欄位或重新登入。');
     return result;
   }
-  function button(label, action, parent=workspace) {const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=()=>Promise.resolve(action()).catch(e=>message(e.message,true));parent.append(b);return b;}
+  function button(label, action, parent=workspace) {const b=document.createElement('button');b.type='button';b.className='button small';b.textContent=label;b.onclick=()=>Promise.resolve().then(action).catch(e=>message(e.message,true));parent.append(b);return b;}
   function field(key,label,value='',type='text'){return `<label>${esc(label)}${type==='textarea'?`<textarea name="${key}">${esc(value)}</textarea>`:`<input name="${key}" type="${type}" value="${esc(value)}">`}</label>`;}
   function options(values,current){return values.map(([v,l])=>`<option value="${esc(v)}" ${v===current?'selected':''}>${esc(l)}</option>`).join('');}
   function unitOptions(current){const units=[...session.units];if(session.profile.role!=='unit_admin')units.push({id:'medresearch',name:'醫學研究部'});return options(units.map(u=>[u.id,u.name]),current);}
   function submit(form, action){form.onsubmit=async e=>{e.preventDefault();const b=form.querySelector('[type=submit]');b.disabled=true;try{await action();}catch(err){message(err.message,true);}finally{b.disabled=false;}};}
-  async function list(kind){
-    const result=await api('manage/content/'+kind); workspace.innerHTML=`<h2>${names[kind]}</h2>`;
-    if(['news','people'].includes(kind))button('新增'+(kind==='news'?'消息':'成員'),()=>edit(kind,{value:{id:(kind==='news'?'news-':'person-')+crypto.randomUUID(),...(kind==='news'?{title:'',summary:'',category:'',content:[],visibility:'public',status:'draft',attachments:[],cover_image:'',cover_alt:'',published_at:'',expires_at:''}:{name:'',title:'',bio:'',visibility:'public'})},revision:null}));
-    for(const entry of result.items){const row=document.createElement('article');row.className='item';row.innerHTML=`<h3>${esc(entry.value.name||entry.value.title||names[kind])}</h3><p>${esc(entry.value.status||'')} ${esc(entry.value.visibility||'')}</p>`;button('編輯',()=>edit(kind,entry),row);workspace.append(row);}
+  async function list(kind){return views.render(kind);}
+  function newEntry(kind){return edit(kind,{value:{id:(kind==='news'?'news-':'person-')+crypto.randomUUID(),...(kind==='news'?{title:'',summary:'',category:'',content:[],visibility:'public',status:'draft',attachments:[],cover_image:'',cover_alt:'',published_at:'',expires_at:''}:{name:'',title:'',bio:'',visibility:'public'})},revision:null});}
+  function formRoute(kind){const serial=views.invalidate();shell.select(kind);history.replaceState(null,'','#'+kind);return serial;}
+  function decorate(title,description){
+    const panel=document.createElement('section');panel.className='editor-panel';
+    panel.append(...workspace.childNodes);shell.frame(title,description,'');workspace.append(panel);
   }
   async function legacyNews() {
+    const serial=formRoute('news');
     if (!window.MedLegacyNews) await new Promise((resolve, reject) => {
       const script = document.createElement('script');
       script.src = new URL('assets/js/legacy-news.js', base);
@@ -38,6 +42,7 @@
     catch { throw Error('瀏覽器禁止讀取舊資料；不影響新版消息保存，請由維運協助取回舊資料。'); }
     const {items, skipped} = window.MedLegacyNews.parse(raw);
     const saved = await api('manage/content/news');
+    if(!views.isCurrent(serial))return;
     const existing = new Set(saved.items.map(entry => entry.value.id));
     const authorized = new Set(session.units.map(unit => unit.id));
     if (session.profile.role !== 'unit_admin') authorized.add('medresearch');
@@ -52,8 +57,10 @@
       else button('預覽並匯入', () => previewLegacyNews(item), row);
       workspace.append(row);
     }
+    decorate('匯入舊消息','將原瀏覽器的舊消息保存到正式伺服器。');
   }
   function previewLegacyNews(item) {
+    const serial=formRoute('news');
     const preferred = session.units.some(unit => unit.id === item.owner_unit_id) ||
       (session.profile.role !== 'unit_admin' && item.owner_unit_id === 'medresearch') ? item.owner_unit_id : undefined;
     workspace.innerHTML=`<h2>匯入舊消息：${esc(item.title)}</h2><p>${esc(item.summary || '')}</p>${item.content.map(p=>`<p>${esc(p)}</p>`).join('')}<p>匯入後保留原消息編號及原發布日期，先存為草稿；圖片與附件請在發布前核對，僅有瀏覽器預覽的檔案需要重新上傳。</p><form id="legacy-import"><label>所屬單位<select name="unit">${unitOptions(preferred)}</select></label><button type="submit">匯入為伺服器草稿</button></form>`;
@@ -62,18 +69,23 @@
       const result=await api(`manage/content/news/${encodeURIComponent(item.id)}`,'PUT',{
         value:item, unit:form.elements.unit.value, revision:null
       });
+      if(!views.isCurrent(serial))return;
       message('舊消息已保存到伺服器，原網址編號保留。請核對內容，再選擇發布。');
       await edit('news',result);
     });
     button('返回舊消息列表',legacyNews);
+    decorate('匯入舊消息','核對內容後保存為伺服器草稿。');
   }
   async function edit(kind,entry){
+    const serial=formRoute(kind);
     if(kind==='news') {
       if(!window.MedNewsEditor)await new Promise((resolve,reject)=>{
         const script=document.createElement('script');script.src=new URL('assets/js/news-editor.js',base);
         script.onload=resolve;script.onerror=()=>reject(Error('無法載入消息表單，請重新載入或確認部署。'));document.head.append(script);
       });
-      window.MedNewsEditor.mount({target:workspace,entry,session,base,api,message,
+      if(!views.isCurrent(serial))return;
+      shell.frame(entry.revision?'編輯消息':'新增消息','填寫消息內容，圖片與附件可直接上傳。','<div class="editor-layout"><section id="news-editor-host" class="editor-panel"></section></div>');
+      window.MedNewsEditor.mount({target:document.getElementById('news-editor-host'),entry,session,base,api,message,
         onSaved:result=>edit('news',result),onBack:()=>list('news'),onHistory:()=>showHistory('news',entry)});
       return;
     }
@@ -83,7 +95,7 @@
     for(const [key,label] of Object.entries(labels)){
       if(!(key in v))continue;
       if(kind==='units'&&session.profile.role==='unit_admin'&&['name','display_order'].includes(key))continue;
-      editable[key]=typeof v[key];fields+=field(key,label,v[key],['summary','short_description','full_description','purpose','bio','description'].includes(key)?'textarea':key==='display_order'?'number':'text');
+      editable[key]=typeof v[key];if(kind==='theme'&&key==='width'){fields+=`<label>版面寬度<select name="width">${options(['1100','1200','1320'].map(w=>[w,w+' px']),String(v.width))}</select></label>`;continue;}fields+=field(key,label,v[key],key==='accent'?'color':['summary','short_description','full_description','purpose','bio','description'].includes(key)?'textarea':key==='display_order'?'number':'text');
     }
     for(const [key,label] of Object.entries(lists))if(Array.isArray(v[key])&&v[key].every(x=>typeof x==='string'))fields+=field('list_'+key,label,v[key].join('\n'),'textarea');
     if(kind==='units')for(const [key,label] of Object.entries({person:'聯絡窗口',phone:'電話',email:'電子郵件',address:'地址'}))fields+=field('contact_'+key,label,v.contact?.[key]||'');
@@ -101,43 +113,44 @@
       if(kind==='news'){value.content=form.elements.paragraphs.value.split(/\n\s*\n/).filter(Boolean);value.status=form.elements.status.value;if(form.elements.featured)value.featured=form.elements.featured.checked;}
       if(form.elements.visibility)value.visibility=form.elements.visibility.value;
       const result=await api(`manage/content/${kind}/${encodeURIComponent(v.id)}`,'PUT',{value,revision:entry.revision,unit:form.elements.unit?.value});
+      if(!views.isCurrent(serial))return;
       message('已儲存至伺服器。公開內容將於重新載入網站後更新。');await edit(kind,result);
     });
     const actions=document.getElementById('edit-actions');button('返回列表',()=>list(kind),actions);
     if(entry.revision)button('查看歷史版本',()=>showHistory(kind,entry),actions);
+    decorate('編輯'+names[kind],kind==='theme'?'調整公開網站的共用主色與容器寬度。':'所有修改依目前角色與單位範圍驗證，並保存至伺服器。');
   }
   async function showHistory(kind,entry){
+    const serial=views.token();
     const versions=await api(`manage/history/${kind}/${encodeURIComponent(entry.value.id)}`);
+    if(!views.isCurrent(serial))return;
     let target=workspace.querySelector('#versions');
-    if(!target){target=document.createElement('div');target.id='versions';workspace.append(target);}
+    if(!target){target=document.createElement('div');target.id='versions';target.className='editor-panel history-panel';workspace.append(target);}
     target.innerHTML='<h3>歷史版本</h3><p>先檢視內容，再載入編輯表單並按儲存完成回復。</p>';
     for(const h of versions.items.reverse()){
       const d=document.createElement('details');d.innerHTML=`<summary>${esc(h.time)}</summary><pre>${esc(JSON.stringify(h.value,null,2))}</pre>`;
       button('載入此版本',()=>edit(kind,{value:h.value,revision:entry.revision}),d);target.append(d);
     }
   }
-  async function grants(){
-    const result=await api('manage/grants');workspace.innerHTML='<h2>人員權限</h2><p>輸入院方驗證欄位對應的員編／識別值，指定角色及單位。儲存後立即生效。</p>';
-    button('新增人員授權',()=>grantForm({identity:'',role:'unit_admin',units:[],active:true}));
-    for(const id of result.bootstrap){const p=document.createElement('p');p.textContent=`${id}：系統管理員（伺服器保留帳號）`;workspace.append(p);}
-    for(const g of result.items){const row=document.createElement('article');row.className='item';row.innerHTML=`<h3>${esc(g.identity)}</h3><p>${roles[g.role]} · ${g.active?'啟用':'停用'} · ${esc(g.units.map(id=>session.units.find(u=>u.id===id)?.name||id).join('、'))}</p>`;button('調整／停用',()=>grantForm(g),row);workspace.append(row);}
-  }
+  async function grants(){return views.render('grants',false);}
   function grantForm(g){
+    const serial=formRoute('grants');
     workspace.innerHTML=`<h2>${g.revision?'調整':'新增'}人員授權</h2><form id="grant">${field('identity','員編／識別值',g.identity)}<label>角色<select name="role">${options(Object.entries(roles).filter(([k])=>session.profile.role==='system_admin'||k==='unit_admin'),g.role)}</select></label><fieldset><legend>管理單位（單位管理員必選，可複選）</legend>${session.units.map(u=>`<label><input type="checkbox" name="units" value="${esc(u.id)}" ${g.units.includes(u.id)?'checked':''}>${esc(u.name)}</label>`).join('')}</fieldset><label><input type="checkbox" name="active" ${g.active?'checked':''}>啟用此授權</label><button type="submit">儲存授權</button></form>`;
     const form=document.getElementById('grant');if(g.revision)form.elements.identity.readOnly=true;
-    submit(form,async()=>{await api('manage/grants','PUT',{identity:form.elements.identity.value,role:form.elements.role.value,units:[...form.querySelectorAll('[name=units]:checked')].map(x=>x.value),active:form.elements.active.checked,revision:g.revision||null});message('授權已更新，所有後續操作會立即使用新權限。');await grants();});
+    submit(form,async()=>{await api('manage/grants','PUT',{identity:form.elements.identity.value,role:form.elements.role.value,units:[...form.querySelectorAll('[name=units]:checked')].map(x=>x.value),active:form.elements.active.checked,revision:g.revision||null});if(!views.isCurrent(serial))return;message('授權已更新，所有後續操作會立即使用新權限。');await grants();});
     button('返回人員列表',grants);
+    decorate(g.revision?'調整人員授權':'新增人員授權','請設定對方的管理角色與單位；不會切換您目前的身分。');
   }
-  function media(){workspace.innerHTML=`<h2>圖片與附件</h2><form id="upload"><label>所屬單位<select name="unit">${unitOptions()}</select></label><label>檔案（PNG、JPEG、PDF，上限 5 MB）<input type="file" name="file" accept="image/png,image/jpeg,application/pdf" required></label><button type="submit">上傳</button></form><p>上傳完成後，將檔案路徑填入封面或附件欄位。未被發布內容引用的檔案不會公開。</p><div id="uploaded"></div>`;
-    const form=document.getElementById('upload');submit(form,async()=>{const file=form.elements.file.files[0];if(file.size>5*1024*1024)throw Error('檔案超過 5 MB');const response=await fetch(new URL('api/manage/files/'+form.elements.unit.value,base),{method:'POST',headers:{'Content-Type':file.type,'X-CSRF-Token':session.csrf},body:file});const data=await response.json();if(!response.ok)throw Error(data.detail);document.getElementById('uploaded').textContent=`已上傳：${data.url}。附件格式：${JSON.stringify({name:file.name,href:data.url})}`;message('檔案已保存。');});}
   try{
-    for(const [id,path] of [['home',''],['internal','internal'],['logout','auth/logout']])document.getElementById(id).href=new URL(path,base);
-    session=await api('manage');document.getElementById('identity').textContent=`${session.profile.identity} · ${session.label}`;
-    const tabs=document.getElementById('tabs');
-    for(const kind of session.kinds)button(names[kind],()=>list(kind),tabs);
-    button('匯入舊消息',legacyNews,tabs);
-    if(session.profile.role!=='unit_admin')button('人員權限',grants,tabs);
-    button('圖片與附件',media,tabs);button('操作紀錄',async()=>{const result=await api('manage/audit');workspace.innerHTML='<h2>操作紀錄</h2>';for(const a of result.items){const p=document.createElement('p');p.textContent=`${a.time} · ${a.actor} · ${a.action} · ${a.kind}/${a.id}`;workspace.append(p);}},tabs);
-    await list('units');
-  }catch(error){message(error.message,true);}
+    session=await api('manage');
+    shell=window.MedManagementShell.create(session,base,id=>views.render(id).catch(error=>message(error.message,true)));
+    views=window.MedManagementViews.create({session,base,api,shell,onEdit:edit,onNew:newEntry,onGrant:grantForm,onImport:legacyNews,message});
+    document.getElementById('notifications').onclick=()=>views.render('news',true,'draft').catch(error=>message(error.message,true));
+    window.addEventListener('hashchange',()=>{const id=location.hash.slice(1)||'overview';views.render(shell.valid(id)?id:'overview').catch(error=>message(error.message,true));});
+    const initial=location.hash.slice(1)||'overview';
+    await views.render(shell.valid(initial)?initial:'overview');
+  }catch(error){
+    message(error.message,true);
+    if(!session)document.getElementById('role-label').textContent='尚未取得管理權限';
+  }
 })();

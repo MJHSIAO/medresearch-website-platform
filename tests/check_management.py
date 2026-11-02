@@ -3,6 +3,7 @@ from dataclasses import replace
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
+from urllib.parse import quote
 from fastapi.testclient import TestClient
 from tests.check_backend import app, settings, sessions, signed_session_cookie
 from backend.main import store
@@ -73,22 +74,42 @@ def main():
         original = next(h['value'] for h in versions if h['value']['status'] == 'draft')
         assert a.put('/api/manage/content/news/test-news', json={'value':original,'revision':private['revision']}).status_code == 200
         assert a.post('/api/manage/files/ai-center', content=b'bad', headers={'content-type':'image/png'}).status_code == 422
-        upload = a.post('/api/manage/files/ai-center', content=b'%PDF-1.4\n test', headers={'content-type':'application/pdf'})
+        upload = a.post('/api/manage/files/ai-center', content=b'%PDF-1.4\n test', headers={'content-type':'application/pdf', 'x-file-name':quote('測試附件.pdf')})
         assert upload.status_code == 200, upload.text
         url = '/'+upload.json()['url']
         assert TestClient(app).get(url).status_code == 401
         assert a.get(url).status_code == 200
         assert ordinary.get(url).status_code == 403
+        assert TestClient(app).get('/api/manage/files').status_code == 401
+        assert ordinary.get('/api/manage/files').status_code == 403
+        library = a.get('/api/manage/files').json()['items']
+        assert len(library) == 1 and library[0]['name'] == '測試附件.pdf'
+        assert library[0]['size'] == len(b'%PDF-1.4\n test')
+        assert quote('測試附件.pdf') in a.get(url).headers['content-disposition']
+        foreign_upload = root.post('/api/manage/files/core-laboratory', content=b'%PDF-1.4\n other', headers={'content-type':'application/pdf'})
+        assert foreign_upload.status_code == 200
+        assert len(root.get('/api/manage/files').json()['items']) == 2
+        assert len(dept.get('/api/manage/files').json()['items']) == 2
+        assert len(a.get('/api/manage/files').json()['items']) == 1
+        assert a.get('/' + foreign_upload.json()['url']).status_code == 403
         current = next(i for i in a.get('/api/manage/content/news').json()['items'] if i['value']['id'] == 'test-news')
         current['value'].update(status='published', visibility='public', attachments=[{'name':'Document','href':url.lstrip('/')}])
         file_news=a.put('/api/manage/content/news/test-news',json=current)
         assert file_news.status_code == 200, file_news.text
         assert TestClient(app).get(url).status_code == 200
+        # Old metadata is readable without a migration; recover its attachment name.
+        with store.transaction() as state:
+            metadata = state['files'][url.rsplit('/', 1)[-1]]
+            for key in ('name', 'size', 'uploaded_at'):
+                metadata.pop(key, None)
+        recovered_file = next(i for i in a.get('/api/manage/files').json()['items'] if '/' + i['url'] == url)
+        assert recovered_file['name'] == 'Document' and recovered_file['size'] > 0
         archived=file_news.json();archived['value']['status']='archived'
         assert a.put('/api/manage/content/news/test-news',json=archived).status_code == 200
         assert TestClient(app).get(url).status_code == 401
         assert grant('UNIT_A','unit_admin',['ai-center'],False).status_code == 200
         assert a.get('/api/manage').status_code == 403
+        assert a.get('/api/manage/files').status_code == 403
         assert a.get(url).status_code == 403
         assert a.get('/api/me').json()['user']['role'] == 'internal_user'
         # Import preserves the old URL ID, persists on disk and never overwrites on retry.

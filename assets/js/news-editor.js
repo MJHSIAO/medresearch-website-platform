@@ -123,7 +123,7 @@
           if(file.size>5*1024*1024)throw Error('檔案超過 5 MB');
           const mime=file.type || (/\.pdf$/i.test(file.name)?'application/pdf':/\.png$/i.test(file.name)?'image/png':/\.jpe?g$/i.test(file.name)?'image/jpeg':'');
           if(!['image/png','image/jpeg','application/pdf'].includes(mime))throw Error('只支援 PNG、JPEG 或 PDF');
-          const response=await fetch(new URL(`api/manage/files/${encodeURIComponent(unit)}`,base),{method:'POST',headers:{'Content-Type':mime,'X-CSRF-Token':session.csrf},body:file});
+          const response=await fetch(new URL(`api/manage/files/${encodeURIComponent(unit)}`,base),{method:'POST',headers:{'Content-Type':mime,'X-CSRF-Token':session.csrf,'X-File-Name':encodeURIComponent(file.name)},body:file});
           if(!response.headers.get('content-type')?.includes('application/json'))throw Error(response.status===413?'檔案超過伺服器允許的上傳大小。':'上傳服務暫時無法使用，請稍後再試。');
           const result=await response.json();
           if(!response.ok)throw Error(typeof result.detail==='string'?result.detail:'上傳失敗');

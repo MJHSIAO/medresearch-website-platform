@@ -1,10 +1,25 @@
 <!doctype html>
-<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>管理中心｜醫學研究部</title></head>
-<body><a href="#workspace">跳至管理內容</a><header><h1>醫學研究部管理中心</h1><p id="identity">正在確認登入權限…</p><nav aria-label="管理導覽"><a id="home">公開網站</a><a id="internal">院內專區</a><a id="logout">登出</a></nav></header>
-<main><p id="status" role="status" aria-live="polite"></p><nav id="tabs" aria-label="管理功能"></nav><section id="workspace" tabindex="-1"></section></main>
-<script>
-// The server redirects old bookmarks to this canonical route.
-const prefix = location.pathname.replace(/\/admin\/?$/, '');
-const style = document.createElement('link'); style.rel='stylesheet'; style.href=prefix+'/assets/css/management.css'; document.head.append(style);
-const script = document.createElement('script'); script.src=prefix+'/assets/js/management.js'; document.body.append(script);
+<html lang="zh-Hant">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>管理中心｜醫學研究部</title></head>
+<body>
+  <a class="skip" href="#content">跳到主要內容</a>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="identity" href="#overview" aria-label="管理工作台"><span class="brand-symbol"><i></i><i></i><i></i><i></i></span><span class="brand-text"><strong>醫學研究部</strong><small>網站管理中心</small></span></a>
+      <div class="nav-section-label">工作空間</div><nav id="primary-nav" aria-label="後台功能"></nav>
+      <div class="sidebar-bottom"><div class="scope-note"><span class="scope-dot"></span><span id="scope-label">正在確認管理範圍</span></div><div class="account"><span class="avatar">管</span><span class="account-copy"><strong id="role-label">正在確認身分</strong><small id="unit-label"></small></span><span class="account-lock" data-icon="shield"></span></div></div>
+    </aside>
+    <div class="sidebar-shade" id="sidebar-shade"></div>
+    <div class="main-shell">
+      <header class="topbar"><div class="topbar-left"><button class="icon-button mobile-menu" id="menu-toggle" aria-label="開啟管理選單" aria-expanded="false" aria-controls="sidebar" data-icon="menu"></button><div class="breadcrumb"><span>管理中心</span><span class="chevron">/</span><strong id="breadcrumb-current">工作台</strong></div></div><div class="topbar-right"><a class="public-link" id="home" target="_blank" rel="noopener"><span data-icon="external"></span><span>前往公開網站</span></a><a class="public-link" id="internal">院內專區</a><button class="icon-button" id="notifications" aria-label="查看待處理草稿" data-icon="bell"></button><a class="public-link" id="logout">登出</a></div></header>
+      <main id="content" tabindex="-1"><p id="status" class="status-message" role="status" aria-live="polite"></p><div id="workspace"><p class="empty">正在確認登入權限…</p></div></main>
+      <footer class="app-footer"><span>© 2026 亞東紀念醫院 醫學研究部 人工智慧中心</span><span id="identity"></span></footer>
+    </div>
+  </div>
+  <script>
+const prefix=location.pathname.replace(/\/admin\/?$/,'');
+const style=document.createElement('link');style.rel='stylesheet';style.href=prefix+'/assets/css/management.css';document.head.append(style);
+const shell=document.createElement('script');shell.src=prefix+'/assets/js/management-shell.js';
+shell.onload=()=>{const views=document.createElement('script');views.src=prefix+'/assets/js/management-views.js';views.onload=()=>{const app=document.createElement('script');app.src=prefix+'/assets/js/management.js';document.body.append(app);};views.onerror=()=>{document.getElementById('status').textContent='管理功能載入失敗，請重新整理。';};document.body.append(views);};
+shell.onerror=()=>{document.getElementById('status').textContent='管理介面載入失敗，請重新整理或聯絡維運。';};document.body.append(shell);
 </script></body></html>
