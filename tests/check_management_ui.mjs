@@ -33,6 +33,7 @@ try{
     assert.doesNotMatch(await page.locator('#home-news').innerText(),/SERVER-AI-DRAFT/);
     for(const width of [1440,768,320]){
       await page.setViewportSize({width,height:1000});
+      await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'public '+role+' '+width);
     }
     await page.setViewportSize({width:1440,height:1000});
@@ -50,6 +51,18 @@ try{
   assert.equal(await page.locator('#unit-label').textContent(),'全部單位');
   assert.equal(await page.locator('[data-route=grants],[data-route=theme],[data-route=site]').count(),3);
   assert.equal(await page.locator('.metric-value').first().innerText(),'2則');
+  assert.ok(await page.locator('[data-route=announcements]').count());
+  await page.locator('[data-route=announcements]').click();await page.getByRole('button',{name:'新增公告',exact:false}).click();
+  await page.locator('.announcement-form [name=text]').fill('SERVER-ANNOUNCEMENT');await page.getByRole('button',{name:'儲存公告',exact:true}).click();await page.locator('.announcement-text').getByText('SERVER-ANNOUNCEMENT',{exact:true}).waitFor();
+  const publicPage=await rootContext.newPage();await publicPage.goto(base+'index.html');await publicPage.locator('.announcement-track').getByText('SERVER-ANNOUNCEMENT',{exact:true}).waitFor();
+  assert.ok(await publicPage.locator('.hospital-logo').evaluate(img=>img.complete&&img.naturalWidth>0));assert.equal(await publicPage.locator('.announcement-pause').count(),0);
+  const announcementScreens=await mkdtemp(join(tmpdir(),'medresearch-announcements-'));await page.screenshot({path:join(announcementScreens,'admin.png'),fullPage:true});
+  await publicPage.emulateMedia({reducedMotion:'no-preference'});await publicPage.locator('#announcement-slot').hover();assert.equal(await publicPage.locator('.announcement-track').evaluate(el=>getComputedStyle(el).animationPlayState),'paused');await publicPage.mouse.move(500,400);assert.equal(await publicPage.locator('.announcement-track').evaluate(el=>getComputedStyle(el).animationPlayState),'running');
+  for(const width of [1440,768,320]){await publicPage.setViewportSize({width,height:1000});await publicPage.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));assert.ok(await publicPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'announcement public width '+width);assert.ok(await publicPage.evaluate(()=>{const a=document.querySelector('#announcement-slot').getBoundingClientRect(),b=document.querySelector('.account-actions').getBoundingClientRect();return Math.abs(a.top+a.height/2-b.top-b.height/2)<2;}),'announcement account alignment '+width);await publicPage.screenshot({path:join(announcementScreens,'public-'+width+'.png'),fullPage:false});}
+  console.log('Announcement screenshots:',announcementScreens);
+  const announcementRow=page.locator('tr').filter({hasText:'SERVER-ANNOUNCEMENT'});await announcementRow.getByRole('button',{name:'編輯',exact:true}).click();await page.locator('.announcement-form [name=text]').fill('SERVER-ANNOUNCEMENT-EDITED');await page.getByRole('button',{name:'儲存公告',exact:true}).click();await page.locator('.announcement-text').getByText('SERVER-ANNOUNCEMENT-EDITED',{exact:true}).waitFor();
+  const updatedRow=page.locator('tr').filter({hasText:'SERVER-ANNOUNCEMENT-EDITED'});await updatedRow.getByRole('button',{name:'停用',exact:true}).click();await updatedRow.getByRole('button',{name:'啟用',exact:true}).waitFor();await publicPage.reload();await publicPage.locator('.announcement-track').waitFor();assert.doesNotMatch(await publicPage.locator('.announcement-track').innerText(),/SERVER-ANNOUNCEMENT/);
+  await updatedRow.getByRole('button',{name:'刪除',exact:true}).click();await page.getByRole('button',{name:'確認刪除',exact:true}).click();await page.locator('.announcement-text').getByText('SERVER-ANNOUNCEMENT-EDITED',{exact:true}).waitFor({state:'detached'});await publicPage.close();
   assert.doesNotMatch(await page.locator('body').innerText(),/外觀預覽|示例|範例資料|role-switcher/);
   await page.locator('[data-route=news]').click();await page.locator('#news-table tbody tr').filter({hasText:'SERVER-AI'}).first().waitFor();
   assert.equal(await page.locator('#news-table tbody tr').count(),3);
@@ -88,6 +101,7 @@ try{
   await checkPublic(unit,'unit','SERVER-SAVED-THROUGH-FORM');await unit.goto(base+'admin');await unit.getByRole('heading',{name:'管理工作台',exact:true}).waitFor();
   assert.equal(await unit.locator('#role-label').textContent(),'單位管理員');assert.equal(await unit.locator('#unit-label').textContent(),'人工智慧中心');
   assert.equal(await unit.locator('[data-route=grants],[data-route=theme],[data-route=site],[data-route=pages],[data-route=services]').count(),0);
+  assert.equal(await unit.locator('[data-route=announcements]').count(),0);
   await unit.locator('[data-route=news]').click();await unit.locator('#news-table tbody').waitFor();assert.doesNotMatch(await unit.locator('#news-table').innerText(),/SERVER-CORE/);
   await unit.locator('[data-route=units]').click();await unit.locator('.unit-card').waitFor();assert.equal(await unit.locator('.unit-card').count(),1);await unit.getByRole('button',{name:'編輯',exact:true}).click();
   assert.equal(await unit.locator('#editor [name=name]').count(),0);await unit.locator('#editor [name=short_description]').fill('SERVER UNIT UPDATE');await unit.locator('#editor [type=submit]').click();await unit.locator('#status').filter({hasText:'已儲存至伺服器'}).waitFor();

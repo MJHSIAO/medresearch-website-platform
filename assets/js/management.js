@@ -94,6 +94,7 @@
     let fields='';
     for(const [key,label] of Object.entries(labels)){
       if(!(key in v))continue;
+      if(kind==='site'&&key==='notice')continue; // Managed in the dedicated announcement screen.
       if(kind==='units'&&session.profile.role==='unit_admin'&&['name','display_order'].includes(key))continue;
       editable[key]=typeof v[key];if(kind==='theme'&&key==='width'){fields+=`<label>版面寬度<select name="width">${options(['1100','1200','1320'].map(w=>[w,w+' px']),String(v.width))}</select></label>`;continue;}fields+=field(key,label,v[key],key==='accent'?'color':['summary','short_description','full_description','purpose','bio','description'].includes(key)?'textarea':key==='display_order'?'number':'text');
     }

@@ -22,6 +22,7 @@
     const items=[{id:'overview',label:'工作台',icon:'home'}];
     for(const [id,label,symbol] of [['news','消息與發布','file'],['units','單位資料','building'],['people','單位成員','people']])if(session.kinds.includes(id))items.push({id,label,icon:symbol});
     items.push({id:'media',label:'檔案與附件',icon:'image'});
+    if(['site_admin','system_admin'].includes(session.profile.role))items.push({id:'announcements',label:'跑馬燈公告',icon:'bell'});
     for(const [id,label] of [['pages','一般內容頁'],['services','首頁服務']])if(session.kinds.includes(id))items.push({id,label,icon:'file'});
     if(['site_admin','system_admin'].includes(session.profile.role))items.push({id:'grants',label:'人員權限',icon:'shield',group:'管理設定'});
     items.push({id:'audit',label:'操作紀錄',icon:'history'});

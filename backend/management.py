@@ -283,6 +283,60 @@ def install(app, runtime, store):
         audit(state, actor, '儲存內容', kind, identifier, owner(kind, value))
         return {'value': value, 'revision': revision(value)}
 
+    def announcement_actor(request, state, write=False):
+        actor, _ = context(request, state, write=write)
+        if actor['role'] not in {'system_admin', 'site_admin'}:
+            raise HTTPException(403, '只有系統管理員及醫研部總管理員可管理全站公告')
+        return actor
+
+    @app.get('/api/announcements')
+    async def public_announcements():
+        items = store.collection(store.read(), 'announcements')
+        return JSONResponse({'items': [{k: i.get(k, '') for k in ('id', 'text', 'href')} for i in items if i.get('active')]}, headers={'Cache-Control': 'no-store'})
+
+    @app.get('/api/manage/announcements')
+    async def announcements(request: Request):
+        state = store.read()
+        announcement_actor(request, state)
+        return {'items': [{'value': i, 'revision': revision(i)} for i in store.collection(state, 'announcements')]}
+
+    @app.api_route('/api/manage/announcements/{identifier}', methods=['PUT', 'DELETE'])
+    async def change_announcement(identifier: str, request: Request):
+        if not re.fullmatch(r'[a-zA-Z0-9_-]{1,100}', identifier):
+            raise HTTPException(404)
+        payload = await body(request)
+        with store.transaction() as state:
+            actor = announcement_actor(request, state, write=True)
+            items = store.collection(state, 'announcements')
+            old = next((i for i in items if i['id'] == identifier), None)
+            if payload.get('revision') != (revision(old) if old else None):
+                raise HTTPException(409, '公告已更新，請重新載入後再操作')
+            if request.method == 'DELETE':
+                if not old:
+                    raise HTTPException(404, '公告不存在')
+                state['content']['announcements'] = [i for i in items if i['id'] != identifier]
+                value = old
+            else:
+                value = payload.get('value')
+                if not isinstance(value, dict) or not isinstance(value.get('text'), str) or not 1 <= len(value['text'].strip()) <= 200 or type(value.get('active')) is not bool or not isinstance(value.get('href', ''), str):
+                    raise HTTPException(422, '公告須為 1–200 字，並選擇啟用狀態')
+                href = value.get('href', '').strip()
+                try:
+                    parsed = urlsplit(href)
+                    invalid_url = parsed.scheme not in {'', 'https', 'http'} or (parsed.scheme and not parsed.hostname)
+                except ValueError:
+                    invalid_url = True
+                if len(href) > 500 or invalid_url:
+                    raise HTTPException(422, '連結只接受網站相對路徑或 HTTP／HTTPS 網址')
+                validate({'text': value['text'], 'href': href})
+                value = {'id': identifier, 'text': value['text'].strip(), 'href': href, 'active': value['active'], 'updated_at': now()}
+                if not old and len(items) >= 100:
+                    raise HTTPException(422, '公告最多 100 則，請先刪除不需要的內容')
+                state['content']['announcements'] = [value if i['id'] == identifier else i for i in items] if old else [value] + items
+            state['history'].append({'version': secrets.token_hex(12), 'kind': 'announcements', 'id': identifier, 'value': copy.deepcopy(value), 'time': now()})
+            audit(state, actor, '刪除公告' if request.method == 'DELETE' else '儲存公告', 'announcements', identifier, 'medresearch')
+        return {'value': value, 'revision': revision(value)}
+
     @app.put('/api/manage/content/{kind}/{identifier}')
     async def write(kind: str, identifier: str, request: Request):
         if kind not in KINDS or not re.fullmatch(r'[a-zA-Z0-9_-]{1,100}', identifier):

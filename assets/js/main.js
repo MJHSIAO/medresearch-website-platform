@@ -65,18 +65,19 @@
         return `<li><a href="${root()}/${item.href}"${active ? ' aria-current="page"' : ''}>${D.escapeHTML(item.label)}</a></li>`;
       }).join('');
       header.innerHTML = `
-        <div class="utility-bar"><div class="container utility-row"><div class="account-actions" aria-label="院內登入與帳號"></div></div></div>
+        <div class="utility-bar"><div class="container utility-row"><div id="announcement-slot" class="announcement-slot"></div><div class="account-actions" aria-label="院內登入與帳號"></div></div></div>
         <div class="site-header"><div class="container header-row">
           <a class="brand" href="${root()}/index.html" aria-label="${D.escapeHTML(site.name)}首頁">
-            <span class="brand-mark" aria-hidden="true">研</span>
-            <span class="brand-copy"><strong>${D.escapeHTML(site.name)}</strong><span>Department of Medical Research</span></span>
+            <img class="hospital-logo" src="${root()}/assets/images/femh-logo-official.svg" alt="亞東紀念醫院 Far Eastern Memorial Hospital" width="260" height="53">
+            <span class="department-brand"><strong>醫學研究部</strong><span>Department of<br>Medical Research</span></span>
           </a>
           <button class="menu-toggle" type="button" aria-label="開啟主選單" aria-expanded="false" aria-controls="main-navigation"><span aria-hidden="true">☰</span><span class="menu-label">選單</span></button>
           <nav class="main-nav" id="main-navigation" aria-label="主要導覽"><ul>${links}</ul></nav>
         </div></div>`;
       renderAuthNavigation(header.querySelector('.account-actions'));
-      // Keep the source notice in normal flow so it does not occupy the sticky header.
-      header.insertAdjacentHTML('beforebegin', `<p class="demo-notice">${D.escapeHTML(site.notice)}</p>`);
+      const mountAnnouncements=()=>window.MedAnnouncements.mount(header.querySelector('#announcement-slot'),new URL(assetUrl(''),location.href));
+      if(window.MedAnnouncements)mountAnnouncements();
+      else {const script=document.createElement('script');script.src=assetUrl('assets/js/announcements.js');script.onload=mountAnnouncements;document.head.append(script);}
       header.dataset.ready = 'true';
       const measureHeader = () => {
         document.documentElement.style.setProperty('--header-height', `${Math.ceil(header.getBoundingClientRect().height)}px`);

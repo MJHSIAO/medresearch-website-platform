@@ -61,6 +61,12 @@
       if(id==='overview'){await overview(serial);return;}
       if(id==='grants'){await showGrants(serial);return;}
       if(id==='media'){await showMedia(serial);return;}
+      if(id==='announcements'){
+        if(!window.MedAnnouncementManager)await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=new URL('assets/js/announcement-manager.js',base);script.onload=resolve;script.onerror=()=>reject(Error('公告管理載入失敗，請重新整理。'));document.head.append(script);});
+        if(serial!==ticket)return;
+        frame('跑馬燈公告','管理全站上方的公告文字；啟用後顯示於前台。','<div id="announcement-manager"></div>');
+        await window.MedAnnouncementManager.mount({target:document.getElementById('announcement-manager'),api,message,base,isCurrent:()=>serial===ticket});return;
+      }
       if(id==='audit'){const logs=await api('manage/audit');if(serial===ticket)frame('操作紀錄','依管理範圍查看最近 500 筆操作。',`<section class="panel"><div class="panel-heading"><h2>最近操作</h2></div>${logsHtml(logs.items)}</section>`);return;}
       const result=await getContent(id);if(serial!==ticket)return;entries=result;
       if(id==='news'){entries.sort(timeSort);showNews();}

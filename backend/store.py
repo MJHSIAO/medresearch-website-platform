@@ -37,5 +37,8 @@ class Store:
             return copy.deepcopy(state['content'][kind])
         if kind == 'theme':
             return {'id': 'theme', 'accent': '#125c4b', 'width': '1200'}
+        if kind == 'announcements':
+            notice = self.collection(state, 'site').get('notice', '')
+            return [{'id': 'site-notice', 'text': notice, 'href': '', 'active': True}] if notice else []
         value = json.loads((self.source / f'{kind}.json').read_text(encoding='utf-8-sig'))
         return value
