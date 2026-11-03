@@ -37,22 +37,10 @@
     const target = document.getElementById('units-grid');
     if (!target) return;
     const units = await D.getUnits();
-    const drawings = {
-      'academic-office':'M4 4h7v16H4zm7 0h9v16h-9M7 8h1m-1 4h1m6-4h3m-3 4h3',
-      'core-laboratory':'M9 3h5v7H9zm2 7v4m5-7a6 6 0 0 1-2 12H7m1-4H5v6h15M8 21v-3',
-      'animal-laboratory':'M8 14c2-4 6-4 8 0l2 3c2 4-4 5-6 3-2 2-8 1-6-3zm-3-4c-3 0-3-5-1-5s3 5 1 5m5-4c-2 0-3-5-1-5s3 5 1 5m5 0c-2 0-1-5 1-5s1 5-1 5m4 4c-2 0-1-5 1-5s1 5-1 5',
-      'ai-center':'M7 7h10v10H7zm3 3h4v4h-4M9 3v4m6-4v4M9 17v4m6-4v4M3 9h4m-4 6h4m10-6h4m-4 6h4',
-      'clinical-trial-center':'M8 4h8v4H8zm0 2H5v15h14V6h-3M9 13h6m-3-3v6',
-      'cell-therapy-center':'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18m-3 7a3 3 0 1 0 6 0 3 3 0 0 0-6 0m-2 7h1m8 0h1',
-      'innovation-ip-center':'M8 14a6 6 0 1 1 8 0v3H8zm1 7h6m-3-12v5M3 3l2 2m14 0 2-2M1 11h3m16 0h3'
-    };
     const selected=units.filter(publicUnit).sort((a,b)=>a.display_order-b.display_order);
     const intro=document.querySelector('.page-header .container');
     intro.insertAdjacentHTML('beforeend',`<div class="directory-total"><strong>${selected.length}</strong><span>個專業單位・共同支持研究發展</span></div><div class="directory-intro-line"></div>`);
-    target.innerHTML = selected.map((unit,index)=>{
-      const href=unitUrl(unit),name=D.escapeHTML(unit.name);
-      return `<article class="directory-card"><div class="directory-card-top"><span class="directory-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="${drawings[unit.id]||drawings['academic-office']}"></path></svg></span><span class="directory-number" aria-hidden="true">${String(index+1).padStart(2,'0')}</span></div><h2><a href="${href}" target="_blank" rel="noopener" aria-label="${name}（另開新分頁）">${name}</a></h2><p>${D.escapeHTML(unit.short_description)}</p><div class="directory-card-footer"><a class="directory-primary" href="${href}" target="_blank" rel="noopener" aria-label="認識${name}（另開新分頁）">認識單位<span class="directory-arrow" aria-hidden="true">→</span></a><a class="directory-source" href="${D.escapeHTML(unit.source_url)}" target="_blank" rel="noopener">原官網 ↗</a></div></article>`;
-    }).join('');
+    target.innerHTML = selected.map((unit,index)=>window.MedUI.unitCard(unit,'h2',index)).join('');
   }
 
   async function renderUnit() {

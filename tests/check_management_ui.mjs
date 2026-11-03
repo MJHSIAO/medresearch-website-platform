@@ -31,6 +31,10 @@ try{
     assert.equal(await page.locator('.main-nav .auth-user-name,.main-nav .account-actions').count(),0);
     assert.match(await page.locator('#home-news .card').first().innerText(),new RegExp(firstTitle));
     assert.doesNotMatch(await page.locator('#home-news').innerText(),/SERVER-AI-DRAFT/);
+    assert.equal(await page.locator('#home-units .directory-card').count(),7);
+    assert.equal(await page.locator('#home-units .unit-visual').count(),0);
+    assert.equal(await page.locator('#home-units .directory-primary .directory-arrow').count(),7);
+    assert.equal(await page.locator('#home-units .directory-source .external-label').count(),7);
     for(const width of [1440,768,320]){
       await page.setViewportSize({width,height:1000});
       await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
@@ -41,7 +45,12 @@ try{
   }
   const visitorContext=await browser.newContext();const visitor=await visitorContext.newPage();
   await checkPublic(visitor,'visitor','SERVER-AI-PUBLISHED');
+  const homeDestinations=await visitor.locator('#home-units .directory-primary').evaluateAll(links=>links.map(a=>a.href));
+  const cardScreens=await mkdtemp(join(tmpdir(),'medresearch-shared-cards-'));
+  for(const width of [1440,768,320]){await visitor.setViewportSize({width,height:1000});await visitor.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));await visitor.locator('#home-units').evaluate(el=>{const section=el.closest('section');scrollTo({top:section.getBoundingClientRect().top+scrollY-document.getElementById('site-header').getBoundingClientRect().height-20,behavior:'instant'});});assert.ok(await visitor.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'home unit cards '+width);if(width!==768)await visitor.screenshot({path:join(cardScreens,'home-'+width+'.png'),fullPage:false});}
   await visitor.goto(base+'units.html');await visitor.locator('.directory-card').first().waitFor();assert.equal(await visitor.locator('.directory-card').count(),7);assert.equal(await visitor.locator('#units-grid .unit-visual').count(),0);
+  assert.deepEqual(await visitor.locator('#units-grid .directory-primary').evaluateAll(links=>links.map(a=>a.href)),homeDestinations);
+  assert.equal(await visitor.locator('#units-grid .directory-primary .directory-arrow').count(),7);assert.equal(await visitor.locator('#units-grid .directory-source .external-label').count(),7);
   for(const link of await visitor.locator('.directory-card a').all()){assert.equal(await link.evaluate(el=>getComputedStyle(el).textDecorationLine),'none');await link.hover();assert.equal(await link.evaluate(el=>getComputedStyle(el).textDecorationLine),'none');}
   await visitor.mouse.move(0,0);await visitor.evaluate(()=>scrollTo(0,0));
   const unitScreens=await mkdtemp(join(tmpdir(),'medresearch-unit-directory-'));
