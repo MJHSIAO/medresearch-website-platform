@@ -166,6 +166,8 @@ main [id], .section-anchor { scroll-margin-top: calc(var(--header-height) + 1rem
 .search-results h2 a, #search-title { overflow-wrap: anywhere; }
 
 /* Official hospital mark, kept in its original proportions and colors. */
+.utility-row.container{width:100%;max-width:none;padding-left:max(20px,calc((100vw - 1200px)/2));padding-right:28px}.utility-row .account-actions{margin-left:auto}
+@media(max-width:700px){.utility-row.container{padding-inline:16px}}
 .utility-bar{background:#e5f2ed;border-bottom:1px solid #c7ded3}.utility-row{display:flex;align-items:center;justify-content:space-between;gap:28px;min-height:48px}.announcement-slot{display:flex;align-items:center;gap:12px;flex:1;min-width:0;color:#174e3d;font-size:15px}.announcement-slot[hidden]{display:none}.announcement-label{font-size:13px;font-weight:700;background:#cfe6d9;border-radius:5px;padding:3px 8px;flex-shrink:0}.announcement-viewport{overflow:hidden;flex:1;min-width:0}.announcement-track{display:flex;align-items:center;gap:65px;white-space:nowrap;width:max-content;animation:announcement-marquee 35s 2s linear infinite}.announcement-track a{color:inherit;text-decoration:underline;text-underline-offset:4px}.announcement-track>span,.announcement-track>a{flex-shrink:0}.account-actions{flex-shrink:0;gap:18px;margin-left:auto}.account-actions a{font-size:14px}
 @keyframes announcement-marquee{from{transform:translateX(var(--travel-start,700px))}to{transform:translateX(-100%)}}
 @media(prefers-reduced-motion:reduce){.announcement-track{animation:none}.announcement-viewport{overflow-x:auto}}

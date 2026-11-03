@@ -35,11 +35,18 @@ try{
       await page.setViewportSize({width,height:1000});
       await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'public '+role+' '+width);
+      assert.ok(await page.locator('.account-actions').evaluate(el=>innerWidth-el.getBoundingClientRect().right<=30),'account at viewport edge '+width);
     }
     await page.setViewportSize({width:1440,height:1000});
   }
   const visitorContext=await browser.newContext();const visitor=await visitorContext.newPage();
   await checkPublic(visitor,'visitor','SERVER-AI-PUBLISHED');
+  await visitor.goto(base+'units.html');await visitor.locator('.directory-card').first().waitFor();assert.equal(await visitor.locator('.directory-card').count(),7);assert.equal(await visitor.locator('#units-grid .unit-visual').count(),0);
+  for(const link of await visitor.locator('.directory-card a').all()){assert.equal(await link.evaluate(el=>getComputedStyle(el).textDecorationLine),'none');await link.hover();assert.equal(await link.evaluate(el=>getComputedStyle(el).textDecorationLine),'none');}
+  await visitor.mouse.move(0,0);await visitor.evaluate(()=>scrollTo(0,0));
+  const unitScreens=await mkdtemp(join(tmpdir(),'medresearch-unit-directory-'));
+  for(const width of [1920,1440,768,320]){await visitor.setViewportSize({width,height:1000});await visitor.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));assert.ok(await visitor.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'unit directory '+width);assert.ok(await visitor.locator('.account-actions').evaluate(el=>innerWidth-el.getBoundingClientRect().right<=30));if(width===1440||width===320)await visitor.screenshot({path:join(unitScreens,'units-'+width+'.png'),fullPage:false});}
+  console.log('PASS unit directory: seven cards, no underlines including hover, viewport-right login and 1920/1440/768/320px. Screenshots:',unitScreens);
   // The browser hint cookie never grants a management link or role.
   await visitorContext.addCookies([{name:'medresearch_auth',value:'1',url:base}]);
   await checkPublic(visitor,'visitor','SERVER-AI-PUBLISHED');
