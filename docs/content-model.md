@@ -68,3 +68,8 @@
 
 原始 JSON 是預設資料。Demo 將單位編輯結果存於 `medresearch_demo_unit_{id}`，新增或編輯消息存於 `medresearch_demo_news`。讀取時合併覆寫，因此同一筆單位資料能同步出現在後台預覽與所有公開版型。此做法不是正式資料庫。
 
+
+
+## 文件表單 documents（2026-11-03）
+
+`id`、`owner_unit_id`、`title`、`summary`、`category`（作業文件／申請表單／檢核清單）、`version`、`updated_at`、`status`（draft／published／archived）、`visibility`（public）、`is_demo` 及 `file`。file 含 href、name、type、size（位元組）；初始示意檔只能引用同一筆資料既有的範例，正式檔只接受伺服器已上傳的同單位檔案。published 才由公開 API 回傳，其他狀態受管理權限保護。操作方式見 [正式管理指南](management-guide.md)。

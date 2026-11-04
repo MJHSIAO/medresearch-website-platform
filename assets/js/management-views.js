@@ -4,7 +4,7 @@
   function create({session,base,api,shell,onEdit,onNew,onGrant,onImport,message}){
     const {esc:e,icon,badge,heading,action,table,date}=window.MedManagementShell;
     const workspace=document.getElementById('workspace');
-    const names={news:'消息與發布',units:'單位資料',people:'單位成員',pages:'一般內容頁',services:'首頁服務',site:'網站資訊與導覽',theme:'共用外觀設定'};
+    const names={documents:'文件表單',news:'消息與發布',units:'單位資料',people:'單位成員',pages:'一般內容頁',services:'首頁服務',site:'網站資訊與導覽',theme:'共用外觀設定'};
     const roles={unit_admin:'單位管理員',site_admin:'醫研部總管理員',system_admin:'系統管理員'};
     let ticket=0,current='overview',entries=[],filter='all',query='',grants=[];
     const unitName=shell.unitName;
@@ -35,6 +35,7 @@
     }
     function showUnits(){frame('單位資料','維護授權範圍內的單位介紹、服務與聯絡資訊。',`<div class="unit-grid">${entries.map((entry,index)=>{const u=entry.value;return `<article class="unit-card"><div class="unit-card-top"><span class="unit-symbol">${e(u.name.slice(0,1))}</span>${badge(u.status)}</div><div><h2>${e(u.name)}</h2><p>${e(u.short_description||'')}</p></div><div class="unit-card-footer">${editButton('units',index)}${action('管理消息','news','arrow',false)}</div></article>`;}).join('')||'<p class="empty">目前沒有獲授權的單位。</p>'}</div>`);}
     function showPeople(){frame('單位成員','維護各單位的公開成員與職務資訊。',`<section class="panel">${table(['姓名','職務','所屬單位','顯示範圍',''],entries.map((entry,index)=>{const p=entry.value;return `<tr><td>${e(p.name)}</td><td>${e(p.title||'—')}</td><td class="unit-name">${e(unitName(p.unit_id))}</td><td>${e(p.visibility==='internal'?'僅院內':p.visibility==='both'?'院內外':'公開')}</td><td>${editButton('people',index)}</td></tr>`;}).join(''))}</section>`,action('新增成員','new-people'));}
+    function showDocuments(){frame('文件表單','新增、上傳與發布文件；草稿與下架項目不會出現在公開網站。',`<section class="panel">${table(['文件名稱','所屬單位','類型／版本','狀態',''],entries.map((entry,index)=>{const d=entry.value;return `<tr><td>${e(d.title)}${d.is_demo?'（示意）':''}</td><td>${e(unitName(d.owner_unit_id))}</td><td>${e(d.category)} · ${e(d.version)}</td><td>${badge(d.status)}</td><td>${editButton('documents',index)}</td></tr>`;}).join(''))}</section>`,action('新增文件','new-documents'));}
     function showRecords(kind){frame(names[kind],'選擇要維護的內容，所有修改皆保存於伺服器。',`<section class="panel">${table(['內容名稱','說明',''],entries.map((entry,index)=>`<tr><td>${e(entry.value.name||entry.value.title||names[kind])}</td><td class="unit-name">${e(entry.value.summary||entry.value.description||'')}</td><td>${editButton(kind,index)}</td></tr>`).join(''))}</section>`);}
     async function showGrants(serial){
       const data=await api('manage/grants');if(serial!==ticket)return;grants=data.items;
@@ -69,7 +70,8 @@
       }
       if(id==='audit'){const logs=await api('manage/audit');if(serial===ticket)frame('操作紀錄','依管理範圍查看最近 500 筆操作。',`<section class="panel"><div class="panel-heading"><h2>最近操作</h2></div>${logsHtml(logs.items)}</section>`);return;}
       const result=await getContent(id);if(serial!==ticket)return;entries=result;
-      if(id==='news'){entries.sort(timeSort);showNews();}
+      if(id==='documents'){entries.sort(timeSort);showDocuments();}
+      else if(id==='news'){entries.sort(timeSort);showNews();}
       else if(id==='units')showUnits();else if(id==='people')showPeople();
       else if(['site','theme'].includes(id)&&entries.length)await onEdit(id,entries[0]);else showRecords(id);
     }
@@ -79,6 +81,7 @@
       if(grant){onGrant(grants[Number(grant.dataset.grant)]);return;}
       if(tab){filter=tab.dataset.filter;updateNews();return;}
       const id=event.target.closest('[data-action]')?.dataset.action;if(!id)return;
+      if(id==='new-documents'){Promise.resolve(onNew('documents')).catch(error=>message(error.message,true));return;}
       if(id==='new-news'||id==='new-people'){Promise.resolve(onNew(id==='new-news'?'news':'people')).catch(error=>message(error.message,true));return;}
       if(id==='new-grant'){onGrant({identity:'',role:'unit_admin',units:[],active:true});return;}
       if(id==='import-news'){Promise.resolve(onImport()).catch(error=>message(error.message,true));return;}

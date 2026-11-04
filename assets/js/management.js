@@ -3,7 +3,7 @@
   const base = new URL('../../', document.currentScript.src);
   const workspace = document.getElementById('workspace');
   const status = document.getElementById('status');
-  const names = {units:'單位資料',news:'消息與發布',people:'單位成員',pages:'一般內容頁',services:'首頁服務',site:'網站資訊與導覽',theme:'共用外觀設定'};
+  const names = {documents:'文件表單',units:'單位資料',news:'消息與發布',people:'單位成員',pages:'一般內容頁',services:'首頁服務',site:'網站資訊與導覽',theme:'共用外觀設定'};
   const roles = {unit_admin:'單位管理員',site_admin:'醫研部總管理員',system_admin:'系統管理員'};
   let session, shell, views;
   const esc = value => String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -21,7 +21,7 @@
   function unitOptions(current){const units=[...session.units];if(session.profile.role!=='unit_admin')units.push({id:'medresearch',name:'醫學研究部'});return options(units.map(u=>[u.id,u.name]),current);}
   function submit(form, action){form.onsubmit=async e=>{e.preventDefault();const b=form.querySelector('[type=submit]');b.disabled=true;try{await action();}catch(err){message(err.message,true);}finally{b.disabled=false;}};}
   async function list(kind){return views.render(kind);}
-  function newEntry(kind){return edit(kind,{value:{id:(kind==='news'?'news-':'person-')+crypto.randomUUID(),...(kind==='news'?{title:'',summary:'',category:'',content:[],visibility:'public',status:'draft',attachments:[],cover_image:'',cover_alt:'',published_at:'',expires_at:''}:{name:'',title:'',bio:'',visibility:'public'})},revision:null});}
+  function newEntry(kind){if(kind==='documents')return edit(kind,{value:{id:'doc-'+crypto.randomUUID(),title:'',summary:'',category:'申請表單',version:'1.0',status:'draft',visibility:'public',is_demo:false,file:{}},revision:null});return edit(kind,{value:{id:(kind==='news'?'news-':'person-')+crypto.randomUUID(),...(kind==='news'?{title:'',summary:'',category:'',content:[],visibility:'public',status:'draft',attachments:[],cover_image:'',cover_alt:'',published_at:'',expires_at:''}:{name:'',title:'',bio:'',visibility:'public'})},revision:null});}
   function formRoute(kind){const serial=views.invalidate();shell.select(kind);history.replaceState(null,'','#'+kind);return serial;}
   function decorate(title,description){
     const panel=document.createElement('section');panel.className='editor-panel';
@@ -78,6 +78,12 @@
   }
   async function edit(kind,entry){
     const serial=formRoute(kind);
+    if(kind==='documents'){
+      if(!window.MedDocumentEditor)await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=new URL('assets/js/document-editor.js',base);script.onload=resolve;script.onerror=()=>reject(Error('文件表單載入失敗，請重新載入。'));document.head.append(script);});
+      if(!views.isCurrent(serial))return;
+      shell.frame(entry.revision?'編輯文件':'新增文件','上傳文件後儲存草稿或發布。','<section id="document-editor-host" class="editor-panel"></section>');
+      window.MedDocumentEditor.mount({target:document.getElementById('document-editor-host'),entry,session,base,api,message,onSaved:result=>edit('documents',result),onBack:()=>list('documents'),onHistory:()=>showHistory('documents',entry)});return;
+    }
     if(kind==='news') {
       if(!window.MedNewsEditor)await new Promise((resolve,reject)=>{
         const script=document.createElement('script');script.src=new URL('assets/js/news-editor.js',base);

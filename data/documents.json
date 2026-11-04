@@ -1,0 +1,110 @@
+[
+  {
+    "id": "research-guide",
+    "title": "院內研究計畫申請須知",
+    "summary": "申請前先確認準備項目與送件流程。",
+    "owner_unit_id": "academic-office",
+    "category": "作業文件",
+    "version": "DEMO 1.0",
+    "updated_at": "2026-11-03",
+    "status": "published",
+    "visibility": "public",
+    "is_demo": true,
+    "file": {
+      "href": "assets/documents/demo/research-guide.html",
+      "name": "院內研究計畫申請須知.html",
+      "type": "HTML",
+      "size": 1724
+    }
+  },
+  {
+    "id": "research-form",
+    "title": "院內研究計畫申請表",
+    "summary": "示範計畫基本資料、研究目的及簽核欄位。",
+    "owner_unit_id": "academic-office",
+    "category": "申請表單",
+    "version": "DEMO 1.0",
+    "updated_at": "2026-11-03",
+    "status": "published",
+    "visibility": "public",
+    "is_demo": true,
+    "file": {
+      "href": "assets/documents/demo/research-form.html",
+      "name": "院內研究計畫申請表.html",
+      "type": "HTML",
+      "size": 2011
+    }
+  },
+  {
+    "id": "lab-form",
+    "title": "共同研究空間使用申請表",
+    "summary": "空間、期間與設備需求一次填寫。",
+    "owner_unit_id": "core-laboratory",
+    "category": "申請表單",
+    "version": "DEMO 1.0",
+    "updated_at": "2026-11-03",
+    "status": "published",
+    "visibility": "public",
+    "is_demo": true,
+    "file": {
+      "href": "assets/documents/demo/lab-form.html",
+      "name": "共同研究空間使用申請表.html",
+      "type": "HTML",
+      "size": 1945
+    }
+  },
+  {
+    "id": "trial-checklist",
+    "title": "臨床試驗文件送件檢核表",
+    "summary": "以勾選方式確認文件是否備齊。",
+    "owner_unit_id": "clinical-trial-center",
+    "category": "檢核清單",
+    "version": "DEMO 1.0",
+    "updated_at": "2026-11-03",
+    "status": "published",
+    "visibility": "public",
+    "is_demo": true,
+    "file": {
+      "href": "assets/documents/demo/trial-checklist.html",
+      "name": "臨床試驗文件送件檢核表.html",
+      "type": "HTML",
+      "size": 1838
+    }
+  },
+  {
+    "id": "animal-guide",
+    "title": "動物實驗申請流程說明",
+    "summary": "呈現分步驟說明與注意事項的文件版型。",
+    "owner_unit_id": "animal-laboratory",
+    "category": "作業文件",
+    "version": "DEMO 1.0",
+    "updated_at": "2026-11-03",
+    "status": "published",
+    "visibility": "public",
+    "is_demo": true,
+    "file": {
+      "href": "assets/documents/demo/animal-guide.html",
+      "name": "動物實驗申請流程說明.html",
+      "type": "HTML",
+      "size": 1784
+    }
+  },
+  {
+    "id": "biosafety-form",
+    "title": "生物安全申請基本資料表",
+    "summary": "展示申請內容、作業場所與附件欄位。",
+    "owner_unit_id": "medresearch",
+    "category": "申請表單",
+    "version": "DEMO 1.0",
+    "updated_at": "2026-11-03",
+    "status": "published",
+    "visibility": "public",
+    "is_demo": true,
+    "file": {
+      "href": "assets/documents/demo/biosafety-form.html",
+      "name": "生物安全申請基本資料表.html",
+      "type": "HTML",
+      "size": 2023
+    }
+  }
+]

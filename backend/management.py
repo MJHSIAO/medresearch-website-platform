@@ -9,7 +9,7 @@ from urllib.parse import urlsplit, unquote
 from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse, FileResponse, Response
 
-KINDS = {'units', 'news', 'people', 'pages', 'services', 'site', 'theme'}
+KINDS = {'units', 'news', 'people', 'pages', 'services', 'site', 'theme', 'documents'}
 MANAGERS = {'unit_admin', 'site_admin', 'system_admin'}
 LABELS = {'internal_user': '一般院內人員', 'unit_admin': '單位管理員', 'site_admin': '醫研部總管理員', 'system_admin': '系統管理員'}
 
@@ -43,10 +43,12 @@ def allowed(actor, kind, item):
         return False
     if actor['role'] == 'site_admin':
         return True
-    return actor['role'] == 'unit_admin' and kind in {'units', 'people', 'news'} and owner(kind, item) in actor['units']
+    return actor['role'] == 'unit_admin' and kind in {'units', 'people', 'news', 'documents'} and owner(kind, item) in actor['units']
 
 
 def visible(item, kind):
+    if kind == 'documents':
+        return item.get('visibility') == 'public' and item.get('status') == 'published'
     return item.get('visibility', 'public') in {'public', 'both'} and item.get('status', 'active') in {'active', 'published', 'expired'}
 
 
@@ -111,7 +113,7 @@ def install(app, runtime, store):
         record.setdefault('csrf', secrets.token_urlsafe(32))
         return {'profile': actor, 'label': LABELS[actor['role']], 'csrf': record['csrf'],
                 'units': [{'id': u['id'], 'name': u['name']} for u in store.collection(state, 'units') if allowed(actor, 'units', u)],
-                'kinds': [k for k in sorted(KINDS) if k != 'theme' or actor['role'] == 'system_admin'] if actor['role'] != 'unit_admin' else ['units', 'news', 'people']}
+                'kinds': [k for k in sorted(KINDS) if k != 'theme' or actor['role'] == 'system_admin'] if actor['role'] != 'unit_admin' else ['units', 'news', 'people', 'documents']}
 
     @app.get('/api/manage/grants')
     async def grants(request: Request):
@@ -185,7 +187,7 @@ def install(app, runtime, store):
             for key in ('owner_unit_id', 'unit_id'):
                 if key in old:
                     value[key] = old[key]
-        elif kind in {'news', 'people'}:
+        elif kind in {'news', 'people', 'documents'}:
             unit = payload.get('unit')
             known = {u['id'] for u in store.collection(state, 'units')} | {'medresearch'}
             if unit not in known or (actor['role'] == 'unit_admin' and unit not in actor['units']):
@@ -218,6 +220,8 @@ def install(app, runtime, store):
                     # Validate these collections below instead of treating the first old file as a schema.
                     if before is old and kind == 'news' and key in {'attachments', 'gallery'}:
                         continue
+                    if before is old and kind == 'documents' and key == 'file':
+                        continue
                     shape(child, after[key])
             elif isinstance(before, list):
                 if not isinstance(after, list):
@@ -233,6 +237,9 @@ def install(app, runtime, store):
             for key in ('attachments', 'gallery'):
                 if key in value and (not isinstance(value[key], list) or any(not isinstance(x, dict) for x in value[key])):
                     raise HTTPException(422, '附件或圖集格式不正確')
+        if kind == 'documents':
+            from .documents import validate_document
+            value = validate_document(value, old, state, store)
         if kind == 'units' and value.get('status') not in {'active', 'inactive', 'archived'}:
             raise HTTPException(422, '單位狀態不正確')
         # Referencing an unpublished upload cannot be used to publish another unit's file.
@@ -436,21 +443,26 @@ def install(app, runtime, store):
         return {'items': sorted(items, key=lambda item: item['uploaded_at'], reverse=True)}
 
     @app.get('/media/{identifier}')
-    async def download(identifier: str, request: Request):
+    async def download(identifier: str, request: Request, inline: bool = False):
         state = store.read()
         metadata = state['files'].get(identifier)
         if not metadata:
             raise HTTPException(404)
         ref = f'media/{identifier}'
-        public = any(ref in json.dumps(item, ensure_ascii=False) and visible(item, kind)
-                     for kind in ('news', 'units', 'people', 'pages') for item in store.collection(state, kind))
+        public = any((item.get('file', {}).get('href') == ref if kind == 'documents' else ref in json.dumps(item, ensure_ascii=False)) and visible(item, kind)
+                     for kind in ('news', 'units', 'people', 'pages', 'documents') for item in store.collection(state, kind))
         if not public:
             actor, _ = context(request, state, manager=False)
             internal = any(ref in json.dumps(i) and i.get('status') in {'published', 'expired'} and i.get('visibility') in {'internal', 'both'} for i in store.collection(state, 'news'))
             if not internal and not allowed(actor, 'news', {'owner_unit_id': metadata['unit']}):
                 raise HTTPException(403)
+        # Browser PDF viewers cannot run inside a CSP sandbox. Inline responses are
+        # limited to the upload endpoint's PDF/image MIME allowlist, never HTML.
+        inline = inline and metadata['mime'] in {'application/pdf', 'image/png', 'image/jpeg'}
+        policy = "default-src 'none'; frame-ancestors 'self'" if inline else "sandbox; default-src 'none'"
         return FileResponse(store.directory / identifier, media_type=metadata['mime'], filename=metadata.get('name') or identifier,
-                            headers={'Cache-Control': 'no-store', 'Content-Security-Policy': "sandbox; default-src 'none'"})
+                            content_disposition_type='inline' if inline else 'attachment',
+                            headers={'Cache-Control': 'no-store', 'Content-Security-Policy': policy})
 
     @app.get('/theme.css')
     async def theme():
