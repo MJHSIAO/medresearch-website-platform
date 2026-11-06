@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+const context=vm.createContext({window:{},document:{body:{dataset:{root:'.'}},addEventListener(){}},Intl,URLSearchParams});
+for(const file of ['data-service.js','search.js'])vm.runInContext(readFileSync('assets/js/'+file,'utf8'),context);
+const load=name=>JSON.parse(readFileSync('data/'+name+'.json','utf8').replace(/^\uFEFF/,''));
+const pages=load('pages'),documents=load('documents');
+pages.push({id:'private-page',title:'PRIVATE_SEARCH_PROBE',visibility:'internal',sections:[]});
+pages.push({id:'draft-page',title:'DRAFT_SEARCH_PROBE',status:'draft',sections:[]});
+documents.push({id:'private-file',title:'PRIVATE_FILE_PROBE',status:'published',visibility:'internal'});
+documents.push({id:'draft-file',title:'DRAFT_FILE_PROBE',status:'draft',visibility:'public'});
+const search=context.window.MedSearch;
+const index=search.buildIndex(load('site'),load('units'),load('people'),load('news'),pages,documents);
+assert.ok(search.search(index,'周三芳').some(x=>x.href.includes('research-consultation')));
+assert.ok(search.search(index,'論文撰寫').some(x=>x.href.includes('writing')));
+assert.ok(search.search(index,'研究計畫申請表').some(x=>x.type==='文件表單'&&x.href.includes('downloads&q=')));
+for(const probe of ['PRIVATE_SEARCH_PROBE','DRAFT_SEARCH_PROBE','PRIVATE_FILE_PROBE','DRAFT_FILE_PROBE'])assert.equal(search.search(index,probe).length,0);
+console.log('PASS resource search: people/resource pages/documents discoverable, private and draft records excluded');

@@ -222,6 +222,8 @@ def install(app, runtime, store):
                         continue
                     if before is old and kind == 'documents' and key == 'file':
                         continue
+                    if before is old and kind == 'pages' and key == 'groups':
+                        continue
                     shape(child, after[key])
             elif isinstance(before, list):
                 if not isinstance(after, list):
@@ -240,6 +242,9 @@ def install(app, runtime, store):
         if kind == 'documents':
             from .documents import validate_document
             value = validate_document(value, old, state, store)
+        if kind == 'pages' and 'groups' in value:
+            from .resources import validate_groups
+            validate_groups(value['groups'])
         if kind == 'units' and value.get('status') not in {'active', 'inactive', 'archived'}:
             raise HTTPException(422, '單位狀態不正確')
         # Referencing an unpublished upload cannot be used to publish another unit's file.

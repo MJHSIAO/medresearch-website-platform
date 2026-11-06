@@ -81,6 +81,7 @@ app.add_middleware(
     path=settings.cookie_path,
 )
 store = Store(settings.data_directory, PROJECT_ROOT / 'data')
+store.upgrade_resource_content()
 install(app, sys.modules[__name__], store)
 
 

@@ -1,109 +1,1250 @@
-﻿[
+[
   {
-    "id":"department-about",
-    "title":"部門介紹",
-    "eyebrow":"Department of Medical Research",
-    "summary":"醫學研究部由研究發展委員會統籌全院醫學研究，下設七個隸屬單位，整合研究行政、實驗資源、臨床試驗、人工智慧、細胞治療與研發成果管理。",
-    "sections":[
-      {"title":"本部簡介","content":"為兼顧臨床、教學與研究的均衡發展，亞東紀念醫院設立醫學研究部，透過專業研究團隊與博士級研究人力協助醫師及醫學生進行研究，並提供研究支援、推動計畫與成果發表。"},
-      {"title":"本部執掌","content":"建置優質學術研究環境、推動研究計畫執行成效、促使研究論文質量倍增、強化研發成果管理運用、促進產學與國際合作、提升研究品質能力、落實研究教學與獎勵，並持續創新研究發展。"},
-      {"title":"發展目標","content":"配合全院整體發展，落實全人照護之醫學研究；強化院際與產官學合作，鼓勵創新成果專利化，建立具競爭力的研究團隊，並培訓院內研究人力與年輕醫師。"},
-      {"title":"隸屬單位","content":"學術研發室、共同研究室、動物實驗室、人工智慧中心、臨床試驗中心、細胞治療中心及創新智財產學中心。"}
+    "id": "department-about",
+    "title": "部門介紹",
+    "eyebrow": "ABOUT THE DEPARTMENT",
+    "summary": "醫學研究部由研究發展委員會統籌全院醫學研究，下設七個隸屬單位，整合研究行政、實驗資源、臨床試驗、人工智慧、細胞治療與研發成果管理。",
+    "sections": [
+      {
+        "title": "本部簡介",
+        "content": "為兼顧臨床、教學與研究的均衡發展，亞東紀念醫院設立醫學研究部，透過專業研究團隊與博士級研究人力協助醫師及醫學生進行研究，並提供研究支援、推動計畫與成果發表。"
+      },
+      {
+        "title": "本部執掌",
+        "content": "建置優質學術研究環境、推動研究計畫執行成效、促使研究論文質量倍增、強化研發成果管理運用、促進產學與國際合作、提升研究品質能力、落實研究教學與獎勵，並持續創新研究發展。"
+      },
+      {
+        "title": "發展目標",
+        "content": "配合全院整體發展，落實全人照護之醫學研究；強化院際與產官學合作，鼓勵創新成果專利化，建立具競爭力的研究團隊，並培訓院內研究人力與年輕醫師。"
+      },
+      {
+        "title": "隸屬單位",
+        "content": "學術研發室、共同研究室、動物實驗室、人工智慧中心、臨床試驗中心、細胞治療中心及創新智財產學中心。"
+      }
     ],
-    "source_url":"https://depart.femh.org.tw/medresearch/FEMH-MR.html"
+    "source_url": "https://depart.femh.org.tw/medresearch/FEMH-MR.html",
+    "groups": [
+      {
+        "title": "組織與主管",
+        "text": "",
+        "cards": [
+          {
+            "title": "張至宏",
+            "text": "研究副院長。詳細經學歷、專長及公開成果請見原官網。",
+            "tag": "研究副院長",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/ViceR.html"
+              }
+            ]
+          },
+          {
+            "title": "吳彥雯",
+            "text": "醫學研究部主任。詳細經學歷、專長及公開成果請見原官網。",
+            "tag": "部主任",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/dirmr.html"
+              }
+            ]
+          },
+          {
+            "title": "組織架構與成員",
+            "text": "查看原官網組織架構及部門公開成員名單。",
+            "tag": "組織資訊",
+            "actions": [
+              {
+                "label": "查看組織架構",
+                "href": "https://depart.femh.org.tw/medresearch/structure.html"
+              },
+              {
+                "label": "查看部門成員",
+                "href": "https://depart.femh.org.tw/medresearch/staff.html"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "七個隸屬單位",
+        "text": "",
+        "cards": [
+          {
+            "title": "學術研發室",
+            "text": "統籌研究相關辦法、院內研究計畫、論文獎勵、學術會議補助與研究能力教學作業。",
+            "tag": "單位介紹",
+            "actions": [
+              {
+                "label": "認識單位",
+                "href": "unit.html?unit=academic-office"
+              }
+            ]
+          },
+          {
+            "title": "共同研究室",
+            "text": "提供三處共同研究室、研究資料分析室、基礎醫學研究設備與專人操作協助。",
+            "tag": "單位介紹",
+            "actions": [
+              {
+                "label": "認識單位",
+                "href": "unit.html?unit=core-laboratory"
+              }
+            ]
+          },
+          {
+            "title": "動物實驗室",
+            "text": "以促進醫療科技研究發展、整合基礎與臨床醫學研究為宗旨。",
+            "tag": "單位介紹",
+            "actions": [
+              {
+                "label": "認識單位",
+                "href": "unit.html?unit=animal-laboratory"
+              }
+            ]
+          },
+          {
+            "title": "人工智慧中心",
+            "text": "推動負責任醫療 AI，建立應用開發申請與審查制度，兼顧個資安全、臨床倫理與模型透明度。",
+            "tag": "單位介紹",
+            "actions": [
+              {
+                "label": "認識單位",
+                "href": "unit.html?unit=ai-center"
+              }
+            ]
+          },
+          {
+            "title": "臨床試驗中心",
+            "text": "帶動臨床試驗研究與國內外合作交流，提供合約、經費、人員、藥局及試驗空間等行政支援。",
+            "tag": "單位介紹",
+            "actions": [
+              {
+                "label": "認識單位",
+                "href": "unit.html?unit=clinical-trial-center"
+              }
+            ]
+          },
+          {
+            "title": "細胞治療中心",
+            "text": "彙整再生醫療與細胞治療法規、核定收費、專業課程、臨床成果及跨專科團隊資訊。",
+            "tag": "單位介紹",
+            "actions": [
+              {
+                "label": "認識單位",
+                "href": "unit.html?unit=cell-therapy-center"
+              }
+            ]
+          },
+          {
+            "title": "創新智財產學中心",
+            "text": "提供研究發展成果、技術移轉、專利提案、專利運用與產學合作相關資訊。",
+            "tag": "單位介紹",
+            "actions": [
+              {
+                "label": "認識單位",
+                "href": "unit.html?unit=innovation-ip-center"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    "id":"research-services",
-    "title":"研究資源",
-    "eyebrow":"依研究需求快速前往",
-    "summary":"官網將研究資源分為研究諮詢及協助、學術倫理比對、實驗分析技術、統計分析方法與論文撰寫，並提供課程、儀器及文件表單入口。",
-    "sections":[
-      {"title":"研究諮詢及協助","content":"研究者可由研究諮詢入口提出需求，依研究主題銜接研究設計、執行與學術倫理等相關協助。"},
-      {"title":"分析與方法","content":"共同研究室及核心實驗室提供實驗分析技術與儀器資源；統計分析方法頁面提供方法資訊與諮詢系統入口。"},
-      {"title":"研究能力與成果","content":"透過學術研究規範、共研必修、實驗原理、儀器操作課程及論文撰寫資源，支持研究品質與成果發表。"},
-      {"title":"申請前提醒","content":"正式申請條件、文件版本、院內系統權限及承辦窗口，請回到原官網或院內 Intra 查核最新資訊。"}
+    "id": "research-services",
+    "title": "研究資源",
+    "eyebrow": "RESEARCH RESOURCE DIRECTORY",
+    "summary": "從諮詢、申請、設備與訓練，找到實際辦事入口。",
+    "sections": [
+      {
+        "title": "研究諮詢及協助",
+        "content": "研究者可由研究諮詢入口提出需求，依研究主題銜接研究設計、執行與學術倫理等相關協助。"
+      },
+      {
+        "title": "分析與方法",
+        "content": "共同研究室及核心實驗室提供實驗分析技術與儀器資源；統計分析方法頁面提供方法資訊與諮詢系統入口。"
+      },
+      {
+        "title": "研究能力與成果",
+        "content": "透過學術研究規範、共研必修、實驗原理、儀器操作課程及論文撰寫資源，支持研究品質與成果發表。"
+      },
+      {
+        "title": "申請前提醒",
+        "content": "正式申請條件、文件版本、院內系統權限及承辦窗口，請回到原官網或院內 Intra 查核最新資訊。"
+      }
     ],
-    "source_url":"https://depart.femh.org.tw/medresearch/Consult.html"
+    "source_url": "https://depart.femh.org.tw/medresearch/Consult.html",
+    "groups": [
+      {
+        "title": "我要辦理研究業務",
+        "text": "",
+        "cards": [
+          {
+            "title": "研究諮詢及協助",
+            "text": "依研究方向選擇諮詢人員、聯絡窗口或預約表單。",
+            "tag": "預約與聯絡",
+            "actions": [
+              {
+                "label": "查看入口",
+                "href": "content-page.html?page=research-consultation"
+              }
+            ]
+          },
+          {
+            "title": "督導與審查單位",
+            "text": "找到學術倫理、受試者保護、動物及生物安全相關單位。",
+            "tag": "審查入口",
+            "actions": [
+              {
+                "label": "查看入口",
+                "href": "content-page.html?page=governance"
+              }
+            ]
+          },
+          {
+            "title": "文件表單",
+            "text": "依單位與類型查找文件，預覽或下載。",
+            "tag": "文件下載",
+            "actions": [
+              {
+                "label": "查看入口",
+                "href": "content-page.html?page=downloads"
+              }
+            ]
+          },
+          {
+            "title": "約用助理人員資訊",
+            "text": "查找約用研究人員文件與辦法入口。",
+            "tag": "研究行政",
+            "actions": [
+              {
+                "label": "查看入口",
+                "href": "content-page.html?page=research-assistants"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "我要找研究支援",
+        "text": "",
+        "cards": [
+          {
+            "title": "儀器設備",
+            "text": "六類設備官方資訊與操作訓練入口。",
+            "tag": "設備與技術",
+            "actions": [
+              {
+                "label": "查看入口",
+                "href": "content-page.html?page=equipment"
+              }
+            ]
+          },
+          {
+            "title": "課程資訊",
+            "text": "研究規範、共研必修、實驗及儀器課程。",
+            "tag": "教育訓練",
+            "actions": [
+              {
+                "label": "查看入口",
+                "href": "content-page.html?page=courses"
+              }
+            ]
+          },
+          {
+            "title": "論文撰寫與研究課程",
+            "text": "院內 E-Learning 課程與學習資源。",
+            "tag": "院內學習",
+            "actions": [
+              {
+                "label": "查看入口",
+                "href": "content-page.html?page=writing"
+              }
+            ]
+          },
+          {
+            "title": "統計分析方法",
+            "text": "研究方法資訊與原有諮詢系統入口。",
+            "tag": "資料分析",
+            "actions": [
+              {
+                "label": "查看入口",
+                "href": "content-page.html?page=statistics"
+              }
+            ]
+          },
+          {
+            "title": "學術倫理與研究規範",
+            "text": "iThenticate 與相關研究規範。",
+            "tag": "研究品質",
+            "actions": [
+              {
+                "label": "查看入口",
+                "href": "content-page.html?page=ethics"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "認識研究網絡",
+        "text": "",
+        "cards": [
+          {
+            "title": "研究團隊",
+            "text": "六個研究團隊的完整名稱與官方介紹入口。",
+            "tag": "",
+            "actions": [
+              {
+                "label": "查看入口",
+                "href": "content-page.html?page=teams"
+              }
+            ]
+          },
+          {
+            "title": "核心實驗室",
+            "text": "四個核心實驗室的介紹入口。",
+            "tag": "",
+            "actions": [
+              {
+                "label": "查看入口",
+                "href": "content-page.html?page=laboratories"
+              }
+            ]
+          },
+          {
+            "title": "院內外常用資源",
+            "text": "IRB、圖書館及院外研究機構等資源。",
+            "tag": "",
+            "actions": [
+              {
+                "label": "查看入口",
+                "href": "content-page.html?page=external-resources"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    "id":"research-consultation",
-    "title":"研究諮詢及協助",
-    "eyebrow":"常用研究服務",
-    "summary":"整合研究需求、計畫設計、執行問題與學術倫理相關協助的單一入口。",
-    "sections":[
-      {"title":"提出需求前","content":"建議先整理研究問題、研究對象、資料來源、目前進度及希望獲得的協助，以利銜接適合的研究資源。"},
-      {"title":"正式申請","content":"請使用醫學研究部官網的研究諮詢協助入口送出需求；表單欄位與回覆流程以官方頁面為準。"}
+    "id": "research-consultation",
+    "title": "研究諮詢及協助",
+    "eyebrow": "常用研究服務",
+    "summary": "依諮詢方向找到人員、聯絡窗口與預約表單。預約由原有系統受理，本站提供資訊與入口。",
+    "sections": [
+      {
+        "title": "提出需求前",
+        "content": "建議先整理研究問題、研究對象、資料來源、目前進度及希望獲得的協助，以利銜接適合的研究資源。"
+      },
+      {
+        "title": "正式申請",
+        "content": "請使用醫學研究部官網的研究諮詢協助入口送出需求；表單欄位與回覆流程以官方頁面為準。"
+      }
     ],
-    "source_url":"https://depart.femh.org.tw/medresearch/Request.html"
+    "source_url": "https://depart.femh.org.tw/medresearch/Request.html",
+    "groups": [
+      {
+        "title": "研究諮詢窗口",
+        "text": "專長依原官網摘要，請先確認適合的諮詢人員；時段與服務內容以受理窗口確認為準。",
+        "cards": [
+          {
+            "title": "吳泓彥",
+            "text": "研究諮詢預約請洽吳靜媛管理師，分機 4562。",
+            "tag": "學術研發室主任／研究型主治醫師",
+            "actions": [
+              {
+                "label": "查看聯絡說明",
+                "href": "https://depart.femh.org.tw/medresearch/Request.html"
+              },
+              {
+                "label": "電子郵件",
+                "href": "mailto:grace96113@mail.femh.org.tw"
+              }
+            ],
+            "contact": "grace96113@mail.femh.org.tw"
+          },
+          {
+            "title": "姜智耀",
+            "text": "諮詢地點及可預約時段請見原官網。",
+            "tag": "心臟血管外科醫師",
+            "actions": [
+              {
+                "label": "前往預約表單",
+                "href": "https://forms.office.com/pages/responsepage.aspx?id=U88R9oa2FEiwNViQjUkAvkZG8ntkGpBKgSVDO6l1iexUMlJFUEJKVEtBNllFSTQ2MkFXNUtBWktDTy4u&route=shorturl"
+              },
+              {
+                "label": "電子郵件",
+                "href": "mailto:eastoneyao@gmail.com"
+              }
+            ],
+            "contact": "eastoneyao@gmail.com"
+          },
+          {
+            "title": "周三芳",
+            "text": "臨床資料統計、問卷分析、研究主題與方法設計。分機 2279。",
+            "tag": "博士研究員",
+            "actions": [
+              {
+                "label": "前往預約表單",
+                "href": "https://forms.office.com/pages/responsepage.aspx?id=U88R9oa2FEiwNViQjUkAvjiti0NemodKssy2qVmzqb1URjRZWFRWNDhMVTUyU1hCUlVHNlRHVjVPVy4u"
+              },
+              {
+                "label": "電子郵件",
+                "href": "mailto:sfchou@femh.org.tw"
+              }
+            ],
+            "contact": "sfchou@femh.org.tw"
+          },
+          {
+            "title": "李明怡",
+            "text": "基礎醫學實驗設計、神經生理及藥理、細胞分子生物。分機 4566。",
+            "tag": "博士研究員",
+            "actions": [
+              {
+                "label": "前往預約表單",
+                "href": "https://forms.gle/ayBDPYVLLsFmpoam9"
+              },
+              {
+                "label": "電子郵件",
+                "href": "mailto:mingyi.lee@gmail.com"
+              }
+            ],
+            "contact": "mingyi.lee@gmail.com"
+          },
+          {
+            "title": "廖秀蓉",
+            "text": "免疫學、生物資訊、實驗設計、研究計畫與論文寫作。分機 4566。",
+            "tag": "博士研究員",
+            "actions": [
+              {
+                "label": "前往預約表單",
+                "href": "https://forms.gle/xsQRQsvwVmsAd3nN9"
+              },
+              {
+                "label": "電子郵件",
+                "href": "mailto:liaohsiujung@gmail.com"
+              }
+            ],
+            "contact": "liaohsiujung@gmail.com"
+          },
+          {
+            "title": "張瓊方",
+            "text": "次世代基因分析、細胞實驗、癌症與組織纖維化研究、論文投稿。分機 4564。",
+            "tag": "博士研究員",
+            "actions": [
+              {
+                "label": "前往預約表單",
+                "href": "https://forms.gle/qLsfXstZT9Y9q4nX9"
+              },
+              {
+                "label": "電子郵件",
+                "href": "mailto:changcf@femh.org.tw"
+              }
+            ],
+            "contact": "changcf@femh.org.tw"
+          },
+          {
+            "title": "陳燦麒",
+            "text": "學術倫理、基礎研究設計、細胞分子影像、研究計畫申請。分機 4565。",
+            "tag": "博士研究員",
+            "actions": [
+              {
+                "label": "前往預約表單",
+                "href": "https://forms.gle/8wenwfomLtgFcVWQ7"
+              },
+              {
+                "label": "電子郵件",
+                "href": "mailto:960887272@femh.org.tw"
+              }
+            ],
+            "contact": "960887272@femh.org.tw"
+          }
+        ]
+      },
+      {
+        "title": "諮詢申請文件",
+        "text": "",
+        "cards": [
+          {
+            "title": "博士研究協助申請單（含學術倫理）",
+            "text": "原官網提供 Word 申請文件；填寫及寄送方式請依原官網說明。",
+            "tag": "原站文件 · DOC",
+            "actions": [
+              {
+                "label": "開啟官方申請單",
+                "href": "https://depart.femh.org.tw/medresearch/Doc/%E5%8D%9A%E5%A3%AB%E7%A0%94%E7%A9%B6%E5%8D%94%E5%8A%A9%E7%94%B3%E8%AB%8B%E5%96%AE.doc"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    "id":"statistics",
-    "title":"統計分析方法",
-    "eyebrow":"研究方法與資料分析",
-    "summary":"提供統計分析相關資訊與諮詢系統入口，協助研究者釐清研究設計、變項與分析方法。",
-    "sections":[
-      {"title":"諮詢前準備","content":"建議備妥研究目的、主要與次要結果、變項定義、預計樣本數及目前資料狀態。"},
-      {"title":"使用方式","content":"請由原官網進入統計分析方法與諮詢系統，最新服務範圍及排程以官方資訊為準。"}
+    "id": "statistics",
+    "title": "統計分析方法",
+    "eyebrow": "研究方法與資料分析",
+    "summary": "提供統計分析相關資訊與諮詢系統入口，協助研究者釐清研究設計、變項與分析方法。",
+    "sections": [
+      {
+        "title": "諮詢前準備",
+        "content": "建議備妥研究目的、主要與次要結果、變項定義、預計樣本數及目前資料狀態。"
+      },
+      {
+        "title": "使用方式",
+        "content": "請由原官網進入統計分析方法與諮詢系統，最新服務範圍及排程以官方資訊為準。"
+      }
     ],
-    "source_url":"https://depart.femh.org.tw/medresearch/Statistice.html"
+    "source_url": "https://depart.femh.org.tw/medresearch/Statistice.html"
   },
   {
-    "id":"ethics",
-    "title":"學術倫理與研究規範",
-    "eyebrow":"研究品質",
-    "summary":"整合 iThenticate 申請、學術研究規範與學術倫理相關資訊；人體研究、動物實驗及生物安全仍須依各審查單位正式流程辦理。",
-    "sections":[
-      {"title":"學術倫理比對","content":"研究者可由官網查看 iThenticate 申請及學術倫理比對資訊。"},
-      {"title":"審查與申請","content":"人體研究、實驗動物、生物安全及人體生物資料庫等案件，請依各督導或審查單位的最新規章與表單提出申請。"},
-      {"title":"研究誠信","content":"最新消息區持續轉知國家科學及技術委員會研究誠信電子報、學術倫理案件處理要點及研究人員學術倫理守則。"}
+    "id": "ethics",
+    "title": "學術倫理與研究規範",
+    "eyebrow": "研究品質",
+    "summary": "整合 iThenticate 申請、學術研究規範與學術倫理相關資訊；人體研究、動物實驗及生物安全仍須依各審查單位正式流程辦理。",
+    "sections": [
+      {
+        "title": "學術倫理比對",
+        "content": "研究者可由官網查看 iThenticate 申請及學術倫理比對資訊。"
+      },
+      {
+        "title": "審查與申請",
+        "content": "人體研究、實驗動物、生物安全及人體生物資料庫等案件，請依各督導或審查單位的最新規章與表單提出申請。"
+      },
+      {
+        "title": "研究誠信",
+        "content": "最新消息區持續轉知國家科學及技術委員會研究誠信電子報、學術倫理案件處理要點及研究人員學術倫理守則。"
+      }
     ],
-    "source_url":"https://depart.femh.org.tw/medresearch/iThenticate.html"
+    "source_url": "https://depart.femh.org.tw/medresearch/iThenticate.html"
   },
   {
-    "id":"experimental-tech",
-    "title":"實驗分析技術",
-    "eyebrow":"研究空間與技術資源",
-    "summary":"由共同研究室、四個核心實驗室與共用儀器支援基礎、臨床轉譯及資料分析研究。",
-    "sections":[
-      {"title":"核心實驗室","content":"再生醫學及細胞治療實驗室、突觸傳遞及神經藥理實驗室、細胞分子影像及基因檢測實驗室、組織纖維化及癌化實驗室。"},
-      {"title":"共同研究空間","content":"第一、第二及第三共同研究室提供 Wet Lab，研究資料分析室提供 Dry Lab；符合條件的研究計畫可依規定申請空間。"},
-      {"title":"儀器與訓練","content":"共用儀器由專人管理並提供使用協助，另不定期辦理研究儀器操作教育訓練。"}
+    "id": "experimental-tech",
+    "title": "實驗分析技術",
+    "eyebrow": "研究空間與技術資源",
+    "summary": "由共同研究室、四個核心實驗室與共用儀器支援基礎、臨床轉譯及資料分析研究。",
+    "sections": [
+      {
+        "title": "核心實驗室",
+        "content": "再生醫學及細胞治療實驗室、突觸傳遞及神經藥理實驗室、細胞分子影像及基因檢測實驗室、組織纖維化及癌化實驗室。"
+      },
+      {
+        "title": "共同研究空間",
+        "content": "第一、第二及第三共同研究室提供 Wet Lab，研究資料分析室提供 Dry Lab；符合條件的研究計畫可依規定申請空間。"
+      },
+      {
+        "title": "儀器與訓練",
+        "content": "共用儀器由專人管理並提供使用協助，另不定期辦理研究儀器操作教育訓練。"
+      }
     ],
-    "source_url":"https://depart.femh.org.tw/medresearch/ExpTech.html"
+    "source_url": "https://depart.femh.org.tw/medresearch/ExpTech.html"
   },
   {
-    "id":"equipment",
-    "title":"儀器設備",
-    "eyebrow":"共同研究資源",
-    "summary":"官網依設備類別提供螢光顯微鏡、共軛焦顯微鏡、流式細胞分析儀、高效液相層析儀、即時螢光定量反應器及其他儀器資訊。",
-    "sections":[
-      {"title":"影像與細胞分析","content":"螢光顯微鏡、共軛焦顯微鏡及流式細胞分析儀。"},
-      {"title":"分離與分子分析","content":"高效液相層析儀及即時螢光定量反應器。"},
-      {"title":"使用提醒","content":"設備規格、預約、收費、必要訓練與操作規範，請以各儀器官方頁面及管理單位公告為準。"}
+    "id": "equipment",
+    "title": "儀器設備",
+    "eyebrow": "共同研究資源",
+    "summary": "依設備類別查找官方介紹、設備資訊與操作相關說明。",
+    "sections": [
+      {
+        "title": "影像與細胞分析",
+        "content": "螢光顯微鏡、共軛焦顯微鏡及流式細胞分析儀。"
+      },
+      {
+        "title": "分離與分子分析",
+        "content": "高效液相層析儀及即時螢光定量反應器。"
+      },
+      {
+        "title": "使用提醒",
+        "content": "設備規格、預約、收費、必要訓練與操作規範，請以各儀器官方頁面及管理單位公告為準。"
+      }
     ],
-    "source_url":"https://depart.femh.org.tw/medresearch/Equip.html"
+    "source_url": "https://depart.femh.org.tw/medresearch/Equip.html",
+    "groups": [
+      {
+        "title": "影像、細胞與分子分析",
+        "text": "",
+        "cards": [
+          {
+            "title": "螢光顯微鏡",
+            "text": "設備規格、適用項目與管理資訊，請見各儀器官方頁面。",
+            "tag": "設備介紹",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/FluMicro.html"
+              }
+            ]
+          },
+          {
+            "title": "共軛焦顯微鏡",
+            "text": "設備規格、適用項目與管理資訊，請見各儀器官方頁面。",
+            "tag": "設備介紹",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/Confocal.html"
+              }
+            ]
+          },
+          {
+            "title": "流式細胞分析儀",
+            "text": "設備規格、適用項目與管理資訊，請見各儀器官方頁面。",
+            "tag": "設備介紹",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/Flow.html"
+              }
+            ]
+          },
+          {
+            "title": "高效液相層析儀",
+            "text": "設備規格、適用項目與管理資訊，請見各儀器官方頁面。",
+            "tag": "設備介紹",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/HPLC.html"
+              }
+            ]
+          },
+          {
+            "title": "即時螢光定量反應器",
+            "text": "設備規格、適用項目與管理資訊，請見各儀器官方頁面。",
+            "tag": "設備介紹",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/LC480.html"
+              }
+            ]
+          },
+          {
+            "title": "其他儀器設備",
+            "text": "設備規格、適用項目與管理資訊，請見各儀器官方頁面。",
+            "tag": "設備介紹",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/OtherEquips.html"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "使用與訓練",
+        "text": "",
+        "cards": [
+          {
+            "title": "操作前先確認訓練要求",
+            "text": "操作課程、預約、收費及使用資格以管理單位公告為準。",
+            "tag": "",
+            "actions": [
+              {
+                "label": "查看儀器操作課程",
+                "href": "https://depart.femh.org.tw/medresearch/Operation.html"
+              },
+              {
+                "label": "認識共同研究室",
+                "href": "unit.html?unit=core-laboratory"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    "id":"courses",
-    "title":"課程資訊",
-    "eyebrow":"研究教育訓練",
-    "summary":"課程資訊分為學術研究規範、共研必修課程、實驗原理課程與儀器操作課程。",
-    "sections":[
-      {"title":"研究規範與必修","content":"提供學術研究規範與共同研究室必修課程資訊，協助研究人員掌握基本要求。"},
-      {"title":"實驗與儀器","content":"依研究需求查找實驗原理及儀器操作課程；開課時間、資格與報名方式以官方公告為準。"}
+    "id": "courses",
+    "title": "課程資訊",
+    "eyebrow": "研究教育訓練",
+    "summary": "從研究規範、共研必修到實驗與儀器操作，前往原有課程資訊與學習資源。",
+    "sections": [
+      {
+        "title": "研究規範與必修",
+        "content": "提供學術研究規範與共同研究室必修課程資訊，協助研究人員掌握基本要求。"
+      },
+      {
+        "title": "實驗與儀器",
+        "content": "依研究需求查找實驗原理及儀器操作課程；開課時間、資格與報名方式以官方公告為準。"
+      }
     ],
-    "source_url":"https://depart.femh.org.tw/medresearch/Course.html"
+    "source_url": "https://depart.femh.org.tw/medresearch/Course.html",
+    "groups": [
+      {
+        "title": "依課程類型查找",
+        "text": "",
+        "cards": [
+          {
+            "title": "學術研究規範",
+            "text": "研究規範與相關教育訓練。",
+            "tag": "課程資訊",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/academicrule.html"
+              }
+            ]
+          },
+          {
+            "title": "共研必修課程",
+            "text": "共同研究室使用所需的基礎訓練資訊。",
+            "tag": "課程資訊",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/Prescribedg.html"
+              }
+            ]
+          },
+          {
+            "title": "實驗原理課程",
+            "text": "實驗技術與原理相關課程資訊。",
+            "tag": "課程資訊",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/ExpClass.html"
+              }
+            ]
+          },
+          {
+            "title": "儀器操作課程",
+            "text": "共用儀器操作訓練與相關說明。",
+            "tag": "課程資訊",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/Operation.html"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "院內學習資源",
+        "text": "",
+        "cards": [
+          {
+            "title": "論文撰寫與研究課程",
+            "text": "整理原官網列出的院內 E-Learning 課程；進入課程需依院方系統登入。",
+            "tag": "院內登入",
+            "actions": [
+              {
+                "label": "查看課程清單",
+                "href": "content-page.html?page=writing"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    "id":"downloads",
-    "title":"文件表單",
-    "eyebrow":"常用申請文件",
-    "summary":"依業務分為學術研發室、共同研究室、臨床試驗中心、學術倫理、動物實驗室與生物安全申請表單。",
-    "sections":[
-      {"title":"研究與空間表單","content":"查找學術研發室、共同研究室與臨床試驗中心相關表單。"},
-      {"title":"審查申請表單","content":"查找學術倫理、動物實驗室及生物安全申請表單。"},
-      {"title":"版本提醒","content":"部分文件須由院內 Intra 下載；送件前請核對表單版本、適用範圍與簽核方式。"}
+    "id": "downloads",
+    "title": "文件表單",
+    "eyebrow": "常用申請文件",
+    "summary": "依業務分為學術研發室、共同研究室、臨床試驗中心、學術倫理、動物實驗室與生物安全申請表單。",
+    "sections": [
+      {
+        "title": "研究與空間表單",
+        "content": "查找學術研發室、共同研究室與臨床試驗中心相關表單。"
+      },
+      {
+        "title": "審查申請表單",
+        "content": "查找學術倫理、動物實驗室及生物安全申請表單。"
+      },
+      {
+        "title": "版本提醒",
+        "content": "部分文件須由院內 Intra 下載；送件前請核對表單版本、適用範圍與簽核方式。"
+      }
     ],
-    "source_url":"https://depart.femh.org.tw/medresearch/Document.html"
+    "source_url": "https://depart.femh.org.tw/medresearch/Document.html"
+  },
+  {
+    "id": "teams",
+    "title": "研究團隊",
+    "eyebrow": "RESEARCH RESOURCES",
+    "summary": "依研究方向找到團隊介紹與原官網公開資料。",
+    "sections": [],
+    "groups": [
+      {
+        "title": "六個專業研究團隊",
+        "text": "",
+        "cards": [
+          {
+            "title": "小腸移植及小兒腫瘤研究團隊",
+            "text": "查看團隊介紹、成員與原官網公開的研究資訊。",
+            "tag": "研究團隊",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/ITPORT.html"
+              }
+            ]
+          },
+          {
+            "title": "心血管核心專業創新研究團隊",
+            "text": "查看團隊介紹、成員與原官網公開的研究資訊。",
+            "tag": "研究團隊",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/CVRT.html"
+              }
+            ]
+          },
+          {
+            "title": "角膜再生與創傷癒合研究團隊",
+            "text": "查看團隊介紹、成員與原官網公開的研究資訊。",
+            "tag": "研究團隊",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/CRWHRT.html"
+              }
+            ]
+          },
+          {
+            "title": "關節肌肉系統以及再生醫療團隊",
+            "text": "查看團隊介紹、成員與原官網公開的研究資訊。",
+            "tag": "研究團隊",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/SR3T.html"
+              }
+            ]
+          },
+          {
+            "title": "免疫治療與精準醫學團隊",
+            "text": "查看團隊介紹、成員與原官網公開的研究資訊。",
+            "tag": "研究團隊",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/INRT.html"
+              }
+            ]
+          },
+          {
+            "title": "腎結石病生理與結晶動力學研究團隊",
+            "text": "查看團隊介紹、成員與原官網公開的研究資訊。",
+            "tag": "研究團隊",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/PCKSRT.html"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "source_url": "https://depart.femh.org.tw/medresearch/Teams.html"
+  },
+  {
+    "id": "laboratories",
+    "title": "核心實驗室",
+    "eyebrow": "RESEARCH RESOURCES",
+    "summary": "找到四個核心實驗室的介紹與研究支援入口。",
+    "sections": [],
+    "groups": [
+      {
+        "title": "核心實驗室",
+        "text": "",
+        "cards": [
+          {
+            "title": "再生醫學及細胞治療實驗室",
+            "text": "研究介紹、技術與人員資訊請見各實驗室原官網。",
+            "tag": "核心實驗室",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/SCellTherapy.html"
+              }
+            ]
+          },
+          {
+            "title": "突觸傳遞及神經藥理實驗室",
+            "text": "研究介紹、技術與人員資訊請見各實驗室原官網。",
+            "tag": "核心實驗室",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/Synapse.html"
+              }
+            ]
+          },
+          {
+            "title": "細胞分子影像及基因檢測實驗室",
+            "text": "研究介紹、技術與人員資訊請見各實驗室原官網。",
+            "tag": "核心實驗室",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/CellImage.html"
+              }
+            ]
+          },
+          {
+            "title": "組織纖維化及癌化實驗室",
+            "text": "研究介紹、技術與人員資訊請見各實驗室原官網。",
+            "tag": "核心實驗室",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/TissueFibrosis.html"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "source_url": "https://depart.femh.org.tw/medresearch/Lab.html"
+  },
+  {
+    "id": "governance",
+    "title": "督導與審查單位",
+    "eyebrow": "RESEARCH RESOURCES",
+    "summary": "依業務查找督導與審查單位；案件的適用程序請向受理單位確認。",
+    "sections": [],
+    "groups": [
+      {
+        "title": "督導與審查入口",
+        "text": "",
+        "cards": [
+          {
+            "title": "學術倫理委員會",
+            "text": "前往該單位的官方介紹與業務資訊。",
+            "tag": "原官網",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/ReseachEthics.html"
+              }
+            ]
+          },
+          {
+            "title": "受試者保護諮議委員會",
+            "text": "前往該單位的官方介紹與業務資訊。",
+            "tag": "原官網",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/RecipCommittee.html"
+              }
+            ]
+          },
+          {
+            "title": "受試者保護中心",
+            "text": "前往該單位的官方介紹與業務資訊。",
+            "tag": "原官網",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/RecipCenter.html"
+              }
+            ]
+          },
+          {
+            "title": "研究發展委員會",
+            "text": "前往該單位的官方介紹與業務資訊。",
+            "tag": "原官網",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/RD.html"
+              }
+            ]
+          },
+          {
+            "title": "實驗動物照護及使用小組",
+            "text": "前往該單位的官方介紹與業務資訊。",
+            "tag": "原官網",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/Animal.html"
+              }
+            ]
+          },
+          {
+            "title": "人體生物資料庫倫理委員會",
+            "text": "前往該單位的官方介紹與業務資訊。",
+            "tag": "原官網",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/BioBank.html"
+              }
+            ]
+          },
+          {
+            "title": "生物安全委員會",
+            "text": "前往該單位的官方介紹與業務資訊。",
+            "tag": "原官網",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/BioSafe.html"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "常用審查相關網站",
+        "text": "",
+        "cards": [
+          {
+            "title": "人體試驗審議委員會（IRB）",
+            "text": "前往委員會獨立網站。",
+            "tag": "外部網站",
+            "actions": [
+              {
+                "label": "前往 IRB 網站",
+                "href": "https://www.femh-irb.org/"
+              }
+            ]
+          },
+          {
+            "title": "醫學倫理委員會",
+            "text": "前往委員會獨立網站。",
+            "tag": "外部網站",
+            "actions": [
+              {
+                "label": "前往委員會網站",
+                "href": "https://sites.google.com/view/femhethics/首頁"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "source_url": "https://depart.femh.org.tw/medresearch/Committee.html"
+  },
+  {
+    "id": "writing",
+    "title": "論文撰寫與研究課程",
+    "eyebrow": "RESEARCH RESOURCES",
+    "summary": "整理原官網的院內 E-Learning 課程入口；需依院方學習平台登入。",
+    "sections": [],
+    "groups": [
+      {
+        "title": "院內 E-Learning 課程",
+        "text": "",
+        "cards": [
+          {
+            "title": "常見醫學研究統計",
+            "text": "課程內容、學習資格與修課紀錄由院方 E-Learning 平台提供。",
+            "tag": "院內登入",
+            "actions": [
+              {
+                "label": "前往學習平台",
+                "href": "https://elearn.femh.org.tw/dist/index.html#/courseResourceCatalog/0/course-info/8639?mid=2223"
+              }
+            ]
+          },
+          {
+            "title": "醫學論文撰寫注意事項",
+            "text": "課程內容、學習資格與修課紀錄由院方 E-Learning 平台提供。",
+            "tag": "院內登入",
+            "actions": [
+              {
+                "label": "前往學習平台",
+                "href": "https://elearn.femh.org.tw/dist/index.html#/courseResourceCatalog/0/course-info/8701?mid=2223"
+              }
+            ]
+          },
+          {
+            "title": "研究資料庫介紹",
+            "text": "課程內容、學習資格與修課紀錄由院方 E-Learning 平台提供。",
+            "tag": "院內登入",
+            "actions": [
+              {
+                "label": "前往學習平台",
+                "href": "https://elearn.femh.org.tw/dist/index.html#/courseResourceCatalog/0/course-info/8559?mid=2223"
+              }
+            ]
+          },
+          {
+            "title": "生物醫學研究設計與研究資源",
+            "text": "課程內容、學習資格與修課紀錄由院方 E-Learning 平台提供。",
+            "tag": "院內登入",
+            "actions": [
+              {
+                "label": "前往學習平台",
+                "href": "https://elearn.femh.org.tw/dist/index.html#/courseResourceCatalog/0/course-info/8559?mid=2223"
+              }
+            ]
+          },
+          {
+            "title": "IRB申請流程與注意事項",
+            "text": "課程內容、學習資格與修課紀錄由院方 E-Learning 平台提供。",
+            "tag": "院內登入",
+            "actions": [
+              {
+                "label": "前往學習平台",
+                "href": "https://elearn.femh.org.tw/dist/index.html#/courseResourceCatalog/0/course-info/8565?mid=2223"
+              }
+            ]
+          },
+          {
+            "title": "計畫主持人應該知道的大小事：研究計畫經費核銷原則",
+            "text": "前往原官網列示的院內課程。",
+            "tag": "院內登入",
+            "actions": [
+              {
+                "label": "前往學習平台",
+                "href": "https://elearn.femh.org.tw/dist/index.html#/courseResourceCatalog/0/course-info/10159?mid=2223"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "source_url": "https://depart.femh.org.tw/medresearch/Writing.html"
+  },
+  {
+    "id": "research-assistants",
+    "title": "約用助理人員資訊",
+    "eyebrow": "RESEARCH RESOURCES",
+    "summary": "集中查找原官網列示的注意事項、管理辦法與酬金標準入口。",
+    "sections": [],
+    "groups": [
+      {
+        "title": "辦法與文件",
+        "text": "",
+        "cards": [
+          {
+            "title": "約用助理人員相關注意事項",
+            "text": "開啟原官網公開 PDF。正式適用內容請洽學術研發室。",
+            "tag": "原站文件 · PDF",
+            "actions": [
+              {
+                "label": "開啟官方 PDF",
+                "href": "https://depart.femh.org.tw/medresearch/Doc/%E7%B4%84%E7%94%A8%E5%8A%A9%E7%90%86%E4%BA%BA%E5%93%A1%E7%9B%B8%E9%97%9C%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A0%85.pdf"
+              }
+            ]
+          },
+          {
+            "title": "約用研究人員相關文件",
+            "text": "研究人力約用、管理細則、助理及博士後研究人員酬金標準等，依原官網指示前往學術研發室內部網頁。",
+            "tag": "院內資源",
+            "actions": [
+              {
+                "label": "前往學術研發室內部網頁",
+                "href": "https://sites.google.com/view/femhrd/%E5%8A%A9%E7%90%86%E4%BA%BA%E5%93%A1"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "source_url": "https://depart.femh.org.tw/medresearch/RA.html"
+  },
+  {
+    "id": "external-resources",
+    "title": "院內外常用資源",
+    "eyebrow": "RESEARCH RESOURCES",
+    "summary": "保留原官網常用資源，依需求直接前往各單位或獨立系統。",
+    "sections": [],
+    "groups": [
+      {
+        "title": "院內常用網站",
+        "text": "",
+        "cards": [
+          {
+            "title": "人體試驗審議委員會（IRB）",
+            "text": "人體試驗審議委員會獨立網站。",
+            "tag": "外部網站",
+            "actions": [
+              {
+                "label": "前往網站",
+                "href": "https://www.femh-irb.org/"
+              }
+            ]
+          },
+          {
+            "title": "醫學倫理委員會",
+            "text": "委員會公開資訊入口。",
+            "tag": "外部網站",
+            "actions": [
+              {
+                "label": "前往網站",
+                "href": "https://sites.google.com/view/femhethics/首頁"
+              }
+            ]
+          },
+          {
+            "title": "圖書館",
+            "text": "文獻、電子資源與圖書館服務。",
+            "tag": "外部網站",
+            "actions": [
+              {
+                "label": "前往網站",
+                "href": "https://sites.google.com/view/femh-library/"
+              }
+            ]
+          },
+          {
+            "title": "教學部",
+            "text": "教學與訓練相關資訊。",
+            "tag": "外部網站",
+            "actions": [
+              {
+                "label": "前往網站",
+                "href": "https://depart.femh.org.tw/meded/new/default.html"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "原官網資源分類",
+        "text": "",
+        "cards": [
+          {
+            "title": "院外研究資源",
+            "text": "中央研究院、國家衛生研究院、國科會與其他醫學中心的官方連結。",
+            "tag": "官方資源清單",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/OtherSources.html"
+              }
+            ]
+          },
+          {
+            "title": "院內學術最新訊息",
+            "text": "前往原官網院內學術資訊。",
+            "tag": "學術資訊",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/MeetingInf1.html"
+              }
+            ]
+          },
+          {
+            "title": "院外學術最新訊息",
+            "text": "前往原官網院外學術資訊。",
+            "tag": "學術資訊",
+            "actions": [
+              {
+                "label": "查看原官網",
+                "href": "https://depart.femh.org.tw/medresearch/MeetingInf2.html"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "source_url": "https://depart.femh.org.tw/medresearch/OtherSources.html"
   }
 ]

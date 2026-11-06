@@ -17,7 +17,7 @@
       target.querySelector('#doc-count').textContent=`共 ${shown.length} 份文件`;
       list.innerHTML=shown.length?shown.map(d=>{const url=urlFor(d.file);return `<article class="doc-card"><div class="doc-top"><span class="doc-icon">${esc(d.category)}</span><span>${esc(unitName(d.owner_unit_id))}</span>${d.is_demo?'<span class="demo-label">示意</span>':''}</div><h2>${esc(d.title)}</h2><p>${esc(d.summary)}</p><div class="doc-meta">${esc(d.version)} · ${esc(D.formatDate(d.updated_at))} · ${esc(d.file?.type||'')} ${Math.ceil((d.file?.size||0)/1024)} KB</div><div class="doc-actions">${url?`<button type="button" data-id="${esc(d.id)}">預覽文件</button><a href="${esc(url)}" download>下載${d.is_demo?'範例':'文件'} ↓</a>`:'<span>檔案暫時無法使用，請聯絡負責單位。</span>'}</div></article>`;}).join(''):'<p>沒有符合的文件，請調整關鍵字或篩選條件。</p>';
     }
-    search.addEventListener('input',draw);unit.addEventListener('change',draw);kind.addEventListener('change',draw);
+    search.value=new URLSearchParams(location.search).get('q')||'';search.addEventListener('input',draw);unit.addEventListener('change',draw);kind.addEventListener('change',draw);
     list.addEventListener('click',event=>{const b=event.target.closest('button[data-id]');if(!b)return;const d=docs.find(x=>x.id===b.dataset.id);const href=urlFor(d.file);if(!href)return;const url=new URL(href);if(d.file.href.startsWith('media/'))url.searchParams.set('inline','true');target.querySelector('#doc-dialog-title').textContent=d.title;target.querySelector('#doc-open').href=url.href;frame.src=url.href;dialog.showModal();});
     target.querySelector('#doc-close').onclick=()=>dialog.close();dialog.addEventListener('close',()=>frame.removeAttribute('src'));draw();
   }

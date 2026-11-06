@@ -6,7 +6,7 @@
   const normalize = (value) => text(value).normalize('NFKC').trim().toLowerCase();
   const unitHref = (unit) => `${root()}/${unit.site_href || `unit.html?unit=${encodeURIComponent(unit.slug)}`}`;
 
-  function buildIndex(site, units, people, news) {
+  function buildIndex(site, units, people, news, pages=[], documents=[]) {
     const publicUnits = units.filter(D.publicUnit);
     const byId = new Map(publicUnits.map((unit) => [unit.id, unit]));
     const entries = publicUnits.map((unit) => ({
@@ -30,6 +30,11 @@
     // site.json is public site metadata, not administrative or draft content.
     entries.push({ type: '網站資訊', title: site.name, summary: site.description,
       body: text([site.platform_name, site.contact?.unit, site.contact?.address, ...Object.values(site.principles || {})]), href: `${root()}/index.html` });
+    for(const page of pages.filter(p=>['public','both'].includes(p.visibility||'public')&&['active','published'].includes(p.status||'active'))){
+      entries.push({type:'網站內容',title:page.title,summary:page.summary,body:text((page.sections||[]).map(x=>[x.title,x.content])),href:`${root()}/content-page.html?page=${encodeURIComponent(page.id)}`});
+      (page.groups||[]).forEach((group,index)=>(group.cards||[]).forEach(c=>entries.push({type:'研究資源',title:c.title,summary:c.text,body:text([c.tag,c.contact,group.title]),href:`${root()}/content-page.html?page=${encodeURIComponent(page.id)}#resource-group-${index+1}`})));
+    }
+    for(const d of documents.filter(d=>d.status==='published'&&d.visibility==='public'))entries.push({type:'文件表單',title:d.title,summary:d.summary,body:text([d.category,d.version]),href:`${root()}/content-page.html?page=downloads&q=${encodeURIComponent(d.title)}`});
     return entries;
   }
 
@@ -54,7 +59,7 @@
     document.getElementById('search-title').textContent = `搜尋「${query}」`;
     document.title = `搜尋「${query}」｜醫學研究部`;
     try {
-      const sources = await Promise.all([D.load('site'), D.getUnits(), D.load('people'), D.getNews()]);
+      const sources = await Promise.all([D.load('site'), D.getUnits(), D.load('people'), D.getNews(), D.load('pages'), D.load('documents')]);
       const results = search(buildIndex(...sources), query);
       count.textContent = `共找到 ${results.length} 筆結果（依相關程度排序）`;
       if (!results.length) { target.innerHTML = '<div class="empty-state">找不到符合條件的內容，請嘗試其他關鍵字。</div>'; return; }

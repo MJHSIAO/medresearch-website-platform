@@ -61,3 +61,7 @@
 
 首頁是跨單位入口，不放本頁 Sidebar。六個共用子站、單位完整介紹與至少四段的一般內容頁才加入動態本頁目錄。桌機左側 sticky，992px 以下改成可收合目錄。新聞列表／詳細頁維持原有查找與相關消息配置；AI 子站保留獨立版型，只在頁尾新增相對路徑全站搜尋連結。
 
+
+## 2026-11-05 資源入口補齊
+
+研究團隊、核心實驗室、督導審查、論文撰寫、約用助理及院內外資源沿用 content-page.html?page={id}，資源群組與卡片集中在 data/pages.json 的 groups 欄位。新 ID 為 teams、laboratories、governance、writing、research-assistants、external-resources；既有內容頁 ID 不改。研究資源總覽集中連到各頁，首頁研究網絡與服務入口同步更新。詳細維護及回復見 management-guide.md 與 content-refresh-rollback.md。

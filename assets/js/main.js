@@ -78,7 +78,7 @@
       const current = currentFile();
       const navigation = [...site.navigation, { label: '全站搜尋', href: 'search.html' }];
       const links = navigation.map((item) => {
-        const active = current === item.href.split('?')[0] || (current === 'unit.html' && item.href === 'units.html');
+        const active = (current === item.href.split('?')[0] && (!item.href.includes('?') || location.search === '?'+item.href.split('?')[1])) || (current === 'unit.html' && item.href === 'units.html');
         return `<li><a href="${root()}/${item.href}"${active ? ' aria-current="page"' : ''}>${D.escapeHTML(item.label)}</a></li>`;
       }).join('');
       header.innerHTML = `
@@ -277,6 +277,7 @@
     document.title = `${page.title}｜醫學研究部`;
     document.querySelectorAll('[data-page-title]').forEach((node) => { node.textContent = page.title; });
     const target = document.getElementById('content-page-body');
+    if (target && page.groups) return window.MedResourceDirectory.render(target,page);
     if (target && id === 'downloads') return window.MedDocuments.render({target,page,D});
     if (target) {
       target.innerHTML = `<span class="eyebrow">${D.escapeHTML(page.eyebrow)}</span><h1>${D.escapeHTML(page.title)}</h1><p class="page-kicker">${D.escapeHTML(page.summary)}</p>${page.sections.map((section) => `<section><h2>${D.escapeHTML(section.title)}</h2><p>${D.escapeHTML(section.content)}</p></section>`).join('')}<div class="callout"><strong>資料來源</strong><p>本頁依醫學研究部官網整理，查核日期為 2026-09-01。正式規章、表單版本與申請方式請以原始頁面為準。</p><p><a class="button secondary" href="${D.escapeHTML(page.source_url)}" target="_blank" rel="noopener">前往官方來源 ↗</a></p></div>`;

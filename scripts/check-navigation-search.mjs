@@ -44,7 +44,18 @@ for (const file of files) {
     }
   }
 }
-console.log('PASS JSON, JavaScript syntax, CSS braces, static HTML resources and Markdown local links');
+// Resource cards are stored in JSON rather than literal HTML.
+const catalog = JSON.parse((await readFile(join(root, 'data/pages.json'), 'utf8')).replace(/^\uFEFF/, ''));
+const pageIds = new Set(catalog.map(page => page.id));
+async function checkResourceHref(href) {
+  if (/^(?:[a-z]+:|#|\/\/)/i.test(href)) return;
+  const url = new URL(href, 'https://local.invalid/');
+  assert.ok(await stat(resolve(root, decodeURIComponent(url.pathname).replace(/^\//, ''))).catch(() => null), 'Resource target: '+href);
+  if(url.pathname.endsWith('content-page.html'))assert.ok(pageIds.has(url.searchParams.get('page')), 'Resource page ID: '+href);
+}
+for(const page of catalog)for(const group of page.groups||[])for(const card of group.cards)for(const action of card.actions)await checkResourceHref(action.href);
+for(const service of JSON.parse((await readFile(join(root, 'data/services.json'), 'utf8')).replace(/^\uFEFF/, '')))await checkResourceHref(service.href);
+console.log('PASS JSON, JavaScript syntax, CSS braces, static HTML resources, resource actions/page IDs and Markdown local links');
 if (process.argv.includes('--static-only')) process.exit(0);
 if (!process.argv[2] || !process.argv[3]) throw new Error('Provide Playwright module and browser executable paths for browser tests.');
 const { chromium } = await import(pathToFileURL(resolve(process.argv[2])).href);

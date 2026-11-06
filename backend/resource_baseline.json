@@ -1,0 +1,442 @@
+{
+  "pages": [
+    {
+      "id": "department-about",
+      "title": "部門介紹",
+      "eyebrow": "Department of Medical Research",
+      "summary": "醫學研究部由研究發展委員會統籌全院醫學研究，下設七個隸屬單位，整合研究行政、實驗資源、臨床試驗、人工智慧、細胞治療與研發成果管理。",
+      "sections": [
+        {
+          "title": "本部簡介",
+          "content": "為兼顧臨床、教學與研究的均衡發展，亞東紀念醫院設立醫學研究部，透過專業研究團隊與博士級研究人力協助醫師及醫學生進行研究，並提供研究支援、推動計畫與成果發表。"
+        },
+        {
+          "title": "本部執掌",
+          "content": "建置優質學術研究環境、推動研究計畫執行成效、促使研究論文質量倍增、強化研發成果管理運用、促進產學與國際合作、提升研究品質能力、落實研究教學與獎勵，並持續創新研究發展。"
+        },
+        {
+          "title": "發展目標",
+          "content": "配合全院整體發展，落實全人照護之醫學研究；強化院際與產官學合作，鼓勵創新成果專利化，建立具競爭力的研究團隊，並培訓院內研究人力與年輕醫師。"
+        },
+        {
+          "title": "隸屬單位",
+          "content": "學術研發室、共同研究室、動物實驗室、人工智慧中心、臨床試驗中心、細胞治療中心及創新智財產學中心。"
+        }
+      ],
+      "source_url": "https://depart.femh.org.tw/medresearch/FEMH-MR.html"
+    },
+    {
+      "id": "research-services",
+      "title": "研究資源",
+      "eyebrow": "依研究需求快速前往",
+      "summary": "官網將研究資源分為研究諮詢及協助、學術倫理比對、實驗分析技術、統計分析方法與論文撰寫，並提供課程、儀器及文件表單入口。",
+      "sections": [
+        {
+          "title": "研究諮詢及協助",
+          "content": "研究者可由研究諮詢入口提出需求，依研究主題銜接研究設計、執行與學術倫理等相關協助。"
+        },
+        {
+          "title": "分析與方法",
+          "content": "共同研究室及核心實驗室提供實驗分析技術與儀器資源；統計分析方法頁面提供方法資訊與諮詢系統入口。"
+        },
+        {
+          "title": "研究能力與成果",
+          "content": "透過學術研究規範、共研必修、實驗原理、儀器操作課程及論文撰寫資源，支持研究品質與成果發表。"
+        },
+        {
+          "title": "申請前提醒",
+          "content": "正式申請條件、文件版本、院內系統權限及承辦窗口，請回到原官網或院內 Intra 查核最新資訊。"
+        }
+      ],
+      "source_url": "https://depart.femh.org.tw/medresearch/Consult.html"
+    },
+    {
+      "id": "research-consultation",
+      "title": "研究諮詢及協助",
+      "eyebrow": "常用研究服務",
+      "summary": "整合研究需求、計畫設計、執行問題與學術倫理相關協助的單一入口。",
+      "sections": [
+        {
+          "title": "提出需求前",
+          "content": "建議先整理研究問題、研究對象、資料來源、目前進度及希望獲得的協助，以利銜接適合的研究資源。"
+        },
+        {
+          "title": "正式申請",
+          "content": "請使用醫學研究部官網的研究諮詢協助入口送出需求；表單欄位與回覆流程以官方頁面為準。"
+        }
+      ],
+      "source_url": "https://depart.femh.org.tw/medresearch/Request.html"
+    },
+    {
+      "id": "statistics",
+      "title": "統計分析方法",
+      "eyebrow": "研究方法與資料分析",
+      "summary": "提供統計分析相關資訊與諮詢系統入口，協助研究者釐清研究設計、變項與分析方法。",
+      "sections": [
+        {
+          "title": "諮詢前準備",
+          "content": "建議備妥研究目的、主要與次要結果、變項定義、預計樣本數及目前資料狀態。"
+        },
+        {
+          "title": "使用方式",
+          "content": "請由原官網進入統計分析方法與諮詢系統，最新服務範圍及排程以官方資訊為準。"
+        }
+      ],
+      "source_url": "https://depart.femh.org.tw/medresearch/Statistice.html"
+    },
+    {
+      "id": "ethics",
+      "title": "學術倫理與研究規範",
+      "eyebrow": "研究品質",
+      "summary": "整合 iThenticate 申請、學術研究規範與學術倫理相關資訊；人體研究、動物實驗及生物安全仍須依各審查單位正式流程辦理。",
+      "sections": [
+        {
+          "title": "學術倫理比對",
+          "content": "研究者可由官網查看 iThenticate 申請及學術倫理比對資訊。"
+        },
+        {
+          "title": "審查與申請",
+          "content": "人體研究、實驗動物、生物安全及人體生物資料庫等案件，請依各督導或審查單位的最新規章與表單提出申請。"
+        },
+        {
+          "title": "研究誠信",
+          "content": "最新消息區持續轉知國家科學及技術委員會研究誠信電子報、學術倫理案件處理要點及研究人員學術倫理守則。"
+        }
+      ],
+      "source_url": "https://depart.femh.org.tw/medresearch/iThenticate.html"
+    },
+    {
+      "id": "experimental-tech",
+      "title": "實驗分析技術",
+      "eyebrow": "研究空間與技術資源",
+      "summary": "由共同研究室、四個核心實驗室與共用儀器支援基礎、臨床轉譯及資料分析研究。",
+      "sections": [
+        {
+          "title": "核心實驗室",
+          "content": "再生醫學及細胞治療實驗室、突觸傳遞及神經藥理實驗室、細胞分子影像及基因檢測實驗室、組織纖維化及癌化實驗室。"
+        },
+        {
+          "title": "共同研究空間",
+          "content": "第一、第二及第三共同研究室提供 Wet Lab，研究資料分析室提供 Dry Lab；符合條件的研究計畫可依規定申請空間。"
+        },
+        {
+          "title": "儀器與訓練",
+          "content": "共用儀器由專人管理並提供使用協助，另不定期辦理研究儀器操作教育訓練。"
+        }
+      ],
+      "source_url": "https://depart.femh.org.tw/medresearch/ExpTech.html"
+    },
+    {
+      "id": "equipment",
+      "title": "儀器設備",
+      "eyebrow": "共同研究資源",
+      "summary": "官網依設備類別提供螢光顯微鏡、共軛焦顯微鏡、流式細胞分析儀、高效液相層析儀、即時螢光定量反應器及其他儀器資訊。",
+      "sections": [
+        {
+          "title": "影像與細胞分析",
+          "content": "螢光顯微鏡、共軛焦顯微鏡及流式細胞分析儀。"
+        },
+        {
+          "title": "分離與分子分析",
+          "content": "高效液相層析儀及即時螢光定量反應器。"
+        },
+        {
+          "title": "使用提醒",
+          "content": "設備規格、預約、收費、必要訓練與操作規範，請以各儀器官方頁面及管理單位公告為準。"
+        }
+      ],
+      "source_url": "https://depart.femh.org.tw/medresearch/Equip.html"
+    },
+    {
+      "id": "courses",
+      "title": "課程資訊",
+      "eyebrow": "研究教育訓練",
+      "summary": "課程資訊分為學術研究規範、共研必修課程、實驗原理課程與儀器操作課程。",
+      "sections": [
+        {
+          "title": "研究規範與必修",
+          "content": "提供學術研究規範與共同研究室必修課程資訊，協助研究人員掌握基本要求。"
+        },
+        {
+          "title": "實驗與儀器",
+          "content": "依研究需求查找實驗原理及儀器操作課程；開課時間、資格與報名方式以官方公告為準。"
+        }
+      ],
+      "source_url": "https://depart.femh.org.tw/medresearch/Course.html"
+    },
+    {
+      "id": "downloads",
+      "title": "文件表單",
+      "eyebrow": "常用申請文件",
+      "summary": "依業務分為學術研發室、共同研究室、臨床試驗中心、學術倫理、動物實驗室與生物安全申請表單。",
+      "sections": [
+        {
+          "title": "研究與空間表單",
+          "content": "查找學術研發室、共同研究室與臨床試驗中心相關表單。"
+        },
+        {
+          "title": "審查申請表單",
+          "content": "查找學術倫理、動物實驗室及生物安全申請表單。"
+        },
+        {
+          "title": "版本提醒",
+          "content": "部分文件須由院內 Intra 下載；送件前請核對表單版本、適用範圍與簽核方式。"
+        }
+      ],
+      "source_url": "https://depart.femh.org.tw/medresearch/Document.html"
+    }
+  ],
+  "services": [
+    {
+      "id": "research-consultation",
+      "title": "研究諮詢及協助",
+      "description": "從研究問題與計畫設計開始，找到適合的諮詢及支援入口。",
+      "icon": "01",
+      "href": "content-page.html?page=research-consultation"
+    },
+    {
+      "id": "academic-ethics",
+      "title": "學術倫理比對",
+      "description": "查看 iThenticate 申請與學術研究規範相關資訊。",
+      "icon": "02",
+      "href": "content-page.html?page=ethics"
+    },
+    {
+      "id": "experimental-tech",
+      "title": "實驗分析技術",
+      "description": "連結共同研究室、核心實驗室與實驗分析資源。",
+      "icon": "03",
+      "href": "content-page.html?page=experimental-tech"
+    },
+    {
+      "id": "statistics",
+      "title": "統計分析方法",
+      "description": "查找統計方法、諮詢系統與研究資料分析入口。",
+      "icon": "04",
+      "href": "content-page.html?page=statistics"
+    },
+    {
+      "id": "equipment",
+      "title": "儀器設備",
+      "description": "瀏覽顯微鏡、流式細胞分析、層析與定量反應設備。",
+      "icon": "05",
+      "href": "content-page.html?page=equipment"
+    },
+    {
+      "id": "courses",
+      "title": "課程資訊",
+      "description": "查看研究規範、共研必修、實驗原理及儀器操作課程。",
+      "icon": "06",
+      "href": "content-page.html?page=courses"
+    },
+    {
+      "id": "downloads",
+      "title": "文件表單",
+      "description": "依單位查找學術研發、共研、臨床試驗與審查申請表單。",
+      "icon": "07",
+      "href": "content-page.html?page=downloads"
+    }
+  ],
+  "news": [
+    {
+      "id": "news-research-integrity-66",
+      "owner_unit_id": "academic-office",
+      "related_unit_ids": [],
+      "category": "研究誠信",
+      "title": "國家科學及技術委員會2026年9月研究誠信電子報（第66期）",
+      "summary": "內容涵蓋研究計畫申請書相似案例、生成式 AI 時代研究誠信、論文工廠與學術倫理案件統計。",
+      "content": [
+        "醫學研究部轉知國家科學及技術委員會第66期研究誠信電子報。",
+        "本期案例說明申請書內容與他人及自身過往研究成果大幅相同，涉及抄襲與未適當揭露。",
+        "專欄聚焦生成式 AI 時代的研究誠信挑戰，以及第九屆世界研究誠信大會討論的論文工廠興起、危害與防治。",
+        "資訊補給站彙整111年1月至115年9月學術倫理案件統計；詳細內容與原始電子報請以前往官方來源為準。"
+      ],
+      "cover_image": "assets/images/news/research-integrity-66-statistics.png",
+      "cover_alt": "111年1月至115年9月學術倫理案件統計圖表",
+      "gallery": [
+        {
+          "src": "assets/images/news/research-integrity-66-actions.png",
+          "alt": "違反學術倫理案件行為類型統計圖表"
+        },
+        {
+          "src": "assets/images/news/research-integrity-66-sanctions.png",
+          "alt": "違反學術倫理案件處分情形圖表"
+        }
+      ],
+      "attachments": [],
+      "source_url": "https://depart.femh.org.tw/medresearch/News.html",
+      "visibility": "public",
+      "status": "published",
+      "published_at": "2026-09-03T09:00:00+08:00",
+      "event_date": "",
+      "expires_at": "",
+      "created_at": "2026-09-03T09:00:00+08:00",
+      "updated_at": "2026-09-07T09:00:00+08:00",
+      "created_by": "醫學研究部官網",
+      "updated_by": "醫學研究部原官網查核",
+      "featured": true
+    },
+    {
+      "id": "news-ntnu-ethics-investigation",
+      "owner_unit_id": "academic-office",
+      "related_unit_ids": [],
+      "category": "研究誠信",
+      "title": "臺師大及研究人員違反學術倫理調查結果",
+      "summary": "原官網提供國科會2025年9月16日簡報及調查結果圖片。",
+      "content": [
+        "醫學研究部原官網彙整臺師大及研究人員違反學術倫理調查結果，並提供國科會2025年9月16日簡報。",
+        "詳細調查內容及附件請以前往官方來源查閱為準。"
+      ],
+      "cover_image": "assets/images/news/ntnu-ethics-investigation.jpg",
+      "cover_alt": "臺師大及研究人員違反學術倫理調查結果說明圖",
+      "gallery": [],
+      "attachments": [],
+      "source_url": "https://depart.femh.org.tw/medresearch/News.html",
+      "visibility": "public",
+      "status": "published",
+      "published_at": "2025-09-19T09:00:00+08:00",
+      "event_date": "",
+      "expires_at": "",
+      "created_at": "2025-09-19T09:00:00+08:00",
+      "updated_at": "2026-09-07T09:00:00+08:00",
+      "created_by": "醫學研究部官網",
+      "updated_by": "醫學研究部原官網查核",
+      "featured": false
+    },
+    {
+      "id": "news-researcher-ethics-code",
+      "owner_unit_id": "academic-office",
+      "related_unit_ids": [],
+      "category": "研究誠信",
+      "title": "國家科學及技術委員會研究人員學術倫理守則",
+      "summary": "原官網提供研究人員學術倫理守則圖文資訊。",
+      "content": [
+        "醫學研究部原官網提供國家科學及技術委員會研究人員學術倫理守則資訊。",
+        "守則內容與後續修正請以前往官方來源及主管機關公告為準。"
+      ],
+      "cover_image": "assets/images/news/researcher-ethics-code.jpg",
+      "cover_alt": "國家科學及技術委員會研究人員學術倫理守則",
+      "gallery": [],
+      "attachments": [],
+      "source_url": "https://depart.femh.org.tw/medresearch/News.html",
+      "visibility": "public",
+      "status": "published",
+      "published_at": "2025-09-17T09:00:00+08:00",
+      "event_date": "",
+      "expires_at": "",
+      "created_at": "2025-09-17T09:00:00+08:00",
+      "updated_at": "2026-09-07T09:00:00+08:00",
+      "created_by": "醫學研究部官網",
+      "updated_by": "醫學研究部原官網查核",
+      "featured": false
+    },
+    {
+      "id": "news-femh45-symposium",
+      "owner_unit_id": "medresearch",
+      "related_unit_ids": [
+        "ai-center",
+        "cell-therapy-center",
+        "clinical-trial-center"
+      ],
+      "category": "研討會",
+      "title": "45週年亞東紀念醫院院慶研討會－健康台灣：智慧醫療與韌性醫療之未來發展",
+      "summary": "以智慧醫療、人工智慧、精準醫療、再生醫療及韌性醫療為主題，促進跨領域交流與合作。",
+      "content": [
+        "為慶祝亞東紀念醫院成立45週年，並配合政府推動「健康台灣」政策，院方舉辦健康台灣：智慧醫療與韌性醫療之未來發展研討會。",
+        "活動內容包含智慧醫療、人工智慧、精準醫療、再生醫療及韌性醫療等專題演講與交流；詳細議程與活動資訊請見官方頁面。"
+      ],
+      "cover_image": "assets/images/news/femh45-poster.jpg",
+      "cover_alt": "45週年亞東紀念醫院院慶研討會活動海報",
+      "attachments": [],
+      "source_url": "https://depart.femh.org.tw/medresearch/FEMH45.html",
+      "visibility": "public",
+      "status": "published",
+      "published_at": "2026-08-26T09:00:00+08:00",
+      "event_date": "",
+      "expires_at": "",
+      "created_at": "2026-08-26T09:00:00+08:00",
+      "updated_at": "2026-09-07T09:00:00+08:00",
+      "created_by": "醫學研究部官網",
+      "updated_by": "醫學研究部原官網查核",
+      "featured": true
+    },
+    {
+      "id": "news-research-integrity-65",
+      "owner_unit_id": "academic-office",
+      "related_unit_ids": [],
+      "category": "研究誠信",
+      "title": "國家科學及技術委員會2026年6月研究誠信電子報（第65期）",
+      "summary": "內容涵蓋研究合作資料使用、學術出版與撤稿、學術倫理案件統計及違反學術倫理案件處分情形。",
+      "content": [
+        "醫學研究部轉知國家科學及技術委員會第65期研究誠信電子報。",
+        "本期重點包括擅自使用合作團隊資料發表論文的案例、撤稿與科學溝通專欄、111年1月至115年1月學術倫理案件統計，以及違反學術倫理案件的行為與處分情形。"
+      ],
+      "cover_image": "",
+      "cover_alt": "研究誠信與學術倫理資訊",
+      "attachments": [],
+      "source_url": "https://depart.femh.org.tw/medresearch/News.html",
+      "visibility": "public",
+      "status": "published",
+      "published_at": "2026-06-01T09:00:00+08:00",
+      "event_date": "",
+      "expires_at": "",
+      "created_at": "2026-06-01T09:00:00+08:00",
+      "updated_at": "2026-06-01T09:00:00+08:00",
+      "created_by": "醫學研究部官網",
+      "updated_by": "醫學研究部官網",
+      "featured": true
+    },
+    {
+      "id": "news-ethics-guidelines-amendment",
+      "owner_unit_id": "academic-office",
+      "related_unit_ids": [],
+      "category": "研究誠信",
+      "title": "國家科學及技術委員會學術倫理案件處理及審議要點部分規定修正",
+      "summary": "轉知學術倫理案件處理及審議要點修正內容，官網提供規定全文與修正對照表入口。",
+      "content": [
+        "依國家科學及技術委員會中華民國115年2月6日來函，醫學研究部轉知學術倫理案件處理及審議要點部分規定修正。",
+        "詳細全文、修正對照表及最新規定請由官方頁面前往國科會學術倫理資訊查閱。"
+      ],
+      "cover_image": "",
+      "cover_alt": "學術倫理案件處理規定修正",
+      "attachments": [],
+      "source_url": "https://depart.femh.org.tw/medresearch/News.html",
+      "visibility": "public",
+      "status": "published",
+      "published_at": "2026-02-06T09:00:00+08:00",
+      "event_date": "",
+      "expires_at": "",
+      "created_at": "2026-02-06T09:00:00+08:00",
+      "updated_at": "2026-02-06T09:00:00+08:00",
+      "created_by": "醫學研究部官網",
+      "updated_by": "醫學研究部官網",
+      "featured": false
+    },
+    {
+      "id": "news-cell-therapy-course",
+      "owner_unit_id": "cell-therapy-center",
+      "related_unit_ids": [],
+      "category": "課程資訊",
+      "title": "再生醫療與細胞治療技術專業課程資訊",
+      "summary": "細胞治療中心彙整再生醫療專業課程及施行細胞治療技術醫師訓練課程。",
+      "content": [
+        "官方頁面提供再生醫療與細胞治療相關課程入口。",
+        "課程日期、報名資格、費用與辦理方式可能調整，請以前往官方頁面查閱為準。"
+      ],
+      "cover_image": "",
+      "cover_alt": "再生醫療與細胞治療專業課程",
+      "attachments": [],
+      "source_url": "https://depart.femh.org.tw/medresearch/CellTherapy.html",
+      "visibility": "public",
+      "status": "expired",
+      "published_at": "2025-07-04T09:00:00+08:00",
+      "event_date": "",
+      "expires_at": "2025-12-31",
+      "created_at": "2025-07-04T09:00:00+08:00",
+      "updated_at": "2025-07-04T09:00:00+08:00",
+      "created_by": "醫學研究部官網",
+      "updated_by": "醫學研究部官網",
+      "featured": false
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+(function(){
+ 'use strict';
+ const esc=value=>window.MedData.escapeHTML(value??'');
+ const internal=id=>'content-page.html?page='+id;
+ function render(target,page){
+  target.classList.add('resource-page');
+  const nav=[['research-services','資源總覽'],['research-consultation','研究諮詢'],['governance','審查入口'],['equipment','儀器設備'],['courses','課程'],['external-resources','常用網站']];
+  function action(a){const href=String(a.href||'');let url;try{url=new URL(href,location.href);}catch{return '';}if(!['http:','https:','mailto:','tel:'].includes(url.protocol))return '';const external=/^https?:\/\//.test(href),mail=href.startsWith('mailto:');return `<a class="resource-action" href="${esc(href)}"${external?' target="_blank" rel="noopener"':''}>${esc(a.label)}${external?' <span aria-hidden="true">↗</span>':mail?'':' <span aria-hidden="true">→</span>'}${external?'<span class="sr-only">（另開新分頁）</span>':''}</a>`;}
+  target.innerHTML=`<div class="resource-header"><span class="eyebrow">${esc(page.eyebrow)}</span><h1>${esc(page.title)}</h1><p class="page-kicker">${esc(page.summary)}</p></div><nav class="resource-shortcuts" aria-label="研究資源導覽">${nav.map(([id,n])=>`<a href="${internal(id)}"${page.id===id?' aria-current="page"':''}>${esc(n)}</a>`).join('')}</nav><div class="resource-body">${(page.groups||[]).map((g,i)=>`<section class="resource-group" id="resource-group-${i+1}"><div class="resource-section-heading"><span class="resource-section-number">${String(i+1).padStart(2,'0')}</span><div><h2>${esc(g.title)}</h2>${g.text?`<p>${esc(g.text)}</p>`:''}</div></div><div class="resource-grid">${g.cards.map(c=>`<article class="resource-card">${c.tag?`<span class="resource-tag">${esc(c.tag)}</span>`:''}<h3>${esc(c.title)}</h3><p>${esc(c.text)}</p>${c.contact?`<p class="resource-contact">${esc(c.contact)}</p>`:''}<div class="resource-card-actions">${(c.actions||[]).map(action).join('')}</div></article>`).join('')}</div></section>`).join('')}${(page.sections||[]).length?`<details class="resource-background"><summary>${page.id==='department-about'?'閱讀部門簡介、執掌與發展目標':'閱讀服務說明'}</summary>${page.sections.map(s=>`<section><h2>${esc(s.title)}</h2><p>${esc(s.content)}</p></section>`).join('')}</details>`:''}</div><aside class="resource-source"><strong>資料來源與使用提醒</strong><p>依醫學研究部原官網公開資訊整理，查核日期 2026-11-05。人員、受理方式及文件版本請以原官網與承辦單位確認為準；外部表單及院內系統由原系統受理。</p><a href="${esc(page.source_url)}" target="_blank" rel="noopener">查看本頁官方來源 ↗</a></aside>`;
+ }
+ window.MedResourceDirectory={render};
+})();

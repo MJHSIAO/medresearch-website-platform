@@ -39,6 +39,8 @@
 - `python -m tests.check_portal`
 - `python -m tests.check_management`
 - `python -m tests.check_documents`
+- `python -m tests.check_resources`
+- `node tests/check_resource_search.mjs`
 - `python -m tests.check_docker_deployment`
 - `python -m tests.check_compose_integration /path/to/server/docker-compose.yml`（需 Docker CLI 與實際主 Compose）
 - `node scripts/check-navigation-search.mjs --static-only`
