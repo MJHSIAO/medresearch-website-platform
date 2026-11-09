@@ -43,7 +43,7 @@ def main():
                         'multi': 'FIXTURE-MULTI', 'ordinary': 'FIXTURE-ORDINARY'}
             if role not in subjects:
                 raise HTTPException(404)
-            sid = runtime.sessions.create({'name': 'Fixture account'}, {'sub': subjects[role]})
+            sid = runtime.sessions.create({'id': subjects[role], 'name': 'Fixture account'}, {'sub': subjects[role]})
             response = RedirectResponse('/medresearch/admin', status_code=303)
             response.set_cookie('medresearch_session', signed_session_cookie(sid), httponly=True, path='/medresearch', samesite='lax')
             response.set_cookie('medresearch_auth', '1', path='/medresearch', samesite='lax')

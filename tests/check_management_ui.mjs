@@ -25,7 +25,10 @@ try{
   const errors=[];
   async function checkPublic(page,role,firstTitle){
     await page.goto(base+'index.html');await page.locator('#home-news .card').first().waitFor();
-    if(role!=='visitor')await page.locator('.account-actions .auth-user-name').waitFor();
+    if(role!=='visitor'){
+      await page.locator('.account-actions .auth-user-name').waitFor();
+      assert.match(await page.locator('.account-actions .auth-user-name').innerText(),/FIXTURE-.*Fixture account/);
+    }
     assert.equal(await page.locator('.account-actions').getByText('院內專區',{exact:true}).count(),['system','site','unit','multi'].includes(role)?1:0);
     assert.equal(await page.locator('.account-actions').getByText('院內人員登入',{exact:true}).count(),role==='visitor'?1:0);
     assert.equal(await page.locator('.main-nav .auth-user-name,.main-nav .account-actions').count(),0);

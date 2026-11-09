@@ -52,7 +52,11 @@
       item.replaceChildren();
       const name = document.createElement('span');
       name.className = 'auth-user-name';
-      name.textContent = result.user.name || result.user.id || '院內使用者';
+      const identity = [...new Set([result.user.id, result.user.name]
+        .filter(value => typeof value === 'string' && value.trim())
+        .map(value => value.trim()))].join('　');
+      name.textContent = identity || '院內使用者';
+      name.title = name.textContent;
       item.append(name);
       if (['unit_admin', 'site_admin', 'system_admin'].includes(result.user.role)) {
         const internal = document.createElement('a');
