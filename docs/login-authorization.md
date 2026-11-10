@@ -15,7 +15,7 @@ SYSTEM_ADMIN_IDS=管理者實際回傳的sub值
 
 範例環境檔已填 `ADMIN_IDENTITY_CLAIM=sub`，管理員名單留空。取得新版不會自動改寫伺服器既有 `.env.docker`，須由維運調整該檔案。
 
-設定後以原 Compose 配置重新建立本站容器（`up -d --force-recreate --no-deps medresearch-app`），再重新登入；單純 restart 不會重讀 env_file。管理員登入直接進 `/admin`，一般院內人員進 `/internal`。系統管理員擁有全部管理功能，不需兼任醫研部總管理員。
+設定後以原 Compose 配置重新建立本站容器（`up -d --force-recreate --no-deps medresearch-app`），再重新登入；單純 restart 不會重讀 env_file。登入後返回登入前的本站頁面（含查詢條件與錨點）；沒有有效返回頁時回到首頁。管理者可點頁首「院內專區」旁的「管理中心」直接前往 `/admin`。系統管理員擁有全部管理功能，不需兼任醫研部總管理員。
 
 ## 存取與撤權
 

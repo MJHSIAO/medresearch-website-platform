@@ -27,7 +27,7 @@ def main():
         for path in ('/internal', '/admin'):
             response = client.get(path)
             assert response.status_code == 303
-            assert response.headers['location'].endswith('/auth/login')
+            assert '/auth/login?next=' in response.headers['location']
             assert response.headers['cache-control'] == 'no-store'
         client.cookies.set('medresearch_auth', '1')
         assert client.get('/admin').status_code == 303
@@ -63,7 +63,7 @@ def main():
             {'sub': 'verified', 'employee_id': 'TEST001'}
         ))):
             callback = client.get('/auth/callback')
-        assert callback.headers['location'].endswith('/admin')
+        assert callback.headers['location'] == configured.app_base_url + '/'
         assert sessions.get(sid) is None
         assert client.get('/api/me').json()['user']['role'] == 'system_admin'
         assert client.get('/admin').status_code == 200
@@ -72,7 +72,7 @@ def main():
     # Reverse proxy prefix must survive redirects and generated links.
     prefixed = replace(configured, app_base_url='https://example.test/medresearch')
     with patch('backend.main.settings', prefixed), TestClient(app, follow_redirects=False, root_path='/medresearch') as client:
-        assert client.get('/internal').headers['location'] == 'https://example.test/medresearch/auth/login'
+        assert client.get('/internal').headers['location'].startswith('https://example.test/medresearch/auth/login?next=')
         for path in ('/admin-demo', '/admin-demo/', '/admin-demo/news-edit.html', '/admin/'):
             assert client.get(path).headers['location'] == 'https://example.test/medresearch/admin'
         sid = sessions.create({'name': 'Test'}, {'sub': 'test', 'employee_id': 'TEST001'})

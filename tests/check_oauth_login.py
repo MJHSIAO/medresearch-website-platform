@@ -43,7 +43,7 @@ SIGNING_KEY = JsonWebKey.generate_key("RSA", 2048, is_private=True, options={"ki
 OTHER_KEY = JsonWebKey.generate_key("RSA", 2048, is_private=True, options={"kid": "test-key"})
 
 
-def check_flow(case: str, jwt_mode: bool = False) -> None:
+def check_flow(case: str, jwt_mode: bool = False, return_page: str | None = None, expected_page: str = '/') -> None:
     calls: list[str] = []
     metadata = dict(METADATA)
     access_token = "test-access-token"
@@ -134,7 +134,7 @@ def check_flow(case: str, jwt_mode: bool = False) -> None:
     # Intercept transport after httpx applies OAuth client/Bearer authentication.
     with patch.object(backend, "oidc", manager), patch.object(httpx.AsyncClient, "_send_single_request", provider_send):
         with TestClient(backend.app, base_url="https://site.example", root_path="/medresearch", follow_redirects=False) as client:
-            login = client.get("/medresearch/auth/login")
+            login = client.get("/medresearch/auth/login", params={'next': return_page} if return_page else {})
             assert login.status_code == 302
             query = parse_qs(urlsplit(login.headers["location"]).query, keep_blank_values=True)
             assert set(query) == {"response_type", "client_id", "redirect_uri", "state"}
@@ -186,7 +186,7 @@ def check_flow(case: str, jwt_mode: bool = False) -> None:
             me = client.get("/medresearch/api/me").json()
             if case in {"success", "aud_list"}:
                 assert callback.status_code == 303
-                assert callback.headers["location"] == BASE + "/internal"
+                assert callback.headers["location"] == BASE + expected_page
                 assert me["authenticated"] is True
                 assert me["user"]["id"] == "test-subject"
                 assert me["user"]["role"] == "internal_user"
@@ -211,6 +211,10 @@ def check_flow(case: str, jwt_mode: bool = False) -> None:
 
 
 def main() -> None:
+    for page in ('/news.html?category=research#results', '/unit.html?unit=ai-center', '/ai-center/index.html#about'):
+        check_flow('success', return_page='/medresearch' + page, expected_page=page)
+    for page in ('https://evil.example/', '//evil.example/', '/outside/index.html', '/medresearch/../admin', '/medresearch/%2e%2e/admin', '/medresearch/auth/login', '/medresearch/\\evil', '/medresearch/%0d%0aLocation:evil'):
+        check_flow('success', return_page=page)
     assert OIDCConfigurationError("private", reason="private").reason == "configuration_error"
     for case in (
         "success", "missing_state", "wrong_state", "missing_cookie", "provider_error",

@@ -6,7 +6,7 @@
 
 1. 安裝 `requirements.txt`，複製 `.env.example` 為 `.env`，填入院方 Client、Callback、Session Secret 及 APP_BASE_URL。
 2. 使用 `uvicorn backend.main:app --host 127.0.0.1 --port 8000 --workers 1` 啟動。
-3. 開啟網站，從「院內人員登入」完成院方登入；登入成功進入 `/internal`。
+3. 開啟網站，從「院內人員登入」完成院方登入；登入成功返回原本瀏覽頁面；管理者可由頁首「管理中心」直接進入後台。
 4. 依 [首次授權說明](docs/login-authorization.md) 確認經院方驗證的員工識別欄位，設定第一位系統管理員。
 5. 管理員進入 `/admin`，使用「人員權限」指定員編、角色與單位。
 

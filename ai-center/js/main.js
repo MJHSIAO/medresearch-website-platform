@@ -21,6 +21,9 @@ async function renderAuthNavigation() {
   const login = document.createElement("a");
   login.className = "nav-link";
   login.href = "../auth/login";
+  const loginUrl = new URL(login.href, location.href);
+  loginUrl.searchParams.set('next', location.pathname + location.search + location.hash);
+  login.href = loginUrl.href;
   login.textContent = "院內人員登入";
   item.append(login);
   menu.append(item);
@@ -51,7 +54,15 @@ async function renderAuthNavigation() {
     logout.className = "nav-link";
     logout.href = "../auth/logout";
     logout.textContent = "登出";
-    item.append(name, internal, logout);
+    item.append(name, internal);
+    if (['unit_admin', 'site_admin', 'system_admin'].includes(result.user.role)) {
+      const admin = document.createElement('a');
+      admin.className = 'nav-link';
+      admin.href = '../admin';
+      admin.textContent = '管理中心';
+      item.append(admin);
+    }
+    item.append(logout);
   } catch {
     // Static-only hosts intentionally keep the login link without a session state.
   }

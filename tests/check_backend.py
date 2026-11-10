@@ -33,6 +33,9 @@ def signed_session_cookie(session_id: str) -> str:
 
 
 def main() -> None:
+    from backend.main import safe_login_return
+    assert safe_login_return('/news.html?q=test#results') == 'http://localhost:8000/news.html?q=test#results'
+    assert safe_login_return('//evil.example/') == 'http://localhost:8000/'
     with TestClient(app, follow_redirects=False) as client:
         home = client.get("/")
         assert home.status_code == 200

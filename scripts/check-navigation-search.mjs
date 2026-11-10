@@ -87,7 +87,9 @@ try {
     await page.goto(base + path);
     const login = page.locator('.auth-navigation a').first();
     await login.waitFor();
-    assert.equal(await login.evaluate(el => el.href), new URL('auth/login', base).href);
+    const loginUrl = new URL(await login.evaluate(el => el.href));
+    assert.equal(loginUrl.origin + loginUrl.pathname, new URL('auth/login', base).href);
+    assert.equal(loginUrl.searchParams.get('next'), new URL(path, base).pathname);
   }
   await context.route(`**${prefix}api/me`, route => route.fulfill({
     contentType: 'application/json',

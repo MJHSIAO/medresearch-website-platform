@@ -60,7 +60,7 @@ def main():
         with patch.object(oidc, "complete_login", mock_complete_login):
             callback = client.get("/medresearch/auth/callback")
         assert callback.status_code == 303
-        assert callback.headers["location"] == "https://aics.femh.org.tw/medresearch/internal"
+        assert callback.headers["location"] == "https://aics.femh.org.tw/medresearch/"
         assert callback.headers["cache-control"] == "no-store"
         cookies = callback.headers.get_list("set-cookie")
         assert len(cookies) == 2

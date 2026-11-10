@@ -33,6 +33,9 @@
     if (!item) return;
     const login = document.createElement('a');
     login.href = assetUrl('auth/login');
+    const loginUrl = new URL(login.href, location.href);
+    loginUrl.searchParams.set('next', location.pathname + location.search + location.hash);
+    login.href = loginUrl.href;
     login.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M15 3h5v18h-5M3 12h12m-4-4 4 4-4 4"/></svg><span>院內人員登入</span>';
     item.append(login);
 
@@ -64,6 +67,10 @@
         internal.textContent = '院內專區';
         internal.title = '查看可用的管理入口';
         item.append(internal);
+        const admin = document.createElement('a');
+        admin.href = assetUrl('admin');
+        admin.textContent = '管理中心';
+        item.append(admin);
       }
       const logout = document.createElement('a');
       logout.href = assetUrl('auth/logout');

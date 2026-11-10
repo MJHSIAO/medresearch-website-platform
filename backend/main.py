@@ -6,6 +6,7 @@ import time
 import sys
 from pathlib import Path
 from typing import Any
+from urllib.parse import parse_qs, unquote, urlencode, urlsplit, urlunsplit
 
 import httpx
 from authlib.integrations.base_client.errors import OAuthError
@@ -103,10 +104,49 @@ async def add_security_headers(request: Request, call_next):
     return response
 
 
+def safe_login_return(value: str | None) -> str:
+    """Only return to an existing site page within the configured deployment."""
+    fallback = f"{settings.app_base_url}/"
+    if not isinstance(value, str) or len(value) > 2048:
+        return fallback
+    try:
+        base = urlsplit(settings.app_base_url)
+        target = urlsplit(value)
+        decoded = unquote(target.path)
+        if any(ord(c) < 32 or c == '\\' for c in unquote(value)):
+            return fallback
+        if target.scheme or target.netloc:
+            if (target.scheme, target.netloc) != (base.scheme, base.netloc):
+                return fallback
+        prefix = base.path.rstrip('/')
+        if not decoded.startswith(prefix + '/'):
+            return fallback
+        page = decoded[len(prefix) + 1:]
+        allowed = page in {'', 'internal', 'admin'} or page in PUBLIC_HTML_FILES
+        if page.startswith('ai-center/'):
+            local = page.removeprefix('ai-center/') or 'index.html'
+            allowed = local in {p.name for p in (PROJECT_ROOT / 'ai-center').glob('*.html')}
+        if not allowed:
+            return fallback
+        return urlunsplit((base.scheme, base.netloc, target.path, target.query, target.fragment))
+    except ValueError:
+        return fallback
+
+
 @app.get("/auth/login", include_in_schema=False)
 async def auth_login(request: Request):
     try:
-        return await oidc.login(request)
+        response = await oidc.login(request)
+        state = parse_qs(urlsplit(response.headers.get('location', '')).query).get('state', [''])[0]
+        if state:
+            # Bind return pages to verified OAuth state, not callback parameters.
+            returns = request.session.get('login_returns', {})
+            returns = dict(list(returns.items())[-3:])
+            returns[state] = safe_login_return(request.query_params.get('next'))
+            while len(returns) > 1 and sum(len(k) + len(v) for k, v in returns.items()) > 1800:
+                returns.pop(next(iter(returns)))
+            request.session['login_returns'] = returns
+        return response
     except (httpx.HTTPError, OIDCConfigurationError) as error:
         reason = error.reason if isinstance(error, OIDCConfigurationError) else "unavailable"
         LOGGER.error("Unable to start OAuth2 login: %s reason=%s", type(error).__name__, reason)
@@ -132,12 +172,11 @@ async def auth_callback(request: Request):
         # A callback error is an integration failure, not a password error.
         raise HTTPException(status_code=400, detail="本站登入串接驗證失敗，請從院內人員登入重新開始。") from error
 
+    destination = safe_login_return(request.session.get('login_returns', {}).get(request.query_params.get('state', '')))
     sessions.delete(request.session.get("session_id"))
     request.session.clear()
     request.session["session_id"] = sessions.create(user, claims)
-    access = profile(claims, settings, store.read())
-    destination = 'admin' if access['role'] in MANAGERS else 'internal'
-    response = RedirectResponse(url=f"{settings.app_base_url}/{destination}", status_code=303)
+    response = RedirectResponse(url=destination, status_code=303)
     # Non-sensitive UI hint only. Authorization always uses the HttpOnly session.
     response.set_cookie(
         "medresearch_auth",
@@ -185,7 +224,8 @@ async def auth_logout(request: Request):
 async def protected_portal(request: Request, admin: bool = False):
     record = sessions.get(request.session.get("session_id"))
     if not record:
-        return RedirectResponse(f"{settings.app_base_url}/auth/login", status_code=303)
+        destination = f"{settings.app_base_url}/{'admin' if admin else 'internal'}"
+        return RedirectResponse(f"{settings.app_base_url}/auth/login?{urlencode({'next': destination})}", status_code=303)
     role = profile(record['claims'], settings, store.read())['role']
     denied = admin and role not in MANAGERS
     if admin and not denied:

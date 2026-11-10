@@ -30,6 +30,7 @@ try{
       assert.match(await page.locator('.account-actions .auth-user-name').innerText(),/FIXTURE-.*Fixture account/);
     }
     assert.equal(await page.locator('.account-actions').getByText('院內專區',{exact:true}).count(),['system','site','unit','multi'].includes(role)?1:0);
+    assert.equal(await page.locator('.account-actions').getByText('管理中心',{exact:true}).count(),['system','site','unit','multi'].includes(role)?1:0);
     assert.equal(await page.locator('.account-actions').getByText('院內人員登入',{exact:true}).count(),role==='visitor'?1:0);
     assert.equal(await page.locator('.main-nav .auth-user-name,.main-nav .account-actions').count(),0);
     assert.match(await page.locator('#home-news .card').first().innerText(),new RegExp(firstTitle));
