@@ -17,13 +17,14 @@
     function newsTable(items){return table(['消息內容','所屬單位','狀態','更新日期',''],newsRows(items));}
     function logsHtml(items){return items.length?items.map(item=>`<div class="activity-row"><span class="activity-dot"></span><div><p>${e(item.action)} · ${e(item.id)}</p><small>${e(item.actor)} · ${e(date(item.time,true))}${item.unit?' · '+e(unitName(item.unit)):''}</small></div></div>`).join(''):'<p class="empty">目前沒有操作紀錄。</p>';}
     async function overview(serial){
-      const [news,logs]=await Promise.all([getContent('news'),api('manage/audit')]);if(serial!==ticket)return;
+      const [news,logs,stats]=await Promise.all([getContent('news'),api('manage/audit'),Promise.all([loadAnalytics(),api('manage/analytics')]).then(([,data])=>data).catch(()=>null)]);if(serial!==ticket)return;
       entries=news.sort(timeSort);
       const published=news.filter(i=>i.value.status==='published').length,drafts=news.filter(i=>['draft','pending_review'].includes(i.value.status)).length;
       const metric=(symbol,label,count,unit,note)=>`<article class="metric"><span class="metric-icon">${icon(symbol)}</span><div><div class="metric-label">${label}</div><div class="metric-value">${count}<small>${unit}</small></div><div class="metric-foot">${note}</div></div></article>`;
       const quick=(symbol,title,subtitle,destination)=>`<button type="button" class="quick-action" data-action="${destination}">${icon(symbol)}<span><strong>${title}</strong><small>${subtitle}</small></span><span class="arrow">${icon('arrow')}</span></button>`;
       frame('管理工作台',session.profile.role==='unit_admin'?'維護獲授權單位的消息、內容與成員。':'集中管理消息、單位內容與人員權限。',
         `<section class="metrics" aria-label="管理概況">${metric('file','已發布消息',published,'則','包含授權範圍內已發布的院內外消息')}${metric('clock','草稿待處理',drafts,'則','可接續編輯與發布')}${metric('building','管理單位',session.units.length,'個','目前獲授權的單位範圍')}</section>
+        ${stats?window.MedManagementAnalytics.summary(stats):`<section class="panel analytics-summary"><div class="panel-heading"><p>瀏覽統計暫時無法取得。</p>${action('重試統計','analytics','chart',false)}</div></section>`}
         <div class="workspace-grid"><div><section class="panel"><div class="panel-heading"><div><h2>最近更新的消息</h2><p class="panel-subtitle">掌握內容進度，快速接續編輯。</p></div>${action('全部消息','news','arrow',false)}</div>${newsTable(entries.slice(0,4))}<div class="table-footer"><span>顯示最近 ${Math.min(entries.length,4)} 筆，共 ${entries.length} 筆消息</span></div></section><section class="panel activity-panel"><div class="panel-heading"><h2>近期操作</h2>${action('查看紀錄','audit','history',false)}</div>${logsHtml(logs.items.slice(0,3))}</section></div>
         <aside class="side-stack"><section class="panel"><div class="panel-heading"><h2>快速操作</h2></div><div class="quick-actions">${quick('plus','建立新消息','發布公告、活動與研究資訊','new-news')}${quick('building','維護單位資料','更新介紹與聯絡資訊','units')}${shell.valid('grants')?quick('shield','管理人員權限','設定角色與管理單位','grants'):quick('people','維護成員名單','更新本單位公開成員','people')}</div></section><section class="panel scope-panel"><div class="scope-heading">${icon('shield')}目前管理範圍</div><h3>${e(session.label)}</h3><p>${e(shell.scope||'尚無授權單位')}</p><p>${session.profile.role==='unit_admin'?'僅能維護獲授權單位的內容與附件。':session.profile.role==='system_admin'?'可管理全部單位、人員授權與系統設定。':'可跨單位維護內容，並管理單位管理員授權。'}</p></section></aside></div>`,action('新增消息','new-news'));
     }
@@ -56,10 +57,21 @@
         }catch(error){message(error.message,true);}finally{submit.disabled=false;}
       };
     }
+    let analyticsLoading;
+    async function loadAnalytics(){
+      if(window.MedManagementAnalytics)return;
+      if(!analyticsLoading)analyticsLoading=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=new URL('assets/js/management-analytics.js',base);script.onload=resolve;script.onerror=()=>{analyticsLoading=null;script.remove();reject(Error('統計介面載入失敗，請重新整理。'));};document.head.append(script);});
+      await analyticsLoading;
+    }
     async function render(id,clear=true,newsFilter){
       if(!shell.valid(id)){message('您沒有此功能的管理權限。',true);return;}
       current=id;const serial=++ticket;filter=newsFilter||'all';query='';shell.select(id);history.replaceState(null,'','#'+id);if(clear)message('');workspace.innerHTML='<p class="empty">正在載入資料…</p>';
       if(id==='overview'){await overview(serial);return;}
+      if(id==='analytics'){
+        await loadAnalytics();if(serial!==ticket)return;
+        frame('瀏覽統計','了解網站使用情況，掌握受到關注的內容。','<div id="management-analytics"></div>');
+        await window.MedManagementAnalytics.mount({target:document.getElementById('management-analytics'),api,session,message,isCurrent:()=>serial===ticket});return;
+      }
       if(id==='grants'){await showGrants(serial);return;}
       if(id==='media'){await showMedia(serial);return;}
       if(id==='announcements'){

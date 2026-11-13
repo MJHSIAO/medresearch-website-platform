@@ -21,7 +21,9 @@ docker compose -p femh-genai-wwservice \
   up -d --build --force-recreate --no-deps medresearch-app
 ```
 
-本次修正版的公開版本端點是 `/medresearch/api/version`，必須回傳 `version: "2026.11.05.1"` 及 `management: "server_authorized"`。任何頁面亦帶有 `X-Medresearch-Version` 回應標頭。`healthz` 成功只表示服務存活，不代表已更新到此版。
+本次修正版的公開版本端點是 `/medresearch/api/version`，必須回傳 `version: "2026.11.13.1"` 及 `management: "server_authorized"`。任何頁面亦帶有 `X-Medresearch-Version` 回應標頭。`healthz` 成功只表示服務存活，不代表已更新到此版。
+
+本版新增管理中心瀏覽統計，開始記錄後保存於既有資料卷的 analytics/ 日期檔案。保留整個資料卷；不匯入任何本機測試統計。部署後用未登入瀏覽器開啟公開頁／文件下載，再進管理中心更新統計核對；管理員自身操作排除。詳見 [統計說明](analytics.md)。
 
 若版本端點仍為 404，請確認重建的服務、build context、執行映像，以及反向代理是否把整個 `/medresearch/` 指到同一個 `medresearch-app:8000`。不要只複製前端檔案或只重啟舊映像。
 

@@ -20,6 +20,7 @@
 - 每次 API 操作重新檢查伺服器授權；修改授權立即生效。禁止前端指定內容擁有者、跨單位寫入、高階角色越權與停用最後一位系統管理員。
 - 內容支援草稿、發布、到期、下架、歷史檢視與回復；儲存有版本衝突檢查。
 - 舊版瀏覽器消息可由「匯入舊消息」預覽並保存為伺服器草稿；正式編輯與發布全程寫入後端，不寫 localStorage。
+- 工作台瀏覽摘要與「瀏覽統計」：近 7／30 日、單位範圍、每日趨勢、頁面／消息／文件下載排行；後端每日累計，管理者操作排除，單位角色只看授權單位。詳見 [統計口徑](docs/analytics.md)。
 - PNG、JPEG、PDF 上傳上限 5 MB；未發布引用的檔案只有授權管理員能讀取。院內消息只透過登入後 API 提供。
 
 操作與限制詳見 [正式管理指南](docs/management-guide.md) 及 [角色矩陣](docs/role-permission-matrix.md)。
@@ -38,6 +39,7 @@
 - `python -m tests.check_oauth_login`
 - `python -m tests.check_portal`
 - `python -m tests.check_management`
+- `python -m tests.check_analytics`
 - `python -m tests.check_documents`
 - `python -m tests.check_resources`
 - `node tests/check_resource_search.mjs`

@@ -65,3 +65,7 @@
 ## 2026-11-05 資源入口補齊
 
 研究團隊、核心實驗室、督導審查、論文撰寫、約用助理及院內外資源沿用 content-page.html?page={id}，資源群組與卡片集中在 data/pages.json 的 groups 欄位。新 ID 為 teams、laboratories、governance、writing、research-assistants、external-resources；既有內容頁 ID 不改。研究資源總覽集中連到各頁，首頁研究網絡與服務入口同步更新。詳細維護及回復見 management-guide.md 與 content-refresh-rollback.md。
+
+## 2026-11-13 正式管理統計入口
+
+正式管理中心 `/admin` 的工作台下方新增「瀏覽統計」（`#analytics`），沿用側欄、登入與後端單位範圍。工作台摘要連至完整統計頁；專頁提供日期／單位篩選、每日趨勢與數值、頁面／消息／文件下載排行。前台文件的下載入口由 `/api/documents/{id}/download` 提供，預覽保留既有路徑。API、保存與權限見 [統計說明](analytics.md)。

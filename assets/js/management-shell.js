@@ -1,7 +1,7 @@
 /* Presentation helpers; permissions always come from the authenticated server. */
 (function(){
   'use strict';
-  const paths={home:'M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z',
+  const paths={chart:'M4 3v18h17M8 15l4-5 4 2 5-7',home:'M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z',
     file:'M14 2H5a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9Zm0 0v7h7M7 13h10M7 17h7',
     building:'M4 21V5h10v16M14 10h6v11M8 9h2M8 13h2M8 17h2M17 14h1M17 18h1M2 21h20',
     people:'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8m13 10v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75',
@@ -19,7 +19,7 @@
   function table(headers,rows){return `<div class="table-container"><table class="data-table"><thead><tr>${headers.map(h=>`<th scope="col">${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows||`<tr><td colspan="${headers.length}" class="empty">目前沒有資料。</td></tr>`}</tbody></table></div>`;}
   function date(value,withTime=false){if(!value)return '—';const parsed=new Date(value);if(Number.isNaN(parsed.getTime()))return value;return new Intl.DateTimeFormat('zh-TW',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit',...(withTime?{hour:'2-digit',minute:'2-digit',hour12:false}:{})}).format(parsed);}
   function navItems(session){
-    const items=[{id:'overview',label:'工作台',icon:'home'}];
+    const items=[{id:'overview',label:'工作台',icon:'home'},{id:'analytics',label:'瀏覽統計',icon:'chart'}];
     for(const [id,label,symbol] of [['documents','文件表單','file'],['news','消息與發布','file'],['units','單位資料','building'],['people','單位成員','people']])if(session.kinds.includes(id))items.push({id,label,icon:symbol});
     items.push({id:'media',label:'檔案與附件',icon:'image'});
     if(['site_admin','system_admin'].includes(session.profile.role))items.push({id:'announcements',label:'跑馬燈公告',icon:'bell'});

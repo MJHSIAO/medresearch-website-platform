@@ -473,3 +473,6 @@ def install(app, runtime, store):
     async def theme():
         value = store.collection(store.read(), 'theme')
         return Response(f":root{{--green-700:{value['accent']};--green-800:{value['accent']};}} .container{{max-width:{value['width']}px;}}", media_type='text/css', headers={'Cache-Control': 'no-store'})
+
+    from .analytics import install as install_analytics
+    runtime.analytics = install_analytics(app, runtime, store, context)
