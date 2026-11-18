@@ -55,6 +55,7 @@ async function checkResourceHref(href) {
 }
 for(const page of catalog)for(const group of page.groups||[])for(const card of group.cards)for(const action of card.actions)await checkResourceHref(action.href);
 for(const service of JSON.parse((await readFile(join(root, 'data/services.json'), 'utf8')).replace(/^\uFEFF/, '')))await checkResourceHref(service.href);
+await checkResourceHref('assets/js/management-personnel.js');
 // Unit sections can contain local downloads, figures and in-page quick links.
 for (const unit of JSON.parse((await readFile(join(root, 'data/units.json'), 'utf8')).replace(/^\uFEFF/, ''))) {
   const sections = unit.special_sections || [];

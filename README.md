@@ -25,6 +25,8 @@
 
 操作與限制詳見 [正式管理指南](docs/management-guide.md) 及 [角色矩陣](docs/role-permission-matrix.md)。
 
+單位成員可拖曳／上下移後儲存順序並同步前台；人員權限依單位與原有角色排序，兩頁均支援確認範圍後刪除。詳見 [成員與授權管理](docs/personnel-management.md)。
+
 ## 資料與備份
 
 `data/` 是初始公開資料。`DATA_DIRECTORY` 預設 `var/`，私有 `state.json` 保存授權、內容覆寫、版本、稽核及附件索引；附件亦存於同目錄。Git 忽略此目錄，後端不提供目錄靜態存取。Docker 使用 `medresearch-data` 持久化資料卷。更新 Git 不會覆蓋管理中心的正式內容；備份與還原須涵蓋整個目錄／資料卷。
@@ -39,6 +41,8 @@
 
 - `python -m tests.check_backend`
 - `python -m tests.check_biobank`
+- `python -m tests.check_personnel`
+- `node tests/check_personnel_sort.mjs`
 - `node tests/check_biobank_search.mjs`
 - `python -m tests.check_oauth_login`
 - `python -m tests.check_portal`

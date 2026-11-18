@@ -18,7 +18,7 @@
   function button(label, action, parent=workspace) {const b=document.createElement('button');b.type='button';b.className='button small';b.textContent=label;b.onclick=()=>Promise.resolve().then(action).catch(e=>message(e.message,true));parent.append(b);return b;}
   function field(key,label,value='',type='text'){return `<label>${esc(label)}${type==='textarea'?`<textarea name="${key}">${esc(value)}</textarea>`:`<input name="${key}" type="${type}" value="${esc(value)}">`}</label>`;}
   function options(values,current){return values.map(([v,l])=>`<option value="${esc(v)}" ${v===current?'selected':''}>${esc(l)}</option>`).join('');}
-  function unitOptions(current){const units=[...session.units];if(session.profile.role!=='unit_admin')units.push({id:'medresearch',name:'醫學研究部'});return options(units.map(u=>[u.id,u.name]),current);}
+  function unitOptions(current){current||=new URLSearchParams(location.search).get('unit');const units=[...session.units];if(session.profile.role!=='unit_admin')units.push({id:'medresearch',name:'醫學研究部'});return options(units.map(u=>[u.id,u.name]),current);}
   function submit(form, action){form.onsubmit=async e=>{e.preventDefault();const b=form.querySelector('[type=submit]');b.disabled=true;try{await action();}catch(err){message(err.message,true);}finally{b.disabled=false;}};}
   async function list(kind){return views.render(kind);}
   function newEntry(kind){if(kind==='documents')return edit(kind,{value:{id:'doc-'+crypto.randomUUID(),title:'',summary:'',category:'申請表單',version:'1.0',status:'draft',visibility:'public',is_demo:false,file:{}},revision:null});return edit(kind,{value:{id:(kind==='news'?'news-':'person-')+crypto.randomUUID(),...(kind==='news'?{title:'',summary:'',category:'',content:[],visibility:'public',status:'draft',attachments:[],cover_image:'',cover_alt:'',published_at:'',expires_at:''}:{name:'',title:'',bio:'',visibility:'public'})},revision:null});}
@@ -108,10 +108,20 @@
     if(kind==='units')for(const [key,label] of Object.entries({person:'聯絡窗口',phone:'電話',email:'電子郵件',address:'地址'}))fields+=field('contact_'+key,label,v.contact?.[key]||'');
     if(kind==='news')fields+=field('paragraphs','本文（空白行分段）',(v.content||[]).join('\n\n'),'textarea')+`<label>狀態<select name="status">${options([['draft','草稿'],['published','發布'],['expired','過期'],['archived','下架／封存'],['pending_review','待確認']],v.status)}</select></label>`;
     if(['news','people'].includes(kind))fields+=`<label>顯示範圍<select name="visibility">${options([['public','公開'],['internal','僅院內'],['both','院內外']],v.visibility)}</select></label>`;
+    let accountChoices;
+    if(kind==='people'&&session.profile.role!=='unit_admin'){
+      const data=await api('manage/grants');if(!views.isCurrent(serial))return;
+      const unit=v.unit_id||new URLSearchParams(location.search).get('unit')||session.units[0]?.id;
+      const choices=data.items.filter(g=>g.role!=='unit_admin'||g.units.includes(unit)).map(g=>[g.identity,`${g.name||g.identity}（${g.identity}）`]);
+      for(const id of data.bootstrap||[])choices.push([id,id+'（伺服器保留）']);
+      accountChoices=selected=>[['','不關聯帳號'],...data.items.filter(g=>g.role!=='unit_admin'||g.units.includes(selected)).map(g=>[g.identity,`${g.name||g.identity}（${g.identity}）`]),...(data.bootstrap||[]).map(id=>[id,id+'（伺服器保留）'])];
+      fields+=`<label>關聯管理帳號（選填）<select name="account_identity">${options([['','不關聯帳號'],...choices],v.account_identity||'')}</select></label><p>只以明確指定的識別值關聯，不會依姓名自動比對。刪除成員時，確認視窗會說明是否一併移除此單位授權。</p>`;
+    }
     if(kind==='news'&&session.profile.role!=='unit_admin')fields+=`<label><input type="checkbox" name="featured" ${v.featured?'checked':''}>首頁推薦</label>`;
-    if(!entry.revision)fields=`<label>所屬單位<select name="unit">${unitOptions()}</select></label>`+fields;
+    if(!entry.revision)fields=`<label>所屬單位<select name="unit">${kind==='people'?options(session.units.map(u=>[u.id,u.name]),new URLSearchParams(location.search).get('unit')):unitOptions()}</select></label>`+fields;
     workspace.innerHTML=`<h2>編輯${names[kind]}</h2><form id="editor">${fields}<details><summary>進階內容欄位（服務、聯絡資料、段落、附件與選單等）</summary><p>保留原有欄位結構；上方表單欄位會覆蓋此處對應值。</p><label>完整內容 JSON<textarea name="advanced" rows="18">${esc(JSON.stringify(v,null,2))}</textarea></label></details><button type="submit">儲存${kind==='news'?'／套用發布狀態':''}</button></form><div id="edit-actions" class="actions"></div><div id="versions"></div>`;
     const form=document.getElementById('editor');
+    if(accountChoices&&form.elements.unit)form.elements.unit.onchange=()=>{const select=form.elements.account_identity;select.innerHTML=options(accountChoices(form.elements.unit.value),select.value);};
     submit(form,async()=>{
       const value=JSON.parse(form.elements.advanced.value);
       for(const [key,type] of Object.entries(editable))value[key]=type==='number'?Number(form.elements[key].value):form.elements[key].value;
@@ -119,6 +129,7 @@
       if(kind==='units')for(const key of ['person','phone','email','address']){value.contact||={};value.contact[key]=form.elements['contact_'+key].value;}
       if(kind==='news'){value.content=form.elements.paragraphs.value.split(/\n\s*\n/).filter(Boolean);value.status=form.elements.status.value;if(form.elements.featured)value.featured=form.elements.featured.checked;}
       if(form.elements.visibility)value.visibility=form.elements.visibility.value;
+      if(kind==='people'&&form.elements.account_identity)value.account_identity=form.elements.account_identity.value;
       const result=await api(`manage/content/${kind}/${encodeURIComponent(v.id)}`,'PUT',{value,revision:entry.revision,unit:form.elements.unit?.value});
       if(!views.isCurrent(serial))return;
       message('已儲存至伺服器。公開內容將於重新載入網站後更新。');await edit(kind,result);
@@ -142,9 +153,9 @@
   async function grants(){return views.render('grants',false);}
   function grantForm(g){
     const serial=formRoute('grants');
-    workspace.innerHTML=`<h2>${g.revision?'調整':'新增'}人員授權</h2><form id="grant">${field('identity','員編／識別值',g.identity)}<label>角色<select name="role">${options(Object.entries(roles).filter(([k])=>session.profile.role==='system_admin'||k==='unit_admin'),g.role)}</select></label><fieldset><legend>管理單位（單位管理員必選，可複選）</legend>${session.units.map(u=>`<label><input type="checkbox" name="units" value="${esc(u.id)}" ${g.units.includes(u.id)?'checked':''}>${esc(u.name)}</label>`).join('')}</fieldset><label><input type="checkbox" name="active" ${g.active?'checked':''}>啟用此授權</label><button type="submit">儲存授權</button></form>`;
+    workspace.innerHTML=`<h2>${g.revision?'調整':'新增'}人員授權</h2><form id="grant">${field('identity','員編／識別值',g.identity)}${field('name','姓名（選填）',g.name||'')}<label>角色<select name="role">${options(Object.entries(roles).filter(([k])=>session.profile.role==='system_admin'||k==='unit_admin'),g.role)}</select></label><fieldset><legend>管理單位（單位管理員必選，可複選）</legend>${session.units.map(u=>`<label><input type="checkbox" name="units" value="${esc(u.id)}" ${g.units.includes(u.id)?'checked':''}>${esc(u.name)}</label>`).join('')}</fieldset><label><input type="checkbox" name="active" ${g.active?'checked':''}>啟用此授權</label><button type="submit">儲存授權</button></form>`;
     const form=document.getElementById('grant');if(g.revision)form.elements.identity.readOnly=true;
-    submit(form,async()=>{await api('manage/grants','PUT',{identity:form.elements.identity.value,role:form.elements.role.value,units:[...form.querySelectorAll('[name=units]:checked')].map(x=>x.value),active:form.elements.active.checked,revision:g.revision||null});if(!views.isCurrent(serial))return;message('授權已更新，所有後續操作會立即使用新權限。');await grants();});
+    submit(form,async()=>{await api('manage/grants','PUT',{identity:form.elements.identity.value,name:form.elements.name.value,role:form.elements.role.value,units:[...form.querySelectorAll('[name=units]:checked')].map(x=>x.value),active:form.elements.active.checked,revision:g.revision||null});if(!views.isCurrent(serial))return;message('授權已更新，所有後續操作會立即使用新權限。');await grants();});
     button('返回人員列表',grants);
     decorate(g.revision?'調整人員授權':'新增人員授權','請設定對方的管理角色與單位；不會切換您目前的身分。');
   }

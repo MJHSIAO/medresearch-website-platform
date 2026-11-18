@@ -16,6 +16,7 @@ import backend.main as runtime
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--port', type=int, required=True)
+    parser.add_argument('--personnel-preview', action='store_true')
     args = parser.parse_args()
     with TemporaryDirectory(prefix='medresearch-management-ui-') as directory:
         runtime.store.directory = Path(directory)
@@ -36,6 +37,28 @@ def main():
                     ('server-ai-draft', 'SERVER-AI-DRAFT', 'ai-center', 'draft'),
                     ('server-core-public', 'SERVER-CORE-PUBLISHED', 'core-laboratory', 'published')]]
             state['content']['news'][2]['published_at'] = '2026-10-01T09:00:00+08:00'
+            if args.personnel_preview:
+                state['grants'].update({
+                    'EXAMPLE-BIO-A': {'name':'示範管理員甲','role':'unit_admin','units':['biobank','core-laboratory'],'active':True},
+                    'EXAMPLE-BIO-B': {'name':'示範管理員乙','role':'unit_admin','units':['biobank'],'active':True},
+                    'EXAMPLE-SYSTEM': {'name':'示範系統管理員','role':'system_admin','units':[],'active':True}})
+                people=runtime.store.collection(state,'people')
+                state['content']['people']=[p for p in people if p['unit_id']!='biobank']+[
+                    {'id':f'example-biobank-{index}','unit_id':'biobank','name':name,'title':title,'bio':'僅供本機功能驗證的虛構成員。','visibility':'public','display_order':index,
+                     'account_identity':'EXAMPLE-BIO-A' if index==0 else ''}
+                    for index,(name,title) in enumerate([('示範成員甲','研究支援'),('示範成員乙','資料管理'),('示範成員丙','檢體管理')])]
+
+        if args.personnel_preview:
+            from fastapi.responses import HTMLResponse
+            @runtime.app.middleware('http')
+            async def preview_notice(request, call_next):
+                response=await call_next(request)
+                if request.url.path.endswith('/admin') and response.status_code==200:
+                    content=b''.join([chunk async for chunk in response.body_iterator]).decode('utf-8')
+                    content=content.replace('<div id="workspace">','<p class="status-message">本機測試預覽｜人體生物資料庫人員為虛構資料；操作實際寫入隔離測試目錄，不影響正式資料。關閉此測試服務後清除。</p><div id="workspace">')
+                    headers={k:v for k,v in response.headers.items() if k.lower() not in {'content-length','content-type'}}
+                    return HTMLResponse(content,headers=headers)
+                return response
 
         @runtime.app.get('/__fixture_login/{role}')
         async def fixture_login(role: str):

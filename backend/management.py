@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from urllib.parse import urlsplit, unquote
 from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse, FileResponse, Response
+from .personnel import ordered_people, sync_members, validate_person, clear_links
 
 KINDS = {'units', 'news', 'people', 'pages', 'services', 'site', 'theme', 'documents'}
 MANAGERS = {'unit_admin', 'site_admin', 'system_admin'}
@@ -155,7 +156,8 @@ def install(app, runtime, store):
         actor, _ = context(request, state)
         if actor['role'] not in {'site_admin', 'system_admin'}:
             raise HTTPException(403)
-        entries = [{'identity': key, **value, 'revision': revision(value)} for key, value in state['grants'].items()
+        people = store.collection(state, 'people')
+        entries = [{'identity': key, **value, 'name': value.get('name') or next((p['name'] for p in people if p.get('account_identity') == key), ''), 'revision': revision(value)} for key, value in state['grants'].items()
                    if actor['role'] == 'system_admin' or value['role'] == 'unit_admin']
         return {'items': entries, 'bootstrap': list(runtime.settings.system_admin_ids) if actor['role'] == 'system_admin' else []}
 
@@ -171,6 +173,10 @@ def install(app, runtime, store):
             if not isinstance(identity, str) or not identity.strip() or len(identity) > 160 or identity != identity.strip():
                 raise HTTPException(422, '請填寫完整員工識別值')
             old = state['grants'].get(identity)
+            name = payload.get('name', (old or {}).get('name', ''))
+            if not isinstance(name, str) or len(name) > 120:
+                raise HTTPException(422, '姓名最多 120 字')
+            validate(name)
             if role not in MANAGERS or not isinstance(active, bool) or not isinstance(units, list):
                 raise HTTPException(422, '角色或單位格式不正確')
             if actor['role'] != 'system_admin' and (actor['role'] != 'site_admin' or role != 'unit_admin' or (old and old['role'] != 'unit_admin')):
@@ -187,6 +193,13 @@ def install(app, runtime, store):
                 if not others and not runtime.settings.system_admin_ids:
                     raise HTTPException(409, '不能停用最後一位系統管理員')
             state['grants'][identity] = {'role': role, 'units': sorted(set(units)) if role == 'unit_admin' else [], 'active': active}
+            if name:
+                state['grants'][identity]['name'] = name.strip()
+            if old:
+                removed = set(old['units']) - set(units) if role == 'unit_admin' else set()
+                if old['role'] != 'unit_admin' and role == 'unit_admin':
+                    removed |= {p.get('unit_id') for p in store.collection(state, 'people')} - set(units)
+                clear_links(state, store, identity, removed)
             audit(state, actor, '設定授權' if active else '停用授權', 'grants', identity)
         return {'ok': True}
 
@@ -197,6 +210,8 @@ def install(app, runtime, store):
         state = store.read()
         actor, _ = context(request, state)
         collection = store.collection(state, kind)
+        if kind == 'people':
+            collection = ordered_people(collection)
         items = collection if isinstance(collection, list) else [dict(collection, id=kind)]
         return {'items': [{'value': item, 'revision': revision(item)} for item in items if allowed(actor, kind, item)]}
 
@@ -226,6 +241,8 @@ def install(app, runtime, store):
             known = {u['id'] for u in store.collection(state, 'units')} | {'medresearch'}
             if unit not in known or (actor['role'] == 'unit_admin' and unit not in actor['units']):
                 raise HTTPException(403, '未獲授權的單位')
+            if kind == 'people' and unit == 'medresearch':
+                raise HTTPException(422, '請選擇實際所屬單位')
             value['unit_id' if kind == 'people' else 'owner_unit_id'] = unit
         elif not old:
             raise HTTPException(422, '此資料類型請編輯既有項目')
@@ -285,6 +302,8 @@ def install(app, runtime, store):
             validate_unit_sections(value['special_sections'])
         if kind == 'units' and value.get('status') not in {'active', 'inactive', 'archived'}:
             raise HTTPException(422, '單位狀態不正確')
+        if kind == 'people':
+            validate_person(value, old, actor, state, store, runtime.settings.system_admin_ids)
         # Referencing an unpublished upload cannot be used to publish another unit's file.
         serialized = json.dumps(value, ensure_ascii=False)
         for file_id, metadata in state['files'].items():
@@ -324,12 +343,7 @@ def install(app, runtime, store):
         else:
             state['content'][kind] = [value if i['id'] == identifier else i for i in items] if old else items + [value]
         if kind == 'people':
-            units = store.collection(state, 'units')
-            for unit in units:
-                if unit['id'] == value['unit_id']:
-                    unit['members'] = [f"{person.get('title', '')} {person['name']}".strip()
-                                       for person in state['content']['people'] if person.get('unit_id') == unit['id'] and visible(person, 'people')]
-            state['content']['units'] = units
+            sync_members(state, store, value['unit_id'])
         audit(state, actor, '儲存內容', kind, identifier, owner(kind, value))
         return {'value': value, 'revision': revision(value)}
 
@@ -414,6 +428,8 @@ def install(app, runtime, store):
             raise HTTPException(404)
         state = store.read()
         value = store.collection(state, kind)
+        if kind == 'people':
+            value = ordered_people(value)
         if isinstance(value, list):
             value = [item for item in value if visible(item, kind)]
             if kind == 'news':
@@ -423,7 +439,7 @@ def install(app, runtime, store):
                         item['status'] = 'expired'
         def clean(item):
             if isinstance(item, dict):
-                return {k: clean(v) for k, v in item.items() if k not in {'created_by', 'updated_by'}}
+                return {k: clean(v) for k, v in item.items() if k not in {'created_by', 'updated_by', 'account_identity'}}
             return [clean(x) for x in item] if isinstance(item, list) else item
         return JSONResponse(clean(value), headers={'Cache-Control': 'no-store'})
 
@@ -514,3 +530,5 @@ def install(app, runtime, store):
 
     from .analytics import install as install_analytics
     runtime.analytics = install_analytics(app, runtime, store, context)
+    from .personnel import install as install_personnel
+    install_personnel(app, runtime, store, context, body)

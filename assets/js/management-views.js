@@ -35,14 +35,17 @@
       updateNews();document.getElementById('news-search').oninput=event=>{query=event.target.value;updateNews();};
     }
     function showUnits(){frame('單位資料','維護授權範圍內的單位介紹、服務與聯絡資訊。',`<div class="unit-grid">${entries.map((entry,index)=>{const u=entry.value;return `<article class="unit-card"><div class="unit-card-top"><span class="unit-symbol">${e(u.name.slice(0,1))}</span>${badge(u.status)}</div><div><h2>${e(u.name)}</h2><p>${e(u.short_description||'')}</p></div><div class="unit-card-footer">${editButton('units',index)}${action('管理消息','news','arrow',false)}</div></article>`;}).join('')||'<p class="empty">目前沒有獲授權的單位。</p>'}</div>`);}
-    function showPeople(){frame('單位成員','維護各單位的公開成員與職務資訊。',`<section class="panel">${table(['姓名','職務','所屬單位','顯示範圍',''],entries.map((entry,index)=>{const p=entry.value;return `<tr><td>${e(p.name)}</td><td>${e(p.title||'—')}</td><td class="unit-name">${e(unitName(p.unit_id))}</td><td>${e(p.visibility==='internal'?'僅院內':p.visibility==='both'?'院內外':'公開')}</td><td>${editButton('people',index)}</td></tr>`;}).join(''))}</section>`,action('新增成員','new-people'));}
+    let personnelLoading;
+    async function showPersonnel(kind,serial){
+      if(!window.MedManagementPersonnel){
+        if(!personnelLoading)personnelLoading=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=new URL('assets/js/management-personnel.js',base);script.onload=resolve;script.onerror=()=>{personnelLoading=null;script.remove();reject(Error('人員管理介面載入失敗，請重新整理。'));};document.head.append(script);});
+        await personnelLoading;
+      }
+      if(serial!==ticket)return;
+      await window.MedManagementPersonnel[kind==='people'?'mountPeople':'mountGrants']({session,api,shell,onEdit,onNew,onGrant,message,base,isCurrent:()=>serial===ticket});
+    }
     function showDocuments(){frame('文件表單','新增、上傳與發布文件；草稿與下架項目不會出現在公開網站。',`<section class="panel">${table(['文件名稱','所屬單位','類型／版本','狀態',''],entries.map((entry,index)=>{const d=entry.value;return `<tr><td>${e(d.title)}${d.is_demo?'（示意）':''}</td><td>${e(unitName(d.owner_unit_id))}</td><td>${e(d.category)} · ${e(d.version)}</td><td>${badge(d.status)}</td><td>${editButton('documents',index)}</td></tr>`;}).join(''))}</section>`,action('新增文件','new-documents'));}
     function showRecords(kind){frame(names[kind],'選擇要維護的內容，所有修改皆保存於伺服器。',`<section class="panel">${table(['內容名稱','說明',''],entries.map((entry,index)=>`<tr><td>${e(entry.value.name||entry.value.title||names[kind])}</td><td class="unit-name">${e(entry.value.summary||entry.value.description||'')}</td><td>${editButton(kind,index)}</td></tr>`).join(''))}</section>`);}
-    async function showGrants(serial){
-      const data=await api('manage/grants');if(serial!==ticket)return;grants=data.items;
-      const rows=(data.bootstrap||[]).map(id=>`<tr><td>${e(id)}</td><td>系統管理員</td><td>全部單位</td><td>${badge('active')}</td><td class="date-cell">伺服器保留帳號</td></tr>`).join('')+grants.map((g,index)=>`<tr><td>${e(g.identity)}</td><td>${e(roles[g.role])}</td><td class="unit-name">${e(g.role==='unit_admin'?g.units.map(unitName).join('、'):'全部單位')}</td><td>${badge(g.active?'active':'inactive')}</td><td><button type="button" class="edit-button" data-grant="${index}">調整／停用</button></td></tr>`).join('');
-      frame('人員權限','依人員設定角色與管理範圍。',`<section class="panel"><div class="panel-heading"><div><h2>管理人員</h2><p class="panel-subtitle">角色由登入身分決定。${session.profile.role==='site_admin'?'您可維護單位管理員的授權。':'伺服器保留管理員須由維運調整。'}</p></div></div>${table(['員工識別值','角色','管理範圍','狀態',''],rows)}</section>`,action('新增授權','new-grant'));
-    }
     async function showMedia(serial){
       const data=await api('manage/files');if(serial!==ticket)return;
       const units=[...session.units];if(session.profile.role!=='unit_admin')units.push({id:'medresearch',name:'醫學研究部'});
@@ -72,7 +75,7 @@
         frame('瀏覽統計','了解網站使用情況，掌握受到關注的內容。','<div id="management-analytics"></div>');
         await window.MedManagementAnalytics.mount({target:document.getElementById('management-analytics'),api,session,message,isCurrent:()=>serial===ticket});return;
       }
-      if(id==='grants'){await showGrants(serial);return;}
+      if(id==='grants'||id==='people'){await showPersonnel(id,serial);return;}
       if(id==='media'){await showMedia(serial);return;}
       if(id==='announcements'){
         if(!window.MedAnnouncementManager)await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=new URL('assets/js/announcement-manager.js',base);script.onload=resolve;script.onerror=()=>reject(Error('公告管理載入失敗，請重新整理。'));document.head.append(script);});
@@ -84,7 +87,7 @@
       const result=await getContent(id);if(serial!==ticket)return;entries=result;
       if(id==='documents'){entries.sort(timeSort);showDocuments();}
       else if(id==='news'){entries.sort(timeSort);showNews();}
-      else if(id==='units')showUnits();else if(id==='people')showPeople();
+      else if(id==='units')showUnits();
       else if(['site','theme'].includes(id)&&entries.length)await onEdit(id,entries[0]);else showRecords(id);
     }
     workspace.addEventListener('click',event=>{
