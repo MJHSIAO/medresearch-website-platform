@@ -14,6 +14,13 @@
       body: text([unit.full_description, unit.purpose, unit.goals, unit.services, unit.research_fields]),
       href: unitHref(unit), newTab: true
     }));
+    for (const unit of publicUnits) {
+      for (const section of unit.special_sections || []) {
+        entries.push({type: '單位資訊', title: `${unit.name}｜${section.title}`, summary: section.intro,
+          body: text([section.items, (section.links || []).map(link => [link.label, link.note]), (section.tables || []).map(table => [table.caption, table.headers, table.rows])]),
+          href: `${unitHref(unit)}#${encodeURIComponent(section.id)}`, newTab: true});
+      }
+    }
     for (const person of people.filter(D.isPublic)) {
       const unit = byId.get(person.unit_id);
       if (!unit) continue;

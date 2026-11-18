@@ -181,3 +181,19 @@ main [id], .section-anchor { scroll-margin-top: calc(var(--header-height) + 1rem
 @media(max-width:1250px){.hospital-logo{width:215px}.brand{gap:14px}.department-brand{padding-left:14px}.department-brand strong{font-size:18px}.main-nav a{font-size:14px;padding-inline:.45rem}}
 @media(max-width:700px){.hospital-logo{width:175px}.brand{gap:10px}.department-brand{padding-left:10px;gap:0}.department-brand strong{font-size:16px;letter-spacing:0}.department-brand>span{display:none}.header-row{min-height:76px;gap:12px}}
 @media(max-width:380px){.hospital-logo{width:143px}.brand{gap:8px}.department-brand{padding-left:8px}.department-brand strong{font-size:14px}.header-row{gap:8px}}
+.unit-detail-section .unit-resource-grid { margin-block: 1.5rem; }
+.unit-data-table { max-width: 100%; overflow-x: auto; margin-block: 1.5rem; border: 1px solid var(--line); border-radius: var(--radius-sm); background: #fff; }
+.unit-data-table table { width: 100%; min-width: 36rem; border-collapse: collapse; font-size: 0.95rem; }
+.unit-data-table caption { padding: 1rem; text-align: left; font-weight: 800; color: var(--green-900); }
+.unit-data-table th, .unit-data-table td { padding: 0.8rem; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+.unit-data-table thead { background: var(--green-050); }
+.unit-data-table tbody th { font-weight: 600; }
+.unit-source-figure { margin-block: 1rem; padding: 1rem; border: 1px solid var(--line); border-radius: var(--radius-sm); background: #fff; }
+.unit-source-figure summary { cursor: pointer; min-height: 44px; align-content: center; color: var(--green-800); font-weight: 700; overflow-wrap: anywhere; }
+.unit-source-figure figure { margin: 1rem 0 0; }
+.unit-source-figure img { display: block; max-width: 100%; height: auto; margin-inline: auto; }
+.unit-source-figure figcaption { margin-top: 1rem; color: var(--muted); }
+.unit-history-list { padding: 0; list-style: none; }
+.unit-history-list li { display: grid; grid-template-columns: 7rem minmax(0, 1fr); gap: 1rem; padding-block: 1rem; border-bottom: 1px solid var(--line); }
+.unit-history-list time { color: var(--green-800); font-variant-numeric: tabular-nums; }
+@media (max-width: 36rem) { .unit-history-list li { grid-template-columns: minmax(0, 1fr); gap: 0.3rem; } }

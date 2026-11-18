@@ -35,7 +35,11 @@
 
 ## 驗證
 
+人體生物資料庫：`unit.html?unit=biobank`。沿用單位共用版型，來源、附件、資料整合及實測紀錄見 [整合說明](docs/biobank-integration.md)。
+
 - `python -m tests.check_backend`
+- `python -m tests.check_biobank`
+- `node tests/check_biobank_search.mjs`
 - `python -m tests.check_oauth_login`
 - `python -m tests.check_portal`
 - `python -m tests.check_management`

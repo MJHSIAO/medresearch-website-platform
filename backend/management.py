@@ -74,6 +74,40 @@ def validate(value):
         raise HTTPException(422, '請輸入純文字，不接受 HTML 標籤')
 
 
+def validate_unit_sections(sections):
+    """Optional unit modules have different shapes; validate each by its fields."""
+    def fail():
+        raise HTTPException(422, '單位特色區塊格式不正確')
+    def strings(value):
+        return isinstance(value, list) and all(isinstance(item, str) for item in value)
+    if not isinstance(sections, list):
+        fail()
+    ids = set()
+    for section in sections:
+        if not isinstance(section, dict) or not isinstance(section.get('id'), str) or not re.fullmatch(r'[a-zA-Z][a-zA-Z0-9_-]*', section['id']):
+            fail()
+        if section['id'] in ids or not isinstance(section.get('title'), str) or not section['title'].strip():
+            fail()
+        ids.add(section['id'])
+        if any(key in section and not isinstance(section[key], str) for key in ('intro', 'eyebrow')) or not strings(section.get('items', [])):
+            fail()
+        for collection, keys in (('links', ('label', 'href')), ('figures', ('src', 'alt'))):
+            if not isinstance(section.get(collection, []), list):
+                fail()
+            for item in section.get(collection, []):
+                if not isinstance(item, dict) or any(not isinstance(item.get(key), str) or not item[key].strip() for key in keys):
+                    fail()
+                if 'note' in item and not isinstance(item['note'], str):
+                    fail()
+        if not isinstance(section.get('tables', []), list):
+            fail()
+        for table in section.get('tables', []):
+            if not isinstance(table, dict) or not isinstance(table.get('caption'), str) or not strings(table.get('headers')) or not table['headers'] or not isinstance(table.get('rows'), list):
+                fail()
+            if any(not strings(row) or len(row) != len(table['headers']) for row in table['rows']):
+                fail()
+
+
 def install(app, runtime, store):
     def context(request, state, manager=True, write=False):
         record = runtime.sessions.get(request.session.get('session_id'))
@@ -224,6 +258,8 @@ def install(app, runtime, store):
                         continue
                     if before is old and kind == 'pages' and key == 'groups':
                         continue
+                    if before is old and kind == 'units' and key == 'special_sections':
+                        continue
                     shape(child, after[key])
             elif isinstance(before, list):
                 if not isinstance(after, list):
@@ -245,6 +281,8 @@ def install(app, runtime, store):
         if kind == 'pages' and 'groups' in value:
             from .resources import validate_groups
             validate_groups(value['groups'])
+        if kind == 'units' and 'special_sections' in value:
+            validate_unit_sections(value['special_sections'])
         if kind == 'units' and value.get('status') not in {'active', 'inactive', 'archived'}:
             raise HTTPException(422, '單位狀態不正確')
         # Referencing an unpublished upload cannot be used to publish another unit's file.

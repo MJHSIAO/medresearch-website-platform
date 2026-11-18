@@ -2,6 +2,14 @@
 
 # 單位子站共用模板
 
+## 2026-11-18 人體生物資料庫擴充
+
+人體生物資料庫同樣沿用 `unit.html?unit=biobank` 及單一 `units.json` 資料，首頁、列表、完整介紹、管理預覽與搜尋同步。組織、流程、收費、表單、法規、統計及成果使用既有 `special_sections` 選配模組，不新增重複 HTML；下文六個單位的記載為初始交付範圍。
+
+新增選用欄位：`links`（label／href／note／source_url）、`tables`（caption／headers／rows）、`figures`（src／alt／source_url）。`items` 保持字串陣列；複合模組由後端逐欄驗證，避免以第一個區塊的欄位限制所有區塊。圖片原圖在可鍵盤操作的 details 展開，表格只在自身區域橫捲。單位可選 `news_archive: true` 顯示自己公開 expired 消息的歷史列表；`source_note` 說明來源日期限制。
+
+保留既有單位的純文字區塊與最新三則全站消息行為。新增單位的完整檔案、官方來源與限制見 [整合紀錄](biobank-integration.md)。
+
 ## 適用範圍
 
 本模板適用於學術研發室、共同研究室、動物實驗室、臨床試驗中心、細胞治療中心及創新智財產學中心。人工智慧中心沿用已完成的獨立第一版子站，不套用此模板。

@@ -3,7 +3,7 @@
     "id": "department-about",
     "title": "部門介紹",
     "eyebrow": "ABOUT THE DEPARTMENT",
-    "summary": "醫學研究部由研究發展委員會統籌全院醫學研究，下設七個隸屬單位，整合研究行政、實驗資源、臨床試驗、人工智慧、細胞治療與研發成果管理。",
+    "summary": "醫學研究部由研究發展委員會統籌全院醫學研究，整合各隸屬單位的研究行政、實驗資源、臨床試驗、人工智慧、細胞治療與研發成果管理。",
     "sections": [
       {
         "title": "本部簡介",
@@ -19,7 +19,7 @@
       },
       {
         "title": "隸屬單位",
-        "content": "學術研發室、共同研究室、動物實驗室、人工智慧中心、臨床試驗中心、細胞治療中心及創新智財產學中心。"
+        "content": "學術研發室、共同研究室、動物實驗室、人工智慧中心、臨床試驗中心、細胞治療中心、創新智財產學中心及人體生物資料庫。"
       }
     ],
     "source_url": "https://depart.femh.org.tw/medresearch/FEMH-MR.html",
@@ -68,7 +68,7 @@
         ]
       },
       {
-        "title": "七個隸屬單位",
+        "title": "隸屬單位",
         "text": "",
         "cards": [
           {
@@ -147,6 +147,12 @@
                 "href": "unit.html?unit=innovation-ip-center"
               }
             ]
+          },
+          {
+            "title": "人體生物資料庫",
+            "text": "查看單位介紹、作業流程、收費標準、辦法表單及相關法規。",
+            "tag": "單位介紹",
+            "actions": [{ "label": "認識單位", "href": "unit.html?unit=biobank" }]
           }
         ]
       }

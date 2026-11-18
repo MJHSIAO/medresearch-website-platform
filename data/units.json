@@ -571,5 +571,479 @@
                                                ]
                                  }
                              ]
-    }
+    },
+  {
+    "id": "biobank",
+    "slug": "biobank",
+    "name": "人體生物資料庫",
+    "short_description": "提供可靠的生物檢體與臨床資料研究資源，整合入庫保存、出庫申請、倫理審查、收費標準及表單，支持生物醫學研究與健康福祉。",
+    "full_description": "亞東紀念醫院人體生物資料庫設於醫學研究部下，其管理及運作受本庫倫理委員會監督，提供本院研究人員可靠的生物檢體來源，並建立完整的臨床資料系統，以促進科學發展與人民健康福祉。",
+    "purpose": "以可靠生物檢體及完整臨床資料支持科學研究，期望研究成果增進人民健康福祉。",
+    "goals": [
+      "提供可靠的生物檢體來源",
+      "建立完整的臨床資料系統",
+      "在倫理委員會監督下促進生物醫學研究"
+    ],
+    "services": [
+      "生物檢體與生物資料入庫保存",
+      "檢體及相關資料出庫運用申請",
+      "倫理審查、使用合約及保密規範",
+      "收費標準與辦法表單",
+      "收案統計、運用情形及研究成果"
+    ],
+    "research_fields": [
+      "生物檢體保存",
+      "臨床資料研究",
+      "研究倫理與資料治理"
+    ],
+    "members": [
+      "劉芫宏 醫師｜代表人、生物醫學主管、執行秘書",
+      "鄭仁傑 工程師｜資訊主管",
+      "許慈恩 管理師｜專責人員"
+    ],
+    "contact": {
+      "person": "許慈恩 管理師",
+      "phone": "(02)8966-4566 ext. 4566 / 4565",
+      "email": "femhbiobank@gmail.com",
+      "address": "亞東紀念醫院 6 樓第二共同研究室"
+    },
+    "hero_image": "",
+    "hero_alt": "人體生物資料庫研究支援",
+    "source_url": "https://depart.femh.org.tw/biolab/Manage.aspx?f=Manage",
+    "source_updated_at": "",
+    "source_checked_at": "2026-11-18",
+    "source_note": "來源頁未標示整頁更新日期；本版查核日為 2026-11-18。各附件、圖表及歷史公告保留個別版本或日期。",
+    "status": "active",
+    "visibility": "public",
+    "display_order": 8,
+    "updated_at": "2026-11-18T00:00:00+08:00",
+    "updated_by": "人體生物資料庫原官網公開資料整合",
+    "template_label": "生物醫學研究資源與倫理治理",
+    "service_heading": "檢體保存、資料運用與申請服務",
+    "resource_links": [
+      {
+        "label": "作業流程",
+        "href": "#biobank-flow",
+        "note": "院內外研究申請與倫理審查"
+      },
+      {
+        "label": "收費標準",
+        "href": "#biobank-fees",
+        "note": "審查、檢體及資料使用費"
+      },
+      {
+        "label": "辦法及表單",
+        "href": "#biobank-forms",
+        "note": "九份公開 PDF 與版本說明"
+      },
+      {
+        "label": "相關法規",
+        "href": "#biobank-laws",
+        "note": "法規資料庫與原站指引"
+      }
+    ],
+    "special_sections": [
+      {
+        "id": "biobank-organization",
+        "eyebrow": "Biobank",
+        "title": "組織架構與倫理監督",
+        "intro": "本庫設於醫學研究部下，管理與運作受人體生物資料庫倫理委員會監督。",
+        "items": [
+          "組織層級：亞東紀念醫院 → 醫學研究部 → 人體生物資料庫。",
+          "由生物醫學主管及資訊主管管理；檢體管理組設檢體管理人員，資料管理組設資訊管理人員及硬體管理人員。",
+          "原站公開職務：劉芫宏醫師為代表人、生物醫學主管及執行秘書；鄭仁傑工程師為資訊主管；許慈恩管理師為專責人員。"
+        ],
+        "links": [
+          {
+            "label": "倫理委員會名單",
+            "href": "assets/documents/biobank/20250902.pdf",
+            "note": "PDF｜依原官網委員名單連結保存，不由檔名推定委員任期。",
+            "source_url": "https://depart.femh.org.tw/biolab/doc/20250902.pdf"
+          }
+        ],
+        "figures": [
+          {
+            "src": "assets/images/biobank/organization.png",
+            "alt": "人體生物資料庫組織架構：醫院、醫學研究部、本庫及倫理委員會，主管下分檢體管理組與資料管理組。",
+            "source_url": "https://depart.femh.org.tw/biolab/images/BIOLAB.png"
+          }
+        ]
+      },
+      {
+        "id": "biobank-flow",
+        "eyebrow": "Biobank",
+        "title": "作業流程",
+        "intro": "本庫歡迎院外單位申請。以下依原站流程圖整理入庫保存與出庫運用，完整要求請核對運用計畫書及最新規範。",
+        "items": [
+          "入庫申請：醫療行為或研究計畫結束後之剩餘檢體與生物資料，如供後續研究使用，須備入庫作業申請表、參與者同意書、入庫申請書及入庫檢體單。",
+          "入庫處理：生物檢體蒐集、處理、分裝後保存；生物資料去連結並實體隔離保存，檢體貼上去識別化二維條碼，參與者同意書上鎖保存。",
+          "出庫評估：計畫主持人填寫檢體數量評估申請書，篩選合適的生物檢體與數量。",
+          "出庫送件：檢體及相關資料使用申請書、檢體數量評估申請書、研究計畫書、保密協議書、使用合約書及人體試驗審議委員會許可書（IRB 同意書）。",
+          "倫理審查與交付：經本庫倫理委員會審查同意後，檢附 IRB 同意書，由檢體或資訊管理人員交付去連結的檢體或資料，計畫主持人簽收。",
+          "結案追蹤：原流程圖載明結束後兩個月內繳回剩餘檢體及追蹤回報暨執行成果報告，商業運用利益發生後 30 天內回報。",
+          "來源差異提醒：流程圖寫「剩餘檢體繳回」，管理準則與使用合約另有剩餘檢體銷毀規定；實際處置及未提供下載的申請表請先向本庫確認，不逕依流程圖辦理。"
+        ],
+        "links": [
+          {
+            "label": "申請流程說明影片",
+            "href": "https://depart.femh.org.tw/biolab/images/biovideo.mp4",
+            "note": "原站公開 MP4｜另開播放，約 12 MB。"
+          },
+          {
+            "label": "辦法及申請文件",
+            "href": "#biobank-forms",
+            "note": "查看本頁九份原站文件與版本提醒。"
+          }
+        ],
+        "figures": [
+          {
+            "src": "assets/images/biobank/workflow-20250813.png",
+            "alt": "入庫保存與出庫運用流程原圖；文字流程及結案規範差異已整理於本區。",
+            "source_url": "https://depart.femh.org.tw/biolab/images/%E6%B5%81%E7%A8%8B%E5%9C%9620250813.png"
+          }
+        ]
+      },
+      {
+        "id": "biobank-fees",
+        "eyebrow": "Biobank",
+        "title": "收費標準",
+        "intro": "以下依原站三張收費圖表逐項整理，金額為新臺幣。原圖未標示生效日期；本版查核日為 2026-11-18，實際費用及院外申請資格請先向本庫確認。",
+        "items": [
+          "檢體蒐集者申請原收案之生物檢體無須收費；院內申請者以優惠價收費。",
+          "由國家級人體生物資料庫整合平台申請之案件，相關費用依該平台收費標準表計算。",
+          "各項服務依實際可提供之生物檢體及資料進行出庫。",
+          "生物資料若須經比對篩選的複雜檢索，另計資料處理費，由本院人體生物資料庫倫理委員會決議金額。"
+        ],
+        "tables": [
+          {
+            "caption": "使用申請案之倫理委員會審查費用",
+            "headers": [
+              "申請類型",
+              "費用（元／案）"
+            ],
+            "rows": [
+              [
+                "院內一般申請者",
+                "4,000"
+              ],
+              [
+                "檢體蒐集者（原始檢體提供者）自提研究使用其提供之檢體",
+                "2,000（可酌予減免）"
+              ],
+              [
+                "院外與本院醫師合作者",
+                "4,000"
+              ]
+            ]
+          },
+          {
+            "caption": "生物檢體使用收費基準（原表標示：元／個案）",
+            "headers": [
+              "服務名稱",
+              "規格與單位",
+              "檢體蒐集者",
+              "院內申請者",
+              "院內與學術單位合作",
+              "院內與產業界合作"
+            ],
+            "rows": [
+              [
+                "Tissue Chunk",
+                "塊／piece",
+                "0",
+                "350",
+                "700",
+                "1,500"
+              ],
+              [
+                "Serum",
+                "300 μl",
+                "0",
+                "200",
+                "400",
+                "450"
+              ],
+              [
+                "Plasma",
+                "300 μl",
+                "0",
+                "200",
+                "400",
+                "480"
+              ],
+              [
+                "Buffy coat",
+                "200 μl",
+                "0",
+                "200",
+                "400",
+                "480"
+              ],
+              [
+                "Urine",
+                "500 μl",
+                "0",
+                "100",
+                "200",
+                "300"
+              ],
+              [
+                "DNA (extracted from tissue)",
+                "1 μg",
+                "0",
+                "50",
+                "100",
+                "150"
+              ],
+              [
+                "DNA (extracted from buffy coat)",
+                "2 μg",
+                "0",
+                "100",
+                "200",
+                "400"
+              ],
+              [
+                "Unstained paraffin section",
+                "片／piece",
+                "0",
+                "100",
+                "200",
+                "250"
+              ],
+              [
+                "Unstained tissue frozen section",
+                "片／piece",
+                "0",
+                "50",
+                "100",
+                "150"
+              ],
+              [
+                "H & E stain",
+                "片／piece",
+                "0",
+                "50",
+                "100",
+                "120"
+              ]
+            ]
+          },
+          {
+            "caption": "生物資料使用收費基準（新臺幣元）",
+            "headers": [
+              "服務名稱",
+              "規格與單位",
+              "檢體蒐集者",
+              "院內申請者",
+              "院內與學術單位合作",
+              "院內與產業界合作"
+            ],
+            "rows": [
+              [
+                "基本臨床數據資料",
+                "例／case",
+                "0",
+                "50",
+                "100",
+                "200"
+              ],
+              [
+                "全基因體定型資料",
+                "例／case",
+                "0",
+                "500",
+                "1,000",
+                "2,000"
+              ],
+              [
+                "全基因體定序資料",
+                "例／case",
+                "0",
+                "2,000",
+                "4,000",
+                "6,000"
+              ]
+            ]
+          }
+        ],
+        "figures": [
+          {
+            "src": "assets/images/biobank/fees-review.jpg",
+            "alt": "原站倫理委員會申請審查費圖表。",
+            "source_url": "https://depart.femh.org.tw/biolab/images/cash1.jpg"
+          },
+          {
+            "src": "assets/images/biobank/fees-specimens.jpg",
+            "alt": "原站生物檢體使用收費表，十項檢體服務及四類使用者費率。",
+            "source_url": "https://depart.femh.org.tw/biolab/images/cash2.jpg"
+          },
+          {
+            "src": "assets/images/biobank/fees-data.jpg",
+            "alt": "原站生物資料使用收費表與四項備註。",
+            "source_url": "https://depart.femh.org.tw/biolab/images/cash3.jpg"
+          }
+        ]
+      },
+      {
+        "id": "biobank-forms",
+        "eyebrow": "Biobank",
+        "title": "辦法及表單",
+        "intro": "提供原官網九份公開 PDF 的本機副本。來源查核：2026-11-18；文件內版次與原站檔名日期可能不同，申請前請洽本庫核對適用版本。",
+        "items": [],
+        "links": [
+          {
+            "label": "參與者同意書",
+            "href": "assets/documents/biobank/2026416163558.pdf",
+            "note": "PDF｜文件標示 2026-01-15 版。",
+            "source_url": "https://depart.femh.org.tw/biolab/doc/2026416163558.pdf"
+          },
+          {
+            "label": "參與者退出",
+            "href": "assets/documents/biobank/20260314001.pdf",
+            "note": "PDF｜注意：原站以「參與者退出」命名，但實際檔案為「生物檢體及生物資料銷毀記錄單」（2025-09-03）；參與者退出程序及適用表單請洽本庫確認。",
+            "source_url": "https://depart.femh.org.tw/biolab/doc/20260314001.pdf"
+          },
+          {
+            "label": "亞東紀念醫院人體生物資料庫運用計畫書",
+            "href": "assets/documents/biobank/20260314002.pdf",
+            "note": "PDF｜原站公開文件，本機保存；適用版本請洽本庫。",
+            "source_url": "https://depart.femh.org.tw/biolab/doc/20260314002.pdf"
+          },
+          {
+            "label": "使用合約書",
+            "href": "assets/documents/biobank/20260314003.pdf",
+            "note": "PDF｜原站公開文件，本機保存；適用版本請洽本庫。",
+            "source_url": "https://depart.femh.org.tw/biolab/doc/20260314003.pdf"
+          },
+          {
+            "label": "生物檢體及生物資料運用保密協議書",
+            "href": "assets/documents/biobank/20260314004.pdf",
+            "note": "PDF｜原站公開文件，本機保存；適用版本請洽本庫。",
+            "source_url": "https://depart.femh.org.tw/biolab/doc/20260314004.pdf"
+          },
+          {
+            "label": "亞東紀念醫院人體生物資料庫管理準則",
+            "href": "assets/documents/biobank/20260314005.pdf",
+            "note": "PDF｜原站公開文件，本機保存；適用版本請洽本庫。",
+            "source_url": "https://depart.femh.org.tw/biolab/doc/20260314005.pdf"
+          },
+          {
+            "label": "亞東紀念醫院人體生物資料庫倫理委員會組織章程",
+            "href": "assets/documents/biobank/20260314006.pdf",
+            "note": "PDF｜原站公開文件，本機保存；適用版本請洽本庫。",
+            "source_url": "https://depart.femh.org.tw/biolab/doc/20260314006.pdf"
+          },
+          {
+            "label": "亞東紀念醫院人體生物資料庫商業運用利益回饋作業規範",
+            "href": "assets/documents/biobank/20260314007.pdf",
+            "note": "PDF｜原站公開文件，本機保存；適用版本請洽本庫。",
+            "source_url": "https://depart.femh.org.tw/biolab/doc/20260314007.pdf"
+          },
+          {
+            "label": "亞東紀念醫院人體生物資料庫商業遭受侵害情事之通報及救濟措施作業規範",
+            "href": "assets/documents/biobank/20260314008.pdf",
+            "note": "PDF｜保留原站列表名稱；文件內題為「遭受侵害情事之通報及救濟措施作業程序」（2025-11-29）。",
+            "source_url": "https://depart.femh.org.tw/biolab/doc/20260314008.pdf"
+          }
+        ]
+      },
+      {
+        "id": "biobank-laws",
+        "eyebrow": "Biobank",
+        "title": "相關法規",
+        "intro": "保留原站所列八項法規及指引。法規連至全國法規資料庫；兩份原站 PDF 另存本機。原站列表日期保留於各項說明，不能視為現行法規修正日期。",
+        "items": [],
+        "links": [
+          {
+            "label": "人體生物資料庫設置許可管理辦法",
+            "href": "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=L0020173",
+            "note": "原站列表日期：2021-10-05；不代表目前修法日期，現行條文請由官方法規頁核對。"
+          },
+          {
+            "label": "人體生物資料庫管理條例",
+            "href": "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=L0020164",
+            "note": "原站列表日期：2021-01-20；不代表目前修法日期，現行條文請由官方法規頁核對。"
+          },
+          {
+            "label": "人體研究法",
+            "href": "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=L0020176",
+            "note": "原站列表日期：2019-01-02；不代表目前修法日期，現行條文請由官方法規頁核對。"
+          },
+          {
+            "label": "個人資料保護法",
+            "href": "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=I0050021",
+            "note": "原站列表日期：2015-12-30；不代表目前修法日期，現行條文請由官方法規頁核對。"
+          },
+          {
+            "label": "人體生物資料庫審查費收費標準",
+            "href": "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=L0020174",
+            "note": "原站列表日期：2011-02-15；不代表目前修法日期，現行條文請由官方法規頁核對。"
+          },
+          {
+            "label": "人體生物資料庫商業運用利益回饋辦法",
+            "href": "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=L0020170",
+            "note": "原站列表日期：2010-09-08；不代表目前修法日期，現行條文請由官方法規頁核對。"
+          },
+          {
+            "label": "人體生物資料庫資訊安全規範",
+            "href": "assets/documents/biobank/information-security.pdf",
+            "note": "原站列表日期：2010-07-02；不代表目前修法日期，現行條文請由官方法規頁核對。",
+            "source_url": "https://depart.femh.org.tw/biolab/doc/人體生物資料庫資訊安全規範_0002083004.pdf"
+          },
+          {
+            "label": "研究用人體檢體採集與使用注意事項",
+            "href": "assets/documents/biobank/research-specimen-guidance.pdf",
+            "note": "原站列表日期：2006-08-18；不代表目前修法日期，現行條文請由官方法規頁核對。",
+            "source_url": "https://depart.femh.org.tw/biolab/doc/研究用人體檢體採集與使用注意事項(95-08-18公告).pdf"
+          }
+        ]
+      },
+      {
+        "id": "biobank-statistics",
+        "eyebrow": "Biobank",
+        "title": "收案統計與運用情形",
+        "intro": "收案統計圖標示統計自成立至 2026-05-22；運用情形圖未另標示統計截止日。均為歷史統計快照，不代表即時數據。",
+        "items": [
+          "依整合平台分類：登錄案例人次 15,600 例，生物檢體 23,333 管，生物資料 9,410 筆；其中生物檢體登錄 14,843 人次、生物資料登錄 757 人次。",
+          "依科部計畫分類：開刀房各科部累計收案 1,888 例、5,158 管；個人型研究計畫 2,598 例、7,403 管；全院型研究計畫 11,114 例、檢體及資料 20,182 件。此為原圖不同分類口徑，勿加總為不重複人數。",
+          "運用情形圖：整合平台出庫案 12 件、院外 2 件、院內 21 件，合計審查通過 35 件研究計畫；原圖所載通過率 100% 為該圖歷史統計。",
+          "原圖所載生物檢體出庫運用累計 1,477 例，生物資料累計 3,770 例；商業運用回饋金入帳 2 筆，細節與通過申請案見完整原圖。"
+        ],
+        "figures": [
+          {
+            "src": "assets/images/biobank/statistics-20260611.png",
+            "alt": "完整收案統計：依整合平台及科部計畫分類，統計自成立至 2026-05-22，包含各檢體及資料類型明細。",
+            "source_url": "https://depart.femh.org.tw/biolab/images/20260611_stat.png"
+          },
+          {
+            "src": "assets/images/biobank/utilization-20260611.png",
+            "alt": "完整運用情形：歷年出庫案件、檢體與資料運用、商業回饋及各年度通過申請案。",
+            "source_url": "https://depart.femh.org.tw/biolab/images/20260611_use.png"
+          }
+        ]
+      },
+      {
+        "id": "biobank-research",
+        "eyebrow": "Biobank",
+        "title": "研究成果",
+        "intro": "原站研究成果圖列出 8 篇國際期刊論文，保留研究計畫、主持人及期刊出處。這是原站公開成果快照，未自行補入未列出的論文。",
+        "items": [
+          "2020：COVID-19 biobank 建置成果，Biomed J。",
+          "2021：輕度認知功能障礙流行病學（Journal of the Formosan Medical Association）；腎衰竭患者皮膚搔癢機轉（Acta Derm Venereol）。",
+          "2022：MAPK 與 Hedgehog 分子交互作用及肝癌病例（World J Clin Cases）。",
+          "2024：RNA-122／AKR1C3 肝癌研究（ONCOLOGY RESEARCH）；飲食、腸道菌與認知老化（Immun Ageing）。",
+          "2025：輕度認知功能障礙與 Aβ-reactive T cell（Alzheimers Dement (Amst)）；Hedgehog、CCL2–CCR2 與肝癌研究（Journal of Cellular and Molecular Medicine）。"
+        ],
+        "figures": [
+          {
+            "src": "assets/images/biobank/publications-20260611.png",
+            "alt": "8 篇國際期刊論文完整列表，包含計畫、主持人、英文論文名稱、期刊及發表日期。",
+            "source_url": "https://depart.femh.org.tw/biolab/images/20260611_result.png"
+          }
+        ]
+      }
+    ],
+    "news_archive": true
+  }
 ]

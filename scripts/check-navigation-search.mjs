@@ -55,6 +55,16 @@ async function checkResourceHref(href) {
 }
 for(const page of catalog)for(const group of page.groups||[])for(const card of group.cards)for(const action of card.actions)await checkResourceHref(action.href);
 for(const service of JSON.parse((await readFile(join(root, 'data/services.json'), 'utf8')).replace(/^\uFEFF/, '')))await checkResourceHref(service.href);
+// Unit sections can contain local downloads, figures and in-page quick links.
+for (const unit of JSON.parse((await readFile(join(root, 'data/units.json'), 'utf8')).replace(/^\uFEFF/, ''))) {
+  const sections = unit.special_sections || [];
+  const ids = new Set(['unit-about', 'unit-services', 'unit-fields', 'unit-members', 'unit-news', 'unit-contact', 'unit-history', ...sections.map(section => section.id)]);
+  for (const link of [...(unit.resource_links || []), ...sections.flatMap(section => section.links || [])]) {
+    if (link.href.startsWith('#')) assert.ok(ids.has(link.href.slice(1)), 'Unit anchor: '+link.href);
+    else await checkResourceHref(link.href);
+  }
+  for (const section of sections) for (const figure of section.figures || []) await checkResourceHref(figure.src);
+}
 console.log('PASS JSON, JavaScript syntax, CSS braces, static HTML resources, resource actions/page IDs and Markdown local links');
 if (process.argv.includes('--static-only')) process.exit(0);
 if (!process.argv[2] || !process.argv[3]) throw new Error('Provide Playwright module and browser executable paths for browser tests.');

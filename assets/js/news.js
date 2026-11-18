@@ -20,8 +20,11 @@
     category.innerHTML += categories.map((value) => `<option value="${D.escapeHTML(value)}">${D.escapeHTML(value)}</option>`).join('');
     const years = [...new Set(publicItems.map((item) => String(item.published_at).slice(0, 4)).filter(Boolean))];
     year.innerHTML += years.map((value) => `<option value="${value}">${value}</option>`).join('');
-    const queryCategory = new URLSearchParams(location.search).get('category');
+    const params = new URLSearchParams(location.search);
+    const queryCategory = params.get('category');
     if (queryCategory && categories.includes(queryCategory)) category.value = queryCategory;
+    if (units.some(entry => D.publicUnit(entry) && entry.id === params.get('unit'))) unit.value = params.get('unit');
+    if ([...status.options].some(option => option.value === params.get('status'))) status.value = params.get('status');
 
     function update(reset = true) {
       if (reset) visibleCount = 4;

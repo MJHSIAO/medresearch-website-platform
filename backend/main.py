@@ -83,6 +83,7 @@ app.add_middleware(
 )
 store = Store(settings.data_directory, PROJECT_ROOT / 'data')
 store.upgrade_resource_content()
+store.upgrade_biobank_content()
 install(app, sys.modules[__name__], store)
 
 

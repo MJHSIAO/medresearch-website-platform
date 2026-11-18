@@ -1,3 +1,24 @@
+# 2026-11-18 人體生物資料庫本機整合
+
+新增唯一主要單位 `biobank`，沿用公開單位共用模板及正式管理資料來源；新增三筆公開人員、32 則保留原日期的過期歷史公告、12 份未修改的公開 PDF、8 張官方原始圖表。完整來源、檔案清單及已標示的來源差異見 [整合紀錄](biobank-integration.md)。初次本機展示未 commit 或 push；後續使用者已授權提交與推送，實際結果以 Git 紀錄為準。未部署或修改原 ai-center-website-demo。
+
+實際執行通過：
+
+- `python -m tests.check_biobank`：新增單位唯一性、歷史日期、既有 state 一次性補入及原檔備份、保留自訂內容及舊卡片、重啟冪等、20 個本機素材 HTTP 200／位元組相同、PDF 檔頭、單位角色隔離、管理更新與公開 API 同源同步、非公開資料排除、表格及圖片格式拒絕。
+- `python -m tests.check_management`、`tests.check_portal`、`tests.check_resources`：既有管理三角色、授權撤銷、範圍、登入入口、既有資源升級及公開過濾回歸通過。
+- `node tests/check_biobank_search.mjs`、`node tests/check_resource_search.mjs`：單位名稱、表單、收費及組織文字的區塊定位、歷史日期可搜尋，未公開及未啟用單位排除；原資源搜尋回歸通過。
+- `node scripts/check-navigation-search.mjs --static-only`：全 JSON、JavaScript 語法、CSS 括號、HTML／Markdown 本機資源、JSON 資源與單位區塊連結、錨點及原圖路徑通過。
+- `node scripts/build-site.mjs` 與 `git diff --check`：通過。既有七筆單位、31 筆人員及七筆消息逐筆與開始時 Git HEAD 比較，所有舊欄位完全相同。
+- 使用 pypdf 成功開啟十二份 PDF 並讀取頁數；外部九個來源頁、六個法規連結、原站影片及國衛院歷史連結均實際取得 HTTP 200。
+
+隔離 FastAPI（127.0.0.1:8010，不讀寫正式 var 目錄）與內建瀏覽器實測：八個單位 × 320／768／1440px 共 24 組，scrollWidth 分別為 305／753／1425，均等於 clientWidth。首頁八張單位卡片及動態數量、單位列表、部門介紹新增入口、搜尋首筆連到本庫、歷史列表 unit=biobank/status=expired 篩出 32 則、第一則歷史詳情與原日期資料正常。首頁三則最新消息沒有本次匯入的歷史公告。
+
+鍵盤實測 Enter 展開手機目錄、Enter 跳到收費區塊並收合目錄／轉移焦點、方向鍵於聚焦表格橫捲（scrollLeft=40）、Enter 展開原圖、展開 32 則歷史公告並開啟第一則詳細頁；已目視檢查桌機首頁／表單卡片、320px 子站／收費表格，並保留子站預覽分頁。所讀瀏覽器錯誤及警告記錄為空。
+
+既有 Authlib／Starlette 依賴顯示棄用提示。Windows 沙箱阻擋 Node 子程序與 Python 暫存寫入時，取得執行環境允許後重跑通過；沒有放寬正式授權或儲存控制。未執行完整管理 UI 套件、真實院方登入、正式部署、完整 WCAG／螢幕閱讀器或跨瀏覽器認證。外部連結驗證為本次 HTTP 可用性，不保證日後版本與連結不變。
+
+---
+
 # 2026-11-13 管理中心實際瀏覽統計（2026.11.13.1）
 
 整合已確認的工作台摘要及「瀏覽統計」頁，使用既有原生前端與私有資料卷，每日累計公開頁面請求及專用文件下載事件。沒有外部追蹤服務、訪客識別碼或前端角色切換。詳細定義見 [統計口徑](analytics.md)。

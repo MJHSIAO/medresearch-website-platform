@@ -15,7 +15,8 @@
       'ai-center':'M7 7h10v10H7zm3 3h4v4h-4M9 3v4m6-4v4M9 17v4m6-4v4M3 9h4m-4 6h4m10-6h4m-4 6h4',
       'clinical-trial-center':'M8 4h8v4H8zm0 2H5v15h14V6h-3M9 13h6m-3-3v6',
       'cell-therapy-center':'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18m-3 7a3 3 0 1 0 6 0 3 3 0 0 0-6 0m-2 7h1m8 0h1',
-      'innovation-ip-center':'M8 14a6 6 0 1 1 8 0v3H8zm1 7h6m-3-12v5M3 3l2 2m14 0 2-2M1 11h3m16 0h3'
+      'innovation-ip-center':'M8 14a6 6 0 1 1 8 0v3H8zm1 7h6m-3-12v5M3 3l2 2m14 0 2-2M1 11h3m16 0h3',
+      'biobank':'M9 3h6m-5 0v9l-4 6a2 2 0 0 0 2 3h8a2 2 0 0 0 2-3l-4-6V3M8 16h8m-6 2h1m2-3h1'
     };
   function unitCard(unit, heading='h2', index=0) {
     const tag=heading==='h3'?'h3':'h2';
@@ -273,6 +274,7 @@
     const homeNews = D.publicNews(rawNews, false).sort((a, b) => (Date.parse(b.published_at) || 0) - (Date.parse(a.published_at) || 0)).slice(0, 3);
     if (newsGrid) newsGrid.innerHTML = homeNews.map((item) => newsCard(item, units)).join('');
     if (unitGrid) {
+      document.querySelectorAll('[data-unit-count]').forEach(node => { node.textContent = `${units.filter(D.publicUnit).length} 個隸屬單位`; });
       unitGrid.innerHTML = units
         .filter(D.publicUnit)
         .sort((a, b) => a.display_order - b.display_order)
