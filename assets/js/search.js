@@ -39,9 +39,9 @@
       body: text([site.platform_name, site.contact?.unit, site.contact?.address, ...Object.values(site.principles || {})]), href: `${root()}/index.html` });
     for(const page of pages.filter(p=>['public','both'].includes(p.visibility||'public')&&['active','published'].includes(p.status||'active'))){
       entries.push({type:'網站內容',title:page.title,summary:page.summary,body:text((page.sections||[]).map(x=>[x.title,x.content])),href:`${root()}/content-page.html?page=${encodeURIComponent(page.id)}`});
-      (page.groups||[]).forEach((group,index)=>(group.cards||[]).forEach(c=>entries.push({type:'研究資源',title:c.title,summary:c.text,body:text([c.tag,c.contact,group.title]),href:`${root()}/content-page.html?page=${encodeURIComponent(page.id)}#resource-group-${index+1}`})));
+      ((D.resolveUnitCards?D.resolveUnitCards(page,units):page).groups||[]).forEach((group,index)=>(group.cards||[]).forEach(c=>entries.push({type:'研究資源',title:c.title,summary:c.text,body:text([c.tag,c.contact,group.title]),href:`${root()}/content-page.html?page=${encodeURIComponent(page.id)}#resource-group-${index+1}`})));
     }
-    for(const d of documents.filter(d=>d.status==='published'&&d.visibility==='public'))entries.push({type:'文件表單',title:d.title,summary:d.summary,body:text([d.category,d.version]),href:`${root()}/content-page.html?page=downloads&q=${encodeURIComponent(d.title)}`});
+    for(const d of documents.filter(d=>d.status==='published'&&d.visibility==='public'&&(d.owner_unit_id==='medresearch'||byId.has(d.owner_unit_id))))entries.push({type:'文件表單',title:d.title,summary:d.summary,body:text([d.category,d.version,d.source_note]),href:`${root()}/content-page.html?page=downloads&q=${encodeURIComponent(d.title)}`});
     return entries;
   }
 

@@ -86,6 +86,7 @@
       ...(specialSections.length ? [['特色資訊', `#${specialSections[0].id}`]] : []),
       ['成員', '#unit-members'],
       ['最新消息', '#unit-news'],
+      ['文件下載', '#unit-documents'],
       ...(unit.news_archive ? [['歷史公告', '#unit-history']] : []),
       ['聯絡資訊', '#unit-contact']
     ];
@@ -120,6 +121,10 @@
       target.querySelector('[data-content-description]').textContent = unit.full_description;
       if (unit.slogan) target.querySelector('[data-content-slogan]').textContent = unit.slogan;
     }
+    const downloads=document.createElement('section');downloads.className='section';downloads.id='unit-documents';
+    downloads.innerHTML='<div class="container"><p>正在載入文件…</p></div>';
+    target.querySelector('#unit-contact').before(downloads);
+    try{await window.MedDocuments.render({target:downloads.firstElementChild,D,unitId:unit.id,embedded:true,page:{title:'文件下載',summary:'此區顯示本單位已發布的對外文件與表單；消息附件請至對應消息查閱。'}});}catch{downloads.firstElementChild.textContent='文件暫時無法載入，請稍後重新整理。';}
     window.MedUI.setupPageNavigation(target.querySelector('.unit-subsite'));
   }
 

@@ -38,9 +38,13 @@
 ## 驗證
 
 人體生物資料庫：`unit.html?unit=biobank`。沿用單位共用版型，來源、附件、資料整合及實測紀錄見 [整合說明](docs/biobank-integration.md)。
+九份辦法與表單已統一至「單位文件與表單」後台及單位文件下載區；原始 PDF 與舊入口保留，見 [文件整合紀錄](docs/biobank-documents-management.md)。
+六份初始示範文件及 HTML 素材已移除；既有私有資料於更新啟動時備份並清理示範項目，保留已換成正式檔案的項目及歷史紀錄。
 
 - `python -m tests.check_backend`
 - `python -m tests.check_biobank`
+- `python -m tests.check_biobank_documents`
+- `python -m tests.check_document_retirement`
 - `python -m tests.check_personnel`
 - `node tests/check_personnel_sort.mjs`
 - `node tests/check_biobank_search.mjs`

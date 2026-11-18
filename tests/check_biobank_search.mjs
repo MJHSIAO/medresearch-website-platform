@@ -10,9 +10,10 @@ const units = load('units');
 const unit = units.find(item => item.id === 'biobank');
 const index = buildIndex(load('site'), units, load('people'), load('news'), load('pages'), load('documents'));
 assert.equal(search(index, '人體生物資料庫')[0].href, './unit.html?unit=biobank');
-for (const [query, anchor] of [['參與者退出','forms'], ['全基因體定序','fees'], ['倫理委員會名單','organization'], ['複雜檢索','fees']]) {
+for (const [query, anchor] of [['全基因體定序','fees'], ['倫理委員會名單','organization'], ['複雜檢索','fees']]) {
   assert.ok(search(index, query).some(item => item.href === `./unit.html?unit=biobank#biobank-${anchor}`), query);
 }
+assert.ok(search(index,'參與者退出').some(item=>item.type==='文件表單'&&item.href.includes('downloads&q=')));
 for (const changed of [{...unit, visibility:'internal'}, {...unit, status:'inactive'}]) {
   const hidden = buildIndex(load('site'), units.map(item => item.id === 'biobank' ? changed : item), load('people'), load('news'));
   assert.ok(!hidden.some(item => item.href.includes('unit=biobank')));

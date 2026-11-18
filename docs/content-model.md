@@ -11,7 +11,7 @@
 | `id` | 不變的內部識別碼 |
 | `name` | 正式名稱；結構性欄位 |
 | `slug` | 網址代碼；結構性欄位 |
-| `short_description` | 100–150 字簡介，供卡片與搜尋結果使用 |
+| `short_description` | 1–100 字摘要，供卡片與搜尋結果使用 |
 | `full_description` | 單位首頁與完整介紹內容 |
 | `hero_image` / `hero_alt` | 主視覺與替代文字 |
 | `services` | 主要服務項目 |
@@ -72,4 +72,10 @@
 
 ## 文件表單 documents（2026-11-03）
 
-`id`、`owner_unit_id`、`title`、`summary`、`category`（作業文件／申請表單／檢核清單）、`version`、`updated_at`、`status`（draft／published／archived）、`visibility`（public）、`is_demo` 及 `file`。file 含 href、name、type、size（位元組）；初始示意檔只能引用同一筆資料既有的範例，正式檔只接受伺服器已上傳的同單位檔案。published 才由公開 API 回傳，其他狀態受管理權限保護。操作方式見 [正式管理指南](management-guide.md)。
+`id`、`owner_unit_id`、`title`、`summary`、`category`（作業文件／申請表單／檢核清單）、`version`、`document_date`（YYYY-MM-DD，獨立顯示日期）、`updated_at`（伺服器稽核時間）、`status`（draft／published／archived）、`visibility`（public／internal）、`is_demo` 及 `file`。舊項目未填 document_date 時沿用原 updated_at 日期，首次儲存補入；既有 JSON 不需破壞性遷移。file 含 href、name、type、size（位元組）；六份示意文件已移除；原始公開 PDF 僅接受精確清單，新增檔案只接受伺服器已上傳的同單位檔案。只有 published + public + 啟用公開單位由公開 API 回傳；published + internal 使用登入限定 API。操作方式見 [正式管理指南](management-guide.md)。
+
+上傳的私有實體檔案與 state.files 上傳紀錄由文件 file.href、消息 attachments 等欄位共用；共用檔案庫不等於發布清單。沿用單一 DATA_DIRECTORY，未另建資料庫或重複上傳機制。公開／院內的已發布引用不能混用同一實體檔案。
+
+單位 short_description 作為 1–100 字卡片摘要，保留既有初始值；full_description 為獨立完整介紹。部門介紹卡片於讀取時解析單位共用資料，原 pages 資料保留。
+
+人體生物資料庫九份原始公開 PDF 為 documents 正式來源項目（is_demo=false），保留原 file.href，伺服器只允許初始清單精確對應的同單位原始路徑；不開放任意靜態路徑。source_url、source_checked_at、source_note、original_file_href 保存來源，既有來源欄位於儲存及歷史回復時保留。document_date 可明確為空字串，代表日期待確認，不能回退顯示 updated_at；舊項目沒有此欄時仍相容原日期。新增上傳沿用私有 media 機制。

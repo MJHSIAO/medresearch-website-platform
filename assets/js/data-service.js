@@ -43,10 +43,22 @@
     return new Intl.DateTimeFormat('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
   }
 
+  function resolveUnitCards(page, units) {
+    return {...page, groups:(page.groups||[]).map(group=>({...group,cards:(group.cards||[]).map(card=>{
+      // Only the dedicated unit directory cards use the unit summary. Other service
+      // cards may link to a unit while explaining a different service.
+      if(page.id!=='department-about')return card;
+      const href=card.actions?.find(a=>/^unit\.html\?unit=/.test(a.href))?.href;
+      const id=href?.match(/^unit\.html\?unit=([a-z0-9-]+)(?:[&#]|$)/)?.[1];
+      const unit=units.find(u=>(u.id===id||u.slug===id)&&publicUnit(u));
+      return id?(unit?{...card,title:unit.name,text:unit.short_description}:null):card;
+    }).filter(Boolean)}))};
+  }
+
   const statusLabels = { draft: '草稿', pending_review: '待確認', published: '已發布', expired: '已過期', archived: '已封存' };
 
   window.MedData = {
     load, getUnits, getUnit, getNews, publicNews, isPublic, publicUnit,
-    escapeHTML, formatDate, statusLabels
+    escapeHTML, formatDate, statusLabels, resolveUnitCards
   };
 })();

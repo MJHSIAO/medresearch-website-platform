@@ -60,6 +60,7 @@
           <label>選擇檔案<input type="file" name="files" multiple accept="image/png,image/jpeg,application/pdf" aria-describedby="upload-help"></label>
           <small id="upload-help">可多選 PNG、JPEG 或 PDF，每個檔案上限 5 MB。選取後上傳，儲存消息時一併附加。</small>
           <div id="news-files"></div>
+          <button type="button" id="news-choose">選用既有檔案</button><p>消息附件只出現在對應消息，另建文件項目後才會列入單位文件下載區；可共用同一檔案，不必重傳。</p>
         </fieldset>
         <fieldset><legend>消息列表預覽圖片（選填）</legend><p>可從已上傳的圖片選擇；不選也可以發布。</p><div id="news-cover"></div>
           <label id="cover-description">圖片說明<input name="cover_alt" value="${esc(original.cover_alt)}" aria-describedby="cover-help"><small id="cover-help">供無法看見圖片的讀者了解內容，例如「活動海報」。未填時使用消息標題作為基本說明。</small></label>
@@ -112,6 +113,8 @@
       for(const button of fileList.querySelectorAll('button'))button.disabled=value;
       for(const button of coverBox.querySelectorAll('button'))button.disabled=value;
     }
+    if(form.elements.unit)form.elements.unit.onchange=()=>{attachments.splice(0);cover.src='';drawFiles();drawCover();message('所屬單位已變更，請選用該單位的檔案。');};
+    target.querySelector('#news-choose').onclick=async()=>{if(busy)return;setBusy(true);try{await window.MedFilePicker.choose({base,api,unit:original.owner_unit_id||form.elements.unit.value,onChoose:file=>{if(active()&&!attachments.some(f=>f.href===file.href)){attachments.push(file);drawFiles();message('已選用既有檔案，儲存消息後生效。');}}});}catch(err){if(active())message(err.message,true);}finally{if(active())setBusy(false);}};
     form.elements.files.onchange = async () => {
       const files=[...form.elements.files.files];
       if(!files.length)return;

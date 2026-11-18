@@ -20,8 +20,8 @@
   function date(value,withTime=false){if(!value)return '—';const parsed=new Date(value);if(Number.isNaN(parsed.getTime()))return value;return new Intl.DateTimeFormat('zh-TW',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit',...(withTime?{hour:'2-digit',minute:'2-digit',hour12:false}:{})}).format(parsed);}
   function navItems(session){
     const items=[{id:'overview',label:'工作台',icon:'home'},{id:'analytics',label:'瀏覽統計',icon:'chart'}];
-    for(const [id,label,symbol] of [['documents','文件表單','file'],['news','消息與發布','file'],['units','單位資料','building'],['people','單位成員','people']])if(session.kinds.includes(id))items.push({id,label,icon:symbol});
-    items.push({id:'media',label:'檔案與附件',icon:'image'});
+    for(const [id,label,symbol] of [['documents','單位文件與表單','file'],['news','消息與發布','file'],['units','單位資料','building'],['people','單位成員','people']])if(session.kinds.includes(id))items.push({id,label,icon:symbol});
+    items.push({id:'media',label:'共用檔案庫',icon:'image'});
     if(['site_admin','system_admin'].includes(session.profile.role))items.push({id:'announcements',label:'跑馬燈公告',icon:'bell'});
     for(const [id,label] of [['pages','一般內容頁'],['services','首頁服務']])if(session.kinds.includes(id))items.push({id,label,icon:'file'});
     if(['site_admin','system_admin'].includes(session.profile.role))items.push({id:'grants',label:'人員權限',icon:'shield',group:'管理設定'});

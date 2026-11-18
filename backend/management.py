@@ -9,6 +9,7 @@ from urllib.parse import urlsplit, unquote
 from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse, FileResponse, Response
 from .personnel import ordered_people, sync_members, validate_person, clear_links
+from .documents import active_units, file_usages, validate_file_scope
 
 KINDS = {'units', 'news', 'people', 'pages', 'services', 'site', 'theme', 'documents'}
 MANAGERS = {'unit_admin', 'site_admin', 'system_admin'}
@@ -238,6 +239,8 @@ def install(app, runtime, store):
                     value[key] = old[key]
         elif kind in {'news', 'people', 'documents'}:
             unit = payload.get('unit')
+            if unit is None and kind == 'documents' and actor['role'] == 'unit_admin' and len(actor['units']) == 1:
+                unit = actor['units'][0]
             known = {u['id'] for u in store.collection(state, 'units')} | {'medresearch'}
             if unit not in known or (actor['role'] == 'unit_admin' and unit not in actor['units']):
                 raise HTTPException(403, '未獲授權的單位')
@@ -302,6 +305,9 @@ def install(app, runtime, store):
             validate_unit_sections(value['special_sections'])
         if kind == 'units' and value.get('status') not in {'active', 'inactive', 'archived'}:
             raise HTTPException(422, '單位狀態不正確')
+        if kind == 'units' and (not isinstance(value.get('short_description'), str) or not 1 <= len(value['short_description'].strip()) <= 100):
+            raise HTTPException(422, '單位摘要請填寫 1–100 字')
+        validate_file_scope(kind, value, state, store)
         if kind == 'people':
             validate_person(value, old, actor, state, store, runtime.settings.system_admin_ids)
         # Referencing an unpublished upload cannot be used to publish another unit's file.
@@ -432,6 +438,8 @@ def install(app, runtime, store):
             value = ordered_people(value)
         if isinstance(value, list):
             value = [item for item in value if visible(item, kind)]
+            if kind == 'documents':
+                value = [item for item in value if item.get('owner_unit_id') in active_units(state, store)]
             if kind == 'news':
                 for item in value:
                     expires = item.get('expires_at', '')
@@ -450,9 +458,12 @@ def install(app, runtime, store):
         return {'items': [i for i in store.collection(state, 'news') if i.get('status') in {'published', 'expired'} and i.get('visibility') in {'internal', 'both'}]}
 
     @app.post('/api/manage/files/{unit}')
-    async def upload(unit: str, request: Request):
+    @app.post('/api/manage/files')
+    async def upload(request: Request, unit: str = ''):
         state = store.read()
         actor, _ = context(request, state, write=True)
+        if not unit and actor['role'] == 'unit_admin' and len(actor['units']) == 1:
+            unit = actor['units'][0]
         if not allowed(actor, 'news', {'owner_unit_id': unit}) or unit not in {u['id'] for u in store.collection(state, 'units')} | {'medresearch'}:
             raise HTTPException(403)
         data = bytearray()
@@ -478,9 +489,11 @@ def install(app, runtime, store):
         return {'url': f'media/{identifier}', 'size': len(data)}
 
     @app.get('/api/manage/files')
-    async def file_library(request: Request):
+    async def file_library(request: Request, unit: str = ''):
         state = store.read()
         actor, _ = context(request, state)
+        if unit and not allowed(actor, 'news', {'owner_unit_id': unit}):
+            raise HTTPException(403)
         # Recover readable names for older uploads from content the actor may manage.
         names = {}
         for item in store.collection(state, 'news'):
@@ -490,6 +503,8 @@ def install(app, runtime, store):
                         names[attachment['href'].lstrip('/')] = attachment['name']
         items = []
         for identifier, metadata in state['files'].items():
+            if unit and metadata['unit'] != unit:
+                continue
             if not allowed(actor, 'news', {'owner_unit_id': metadata['unit']}):
                 continue
             path = store.directory / identifier
@@ -498,8 +513,18 @@ def install(app, runtime, store):
             url = f'media/{identifier}'
             items.append({'id': identifier, 'url': url, 'unit': metadata['unit'], 'mime': metadata['mime'],
                           'name': metadata.get('name') or names.get(url) or identifier,
-                          'size': metadata.get('size', path.stat().st_size), 'uploaded_at': metadata.get('uploaded_at', '')})
+                          'size': metadata.get('size', path.stat().st_size), 'uploaded_at': metadata.get('uploaded_at', ''),
+                          'usages': [use for use in file_usages(state, store, url)
+                                     if allowed(actor, use['kind'], {'id': use['id'], 'owner_unit_id': use['unit'], 'unit_id': use['unit']})]})
         return {'items': sorted(items, key=lambda item: item['uploaded_at'], reverse=True)}
+
+    @app.get('/api/internal/documents')
+    async def internal_documents(request: Request):
+        state = store.read()
+        context(request, state, manager=False)
+        return JSONResponse({'items': [i for i in store.collection(state, 'documents')
+                                      if i.get('status') == 'published' and i.get('visibility') == 'internal'
+                                      and i.get('owner_unit_id') in active_units(state, store)]}, headers={'Cache-Control': 'no-store'})
 
     @app.get('/media/{identifier}')
     async def download(identifier: str, request: Request, inline: bool = False):
@@ -509,10 +534,13 @@ def install(app, runtime, store):
             raise HTTPException(404)
         ref = f'media/{identifier}'
         public = any((item.get('file', {}).get('href') == ref if kind == 'documents' else ref in json.dumps(item, ensure_ascii=False)) and visible(item, kind)
+                     and (kind != 'documents' or item.get('owner_unit_id') in active_units(state, store))
                      for kind in ('news', 'units', 'people', 'pages', 'documents') for item in store.collection(state, kind))
         if not public:
             actor, _ = context(request, state, manager=False)
-            internal = any(ref in json.dumps(i) and i.get('status') in {'published', 'expired'} and i.get('visibility') in {'internal', 'both'} for i in store.collection(state, 'news'))
+            internal = any(ref in json.dumps(i) and i.get('status') in {'published', 'expired'} and i.get('visibility') in {'internal', 'both'}
+                           and (kind != 'documents' or i.get('owner_unit_id') in active_units(state, store))
+                           for kind in ('news', 'documents') for i in store.collection(state, kind))
             if not internal and not allowed(actor, 'news', {'owner_unit_id': metadata['unit']}):
                 raise HTTPException(403)
         # Browser PDF viewers cannot run inside a CSP sandbox. Inline responses are

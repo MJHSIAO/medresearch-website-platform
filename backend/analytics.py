@@ -12,6 +12,7 @@ from fastapi.responses import FileResponse
 from starlette.concurrency import run_in_threadpool
 
 from .management import MANAGERS, profile, visible
+from .documents import resolve_file
 
 LOGGER = logging.getLogger(__name__)
 TAIPEI = timezone(timedelta(hours=8))
@@ -163,27 +164,7 @@ def page_target(store, state, path, query):
 
 
 def document_file(store, state, identifier):
-    item = next((i for i in public_catalog(store, state, 'documents') if i['id'] == identifier), None)
-    if not item:
-        raise HTTPException(404, '文件未公開或不存在')
-    href = item.get('file', {}).get('href', '')
-    media = re.fullmatch(r'media/([a-f0-9]{32}\.(?:pdf|png|jpg))', href)
-    if media:
-        metadata = state['files'].get(media[1])
-        if not metadata or metadata['unit'] != item['owner_unit_id']:
-            raise HTTPException(404)
-        path, mime = store.directory / media[1], metadata['mime']
-        name = metadata.get('name') or media[1]
-    else:
-        # Only an exact shipped sample for this same document may use static HTML.
-        samples = json.loads((store.source / 'documents.json').read_text(encoding='utf-8-sig'))
-        sample = next((s for s in samples if s['id'] == identifier and s.get('file', {}).get('href') == href), None)
-        if not sample or not re.fullmatch(r'assets/documents/demo/[a-z-]+\.html', href):
-            raise HTTPException(404)
-        path, mime, name = store.source.parent / href, 'text/html', href.rsplit('/', 1)[-1]
-    if not path.is_file():
-        raise HTTPException(404)
-    return item, path, mime, name
+    return resolve_file(store, state, identifier)
 
 
 def install(app, runtime, store, context):
@@ -202,12 +183,19 @@ def install(app, runtime, store, context):
             raise HTTPException(503, '統計資料暫時無法讀取，請稍後再試') from None
 
     @app.get('/api/documents/{identifier}/download')
-    async def download_document(identifier: str):
+    async def download_document(identifier: str, request: Request, inline: bool = False):
         if not IDENTIFIER.fullmatch(identifier):
             raise HTTPException(404)
-        _, path, mime, name = document_file(store, store.read(), identifier)
-        return FileResponse(path, media_type=mime, filename=name,
-                            headers={'Cache-Control': 'no-store', 'Content-Security-Policy': "sandbox; default-src 'none'"})
+        state = store.read()
+        item = next((d for d in store.collection(state, 'documents') if d['id'] == identifier), {})
+        restricted = item.get('visibility') == 'internal'
+        if restricted:
+            context(request, state, manager=False)
+        _, path, mime, name = resolve_file(store, state, identifier, internal=restricted)
+        # Only the shipped public samples are HTML; uploaded inline types are allowlisted.
+        policy = "default-src 'none'; frame-ancestors 'self'" if inline else "sandbox; default-src 'none'"
+        return FileResponse(path, media_type=mime, filename=name, content_disposition_type='inline' if inline else 'attachment',
+                            headers={'Cache-Control': 'no-store', 'Content-Security-Policy': policy})
 
     def count(request, path, query):
         with store.lock:
@@ -217,6 +205,8 @@ def install(app, runtime, store, context):
                 return
             match = re.fullmatch(r'/api/documents/([a-zA-Z0-9_-]{1,100})/download', path)
             if match:
+                if query.get('inline') == 'true' or not any(d['id'] == match[1] for d in public_catalog(store, state, 'documents')):
+                    return
                 item, _, _, _ = document_file(store, state, match[1])
                 title = item['title'] + ('（示意文件）' if item.get('is_demo') else '')
                 entry = target('download:' + item['id'], 'downloads', item['id'], title,

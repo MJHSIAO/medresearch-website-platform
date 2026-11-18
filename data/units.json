@@ -634,7 +634,7 @@
       {
         "label": "辦法及表單",
         "href": "#biobank-forms",
-        "note": "九份公開 PDF 與版本說明"
+        "note": "統一文件下載入口與版本說明"
       },
       {
         "label": "相關法規",
@@ -692,7 +692,7 @@
           {
             "label": "辦法及申請文件",
             "href": "#biobank-forms",
-            "note": "查看本頁九份原站文件與版本提醒。"
+            "note": "由統一文件下載區查閱辦法、表單及版本提醒。"
           }
         ],
         "figures": [
@@ -889,62 +889,13 @@
         "id": "biobank-forms",
         "eyebrow": "Biobank",
         "title": "辦法及表單",
-        "intro": "提供原官網九份公開 PDF 的本機副本。來源查核：2026-11-18；文件內版次與原站檔名日期可能不同，申請前請洽本庫核對適用版本。",
+        "intro": "本庫辦法及申請表單統一於「文件下載」查閱，文件名稱、說明、版本及發布狀態由同一套後台維護。適用版本及原站名稱差異請詳閱各文件說明。",
         "items": [],
         "links": [
           {
-            "label": "參與者同意書",
-            "href": "assets/documents/biobank/2026416163558.pdf",
-            "note": "PDF｜文件標示 2026-01-15 版。",
-            "source_url": "https://depart.femh.org.tw/biolab/doc/2026416163558.pdf"
-          },
-          {
-            "label": "參與者退出",
-            "href": "assets/documents/biobank/20260314001.pdf",
-            "note": "PDF｜注意：原站以「參與者退出」命名，但實際檔案為「生物檢體及生物資料銷毀記錄單」（2025-09-03）；參與者退出程序及適用表單請洽本庫確認。",
-            "source_url": "https://depart.femh.org.tw/biolab/doc/20260314001.pdf"
-          },
-          {
-            "label": "亞東紀念醫院人體生物資料庫運用計畫書",
-            "href": "assets/documents/biobank/20260314002.pdf",
-            "note": "PDF｜原站公開文件，本機保存；適用版本請洽本庫。",
-            "source_url": "https://depart.femh.org.tw/biolab/doc/20260314002.pdf"
-          },
-          {
-            "label": "使用合約書",
-            "href": "assets/documents/biobank/20260314003.pdf",
-            "note": "PDF｜原站公開文件，本機保存；適用版本請洽本庫。",
-            "source_url": "https://depart.femh.org.tw/biolab/doc/20260314003.pdf"
-          },
-          {
-            "label": "生物檢體及生物資料運用保密協議書",
-            "href": "assets/documents/biobank/20260314004.pdf",
-            "note": "PDF｜原站公開文件，本機保存；適用版本請洽本庫。",
-            "source_url": "https://depart.femh.org.tw/biolab/doc/20260314004.pdf"
-          },
-          {
-            "label": "亞東紀念醫院人體生物資料庫管理準則",
-            "href": "assets/documents/biobank/20260314005.pdf",
-            "note": "PDF｜原站公開文件，本機保存；適用版本請洽本庫。",
-            "source_url": "https://depart.femh.org.tw/biolab/doc/20260314005.pdf"
-          },
-          {
-            "label": "亞東紀念醫院人體生物資料庫倫理委員會組織章程",
-            "href": "assets/documents/biobank/20260314006.pdf",
-            "note": "PDF｜原站公開文件，本機保存；適用版本請洽本庫。",
-            "source_url": "https://depart.femh.org.tw/biolab/doc/20260314006.pdf"
-          },
-          {
-            "label": "亞東紀念醫院人體生物資料庫商業運用利益回饋作業規範",
-            "href": "assets/documents/biobank/20260314007.pdf",
-            "note": "PDF｜原站公開文件，本機保存；適用版本請洽本庫。",
-            "source_url": "https://depart.femh.org.tw/biolab/doc/20260314007.pdf"
-          },
-          {
-            "label": "亞東紀念醫院人體生物資料庫商業遭受侵害情事之通報及救濟措施作業規範",
-            "href": "assets/documents/biobank/20260314008.pdf",
-            "note": "PDF｜保留原站列表名稱；文件內題為「遭受侵害情事之通報及救濟措施作業程序」（2025-11-29）。",
-            "source_url": "https://depart.femh.org.tw/biolab/doc/20260314008.pdf"
+            "label": "前往文件下載",
+            "href": "#unit-documents",
+            "note": "依文件類型或關鍵字查找本庫已發布文件。"
           }
         ]
       },

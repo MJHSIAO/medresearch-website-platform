@@ -1,5 +1,7 @@
 # 人體生物資料庫整合（2026-11-18）
 
+後續文件整合：九份辦法及表單已改由 documents 集合及後台統一維護，原「辦法及表單」段落保留為下載區入口；本文件下方記錄原始匯入來源及歷史實作。PDF 原始網址、檔案與來源差異提醒保持，詳見 [九份文件統一管理](biobank-documents-management.md)。
+
 本次在目前專案完成本機開發與驗證；初次展示階段未 commit、push 或部署，後續使用者已授權提交與推送，實際結果以 Git 紀錄為準。Git 推送不等於正式伺服器部署。新增網址為 `unit.html?unit=biobank`，完整介紹沿用 `unit-about.html?unit=biobank`；共用頁首、頁尾、單位卡片及響應式目錄，未複製舊站視覺，也未操作原 ai-center-website-demo。
 
 ## 資料與入口

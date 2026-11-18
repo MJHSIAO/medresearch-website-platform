@@ -1,5 +1,7 @@
 (async function(){
   const base = new URL('../../', document.currentScript.src);
+  const documents=document.getElementById('internal-documents');
+  window.MedDocuments.render({target:documents,D:window.MedData,base,embedded:true,internal:true,page:{title:'院內文件下載',summary:'僅院內登入人員可查閱；可依單位、類型及關鍵字篩選。'}}).catch(error=>{documents.textContent=error.message;});
   const response = await fetch(new URL('api/internal/news', base));
   const target = document.getElementById('internal-news');
   if (!response.ok) { target.textContent='無法載入院內消息，請重新登入。'; return; }

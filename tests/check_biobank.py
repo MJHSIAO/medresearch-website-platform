@@ -65,6 +65,7 @@ def main():
         for section in unit['special_sections']:
             local += [item['href'] for item in section.get('links', []) if item['href'].startswith('assets/')]
             local += [item['src'] for item in section.get('figures', [])]
+        local += [d['file']['href'] for d in public.get('/data/documents.json').json() if d.get('original_file_href') and d['owner_unit_id']=='biobank']
         assert len(local) == 20
         for path in local:
             response = public.get('/' + path)

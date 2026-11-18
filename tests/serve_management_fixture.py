@@ -17,6 +17,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--port', type=int, required=True)
     parser.add_argument('--personnel-preview', action='store_true')
+    parser.add_argument('--biobank-documents-preview', action='store_true')
     args = parser.parse_args()
     with TemporaryDirectory(prefix='medresearch-management-ui-') as directory:
         runtime.store.directory = Path(directory)
@@ -27,6 +28,8 @@ def main():
                 'FIXTURE-UNIT': {'role': 'unit_admin', 'units': ['ai-center'], 'active': True},
                 'FIXTURE-SITE': {'role': 'site_admin', 'units': [], 'active': True},
                 'FIXTURE-MULTI': {'role': 'unit_admin', 'units': ['ai-center', 'core-laboratory'], 'active': True}}
+            if args.biobank_documents_preview:
+                state['grants']['FIXTURE-BIOBANK']={'role':'unit_admin','units':['biobank'],'active':True}
             state['content']['news'] = [
                 {'id': identifier, 'title': title, 'summary': 'Server fixture summary', 'content': ['Server fixture body'],
                  'category': '一般公告', 'owner_unit_id': unit, 'related_unit_ids': [], 'status': status,
@@ -37,6 +40,9 @@ def main():
                     ('server-ai-draft', 'SERVER-AI-DRAFT', 'ai-center', 'draft'),
                     ('server-core-public', 'SERVER-CORE-PUBLISHED', 'core-laboratory', 'published')]]
             state['content']['news'][2]['published_at'] = '2026-10-01T09:00:00+08:00'
+            if args.biobank_documents_preview:
+                # Display the unmodified public seeds; all management writes stay isolated.
+                del state['content']['news']
             if args.personnel_preview:
                 state['grants'].update({
                     'EXAMPLE-BIO-A': {'name':'示範管理員甲','role':'unit_admin','units':['biobank','core-laboratory'],'active':True},
@@ -48,14 +54,14 @@ def main():
                      'account_identity':'EXAMPLE-BIO-A' if index==0 else ''}
                     for index,(name,title) in enumerate([('示範成員甲','研究支援'),('示範成員乙','資料管理'),('示範成員丙','檢體管理')])]
 
-        if args.personnel_preview:
+        if args.personnel_preview or args.biobank_documents_preview:
             from fastapi.responses import HTMLResponse
             @runtime.app.middleware('http')
             async def preview_notice(request, call_next):
                 response=await call_next(request)
                 if request.url.path.endswith('/admin') and response.status_code==200:
                     content=b''.join([chunk async for chunk in response.body_iterator]).decode('utf-8')
-                    content=content.replace('<div id="workspace">','<p class="status-message">本機測試預覽｜人體生物資料庫人員為虛構資料；操作實際寫入隔離測試目錄，不影響正式資料。關閉此測試服務後清除。</p><div id="workspace">')
+                    content=content.replace('<div id="workspace">','<p class="status-message">本機隔離測試預覽｜示範帳號與新增內容供操作驗證；寫入暫存測試目錄，不影響正式資料。關閉此測試服務後清除。</p><div id="workspace">')
                     headers={k:v for k,v in response.headers.items() if k.lower() not in {'content-length','content-type'}}
                     return HTMLResponse(content,headers=headers)
                 return response
@@ -64,6 +70,8 @@ def main():
         async def fixture_login(role: str):
             subjects = {'system': 'FIXTURE-ROOT', 'unit': 'FIXTURE-UNIT', 'site': 'FIXTURE-SITE',
                         'multi': 'FIXTURE-MULTI', 'ordinary': 'FIXTURE-ORDINARY'}
+            if args.biobank_documents_preview:
+                subjects['biobank']='FIXTURE-BIOBANK'
             if role not in subjects:
                 raise HTTPException(404)
             sid = runtime.sessions.create({'id': subjects[role], 'name': 'Fixture account'}, {'sub': subjects[role]})

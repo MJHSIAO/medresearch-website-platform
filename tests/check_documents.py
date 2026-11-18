@@ -30,7 +30,7 @@ def main():
         assert anon.get('/api/manage/content/documents').status_code==401
         assert ordinary.get('/api/manage/content/documents').status_code==403
         samples=anon.get('/data/documents.json').json()
-        assert len(samples)==6 and all(d['is_demo'] for d in samples)
+        assert len(samples)==9 and not any(d.get('is_demo') for d in samples)
         for d in samples:
             assert anon.get('/'+d['file']['href']).status_code==200
         payload=dict(value=dict(title='測試文件',summary='測試說明',version='1.0',category='申請表單',visibility='public',status='draft',file={},is_demo=False),revision=None,unit='ai-center')
@@ -47,7 +47,7 @@ def main():
         def change(entry,**fields):
             return {**entry,'value':{**entry['value'],**fields}}
         assert a.put(endpoint,json=change(draft,status='published')).status_code==422
-        assert a.put(endpoint,json=change(draft,visibility='internal')).status_code==422
+        assert a.put(endpoint,json=change(draft,visibility='both')).status_code==422
         for href in ['javascript:alert(1)','https://evil.test/file.pdf','media/%2e%2e/secret','assets/documents/demo/research-form.html']:
             assert a.put(endpoint,json=change(draft,file={'href':href})).status_code==422
         foreign=b.post('/api/manage/files/core-laboratory',content=b'%PDF-1.4\nother',headers={'content-type':'application/pdf'}).json()['url']
@@ -83,9 +83,9 @@ def main():
         reloaded=Store(directory,store.source)
         assert any(d['id']=='test-doc' for d in reloaded.collection(reloaded.read(),'documents'))
         assert anon.get('/data/news.json').status_code==200
-        sample=next(x for x in root.get('/api/manage/content/documents').json()['items'] if x['value']['id']=='research-form')
-        assert root.put('/api/manage/content/documents/research-form',json=change(sample,is_demo=False)).json()['value']['is_demo'] is True
-        assert len(dept.get('/api/manage/content/documents').json()['items'])==7
+        assert anon.get('/assets/documents/demo/research-form.html').status_code==404
+        assert anon.get('/api/documents/research-form/download').status_code==404
+        assert len(dept.get('/api/manage/content/documents').json()['items'])==10
     print('PASS documents: samples, draft/publish/archive/restore, immutable owners, scope/CSRF, upload metadata, private/inline downloads, history and persistence')
 
 

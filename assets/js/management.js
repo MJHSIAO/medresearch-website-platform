@@ -3,7 +3,7 @@
   const base = new URL('../../', document.currentScript.src);
   const workspace = document.getElementById('workspace');
   const status = document.getElementById('status');
-  const names = {documents:'文件表單',units:'單位資料',news:'消息與發布',people:'單位成員',pages:'一般內容頁',services:'首頁服務',site:'網站資訊與導覽',theme:'共用外觀設定'};
+  const names = {documents:'單位文件與表單',units:'單位資料',news:'消息與發布',people:'單位成員',pages:'一般內容頁',services:'首頁服務',site:'網站資訊與導覽',theme:'共用外觀設定'};
   const roles = {unit_admin:'單位管理員',site_admin:'醫研部總管理員',system_admin:'系統管理員'};
   let session, shell, views;
   const esc = value => String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -16,7 +16,7 @@
     return result;
   }
   function button(label, action, parent=workspace) {const b=document.createElement('button');b.type='button';b.className='button small';b.textContent=label;b.onclick=()=>Promise.resolve().then(action).catch(e=>message(e.message,true));parent.append(b);return b;}
-  function field(key,label,value='',type='text'){return `<label>${esc(label)}${type==='textarea'?`<textarea name="${key}">${esc(value)}</textarea>`:`<input name="${key}" type="${type}" value="${esc(value)}">`}</label>`;}
+  function field(key,label,value='',type='text'){if(key==='short_description')return `<label>${esc(label)}<textarea name="short_description" required rows="3" aria-describedby="unit-summary-help unit-summary-count">${esc(value)}</textarea></label><small id="unit-summary-help">1–100 字；用於醫研部首頁、隸屬單位與資源卡片，不會改動完整介紹。</small><p id="unit-summary-count" role="status"></p>`;return `<label>${esc(label)}${type==='textarea'?`<textarea name="${key}">${esc(value)}</textarea>`:`<input name="${key}" type="${type}" value="${esc(value)}">`}</label>`;}
   function options(values,current){return values.map(([v,l])=>`<option value="${esc(v)}" ${v===current?'selected':''}>${esc(l)}</option>`).join('');}
   function unitOptions(current){current||=new URLSearchParams(location.search).get('unit');const units=[...session.units];if(session.profile.role!=='unit_admin')units.push({id:'medresearch',name:'醫學研究部'});return options(units.map(u=>[u.id,u.name]),current);}
   function submit(form, action){form.onsubmit=async e=>{e.preventDefault();const b=form.querySelector('[type=submit]');b.disabled=true;try{await action();}catch(err){message(err.message,true);}finally{b.disabled=false;}};}
@@ -78,6 +78,10 @@
   }
   async function edit(kind,entry){
     const serial=formRoute(kind);
+    if(['documents','news'].includes(kind)&&!window.MedFilePicker){
+      await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=new URL('assets/js/file-picker.js',base);script.onload=resolve;script.onerror=()=>reject(Error('檔案選用介面載入失敗，請重新整理。'));document.head.append(script);});
+      if(!views.isCurrent(serial))return;
+    }
     if(kind==='documents'){
       if(!window.MedDocumentEditor)await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=new URL('assets/js/document-editor.js',base);script.onload=resolve;script.onerror=()=>reject(Error('文件表單載入失敗，請重新載入。'));document.head.append(script);});
       if(!views.isCurrent(serial))return;
@@ -96,7 +100,7 @@
       return;
     }
     const v=entry.value; const editable={}; const lists={services:'主要業務（每行一項）',goals:'發展目標（每行一項）',research_fields:'研究領域（每行一項）'};
-    const labels={name:'名稱',title:'標題',summary:'摘要',short_description:'簡介',full_description:'完整介紹',purpose:'成立宗旨',bio:'簡介',category:'分類',cover_image:'封面圖片路徑',cover_alt:'圖片替代文字',notice:'網站頂端公告',description:'說明',display_order:'排序',published_at:'發布日期',expires_at:'截止日期',accent:'主色（例如 #125c4b）',width:'版面寬度（1100、1200、1320）'};
+    const labels={name:'名稱',title:'標題',summary:'摘要',short_description:'單位摘要（縮版介紹）',full_description:'完整介紹',purpose:'成立宗旨',bio:'簡介',category:'分類',cover_image:'封面圖片路徑',cover_alt:'圖片替代文字',notice:'網站頂端公告',description:'說明',display_order:'排序',published_at:'發布日期',expires_at:'截止日期',accent:'主色（例如 #125c4b）',width:'版面寬度（1100、1200、1320）'};
     let fields='';
     for(const [key,label] of Object.entries(labels)){
       if(!(key in v))continue;
@@ -121,6 +125,10 @@
     if(!entry.revision)fields=`<label>所屬單位<select name="unit">${kind==='people'?options(session.units.map(u=>[u.id,u.name]),new URLSearchParams(location.search).get('unit')):unitOptions()}</select></label>`+fields;
     workspace.innerHTML=`<h2>編輯${names[kind]}</h2><form id="editor">${fields}<details><summary>進階內容欄位（服務、聯絡資料、段落、附件與選單等）</summary><p>保留原有欄位結構；上方表單欄位會覆蓋此處對應值。</p><label>完整內容 JSON<textarea name="advanced" rows="18">${esc(JSON.stringify(v,null,2))}</textarea></label></details><button type="submit">儲存${kind==='news'?'／套用發布狀態':''}</button></form><div id="edit-actions" class="actions"></div><div id="versions"></div>`;
     const form=document.getElementById('editor');
+    if(kind==='units'){
+      const input=form.elements.short_description,counter=document.getElementById('unit-summary-count');
+      const count=()=>{const length=Array.from(input.value.trim()).length;counter.textContent=`${length} / 100 字`;input.setCustomValidity(length<1||length>100?'單位摘要請填寫 1–100 字':'');};input.oninput=count;count();
+    }
     if(accountChoices&&form.elements.unit)form.elements.unit.onchange=()=>{const select=form.elements.account_identity;select.innerHTML=options(accountChoices(form.elements.unit.value),select.value);};
     submit(form,async()=>{
       const value=JSON.parse(form.elements.advanced.value);

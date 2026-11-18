@@ -56,10 +56,15 @@ async function checkResourceHref(href) {
 for(const page of catalog)for(const group of page.groups||[])for(const card of group.cards)for(const action of card.actions)await checkResourceHref(action.href);
 for(const service of JSON.parse((await readFile(join(root, 'data/services.json'), 'utf8')).replace(/^\uFEFF/, '')))await checkResourceHref(service.href);
 await checkResourceHref('assets/js/management-personnel.js');
+for (const href of ['assets/js/file-picker.js','assets/js/document-editor.js','assets/js/documents.js','assets/css/documents.css']) await checkResourceHref(href);
+for (const document of JSON.parse((await readFile(join(root,'data/documents.json'),'utf8')).replace(/^\uFEFF/,''))) {
+  if(document.file?.href && !document.file.href.startsWith('media/'))await checkResourceHref(document.file.href);
+  if(document.original_file_href)await checkResourceHref(document.original_file_href);
+}
 // Unit sections can contain local downloads, figures and in-page quick links.
 for (const unit of JSON.parse((await readFile(join(root, 'data/units.json'), 'utf8')).replace(/^\uFEFF/, ''))) {
   const sections = unit.special_sections || [];
-  const ids = new Set(['unit-about', 'unit-services', 'unit-fields', 'unit-members', 'unit-news', 'unit-contact', 'unit-history', ...sections.map(section => section.id)]);
+  const ids = new Set(['unit-about', 'unit-services', 'unit-fields', 'unit-members', 'unit-news', 'unit-documents', 'unit-contact', 'unit-history', ...sections.map(section => section.id)]);
   for (const link of [...(unit.resource_links || []), ...sections.flatMap(section => section.links || [])]) {
     if (link.href.startsWith('#')) assert.ok(ids.has(link.href.slice(1)), 'Unit anchor: '+link.href);
     else await checkResourceHref(link.href);
