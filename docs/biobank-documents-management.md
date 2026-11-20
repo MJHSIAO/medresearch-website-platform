@@ -69,3 +69,13 @@
 新增 tests/check_document_retirement.py 驗證清理、備份、正式換檔保留及重啟冪等；README、PLANS、管理指南、資料模型與既有測試一併更新。刪除的 HTML：animal-guide、biosafety-form、lab-form、research-form、research-guide、trial-checklist。
 
 移除示範文件後，實際重跑通過 check_document_retirement、check_documents、check_biobank_documents、check_unit_documents、check_management、check_analytics、check_biobank、check_personnel、check_resources、check_portal，以及四組搜尋／消息／人員 JavaScript 測試、靜態連結語法檢查、建置與 diff 檢查。正式上線仍需重建既有後端服務，啟動時才會執行舊資料清理與備份；Git 推送不代表已部署。
+
+## 共用檔案庫原始匯入清單（使用者已確認並授權提交、推送）
+
+九份原始 PDF 現在一併列入共用檔案庫，標示「原始匯入檔案」、原始檔名、原官網來源、查核日與來源說明，以及目前對應文件的名稱、範圍與狀態。資料由既有初始文件及目前管理內容即時組合，不重新上傳、不建立實體副本，也不新增 state.files。文件改名／下架會更新對應資訊；換檔後原檔案標示為原始來源。其他單位管理員不會取得本庫匯入項目。
+
+本次修改 backend/documents.py、backend/management.py（唯讀合併、來源與關聯）、assets/js/management-views.js、assets/css/management.css（檔案卡片資訊與管理入口）、assets/js/file-picker.js（維持只選用私有上傳檔案），新增 tests/check_imported_file_library.py，更新 tests/check_management.py、tests/check_unit_documents.py、tests/check_management_ui.mjs 的清單預期，以及 README、管理指南、內容模型與本文件。
+
+已執行 check_imported_file_library、check_management、check_unit_documents、check_biobank_documents、check_documents 及靜態語法／JSON／連結檢查。新測試確認九筆無重複、原檔案內容不變、讀取不寫狀態或複製檔案、單位隔離、權限撤銷、目前文件名稱／狀態同步、換檔來源區分及原上傳清單相容。既有 check_management_ui.mjs 只更新預期數量，未以該腳本執行完整瀏覽器測試；右側採實際本機隔離服務手動驗證。
+
+本機追加驗證：原始匯入檔案九張卡片與九筆對應文件正常顯示；Enter 可從「前往文件管理」進入文件清單。檔案庫桌機 1141px、平板 768px 與手機 320px 皆無整頁水平溢出；最後重跑新檔案庫測試、靜態檢查、建置及 diff 檢查通過。使用者已確認將原始匯入顯示與卡片排版一併提交、推送；實際結果以 Git 紀錄為準。

@@ -3,7 +3,7 @@
   'use strict';
   async function choose({base,api,unit,onChoose}){
     const {esc}=window.MedManagementShell;
-    const {items}=await api('manage/files?unit='+encodeURIComponent(unit));
+    const {items}=await api('manage/files?include_imported=false&unit='+encodeURIComponent(unit));
     const dialog=document.createElement('dialog');dialog.className='file-picker';
     dialog.setAttribute('aria-labelledby','file-picker-title');
     dialog.innerHTML=`<h2 id="file-picker-title">選用既有檔案</h2><p>僅列出目前單位的上傳檔案。選用後仍須儲存內容才會建立關聯。</p><label>搜尋檔名<input type="search"></label><div class="file-picker-list"></div><button type="button" data-close>取消</button>`;

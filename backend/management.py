@@ -9,7 +9,7 @@ from urllib.parse import urlsplit, unquote
 from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse, FileResponse, Response
 from .personnel import ordered_people, sync_members, validate_person, clear_links
-from .documents import active_units, file_usages, validate_file_scope
+from .documents import active_units, file_usages, imported_files, validate_file_scope
 
 KINDS = {'units', 'news', 'people', 'pages', 'services', 'site', 'theme', 'documents'}
 MANAGERS = {'unit_admin', 'site_admin', 'system_admin'}
@@ -489,7 +489,7 @@ def install(app, runtime, store):
         return {'url': f'media/{identifier}', 'size': len(data)}
 
     @app.get('/api/manage/files')
-    async def file_library(request: Request, unit: str = ''):
+    async def file_library(request: Request, unit: str = '', include_imported: bool = True):
         state = store.read()
         actor, _ = context(request, state)
         if unit and not allowed(actor, 'news', {'owner_unit_id': unit}):
@@ -502,6 +502,9 @@ def install(app, runtime, store):
                     if isinstance(attachment, dict) and isinstance(attachment.get('name'), str) and isinstance(attachment.get('href'), str):
                         names[attachment['href'].lstrip('/')] = attachment['name']
         items = []
+        def usages(url):
+            return [use for use in file_usages(state, store, url)
+                    if allowed(actor, use['kind'], {'id': use['id'], 'owner_unit_id': use['unit'], 'unit_id': use['unit']})]
         for identifier, metadata in state['files'].items():
             if unit and metadata['unit'] != unit:
                 continue
@@ -512,11 +515,18 @@ def install(app, runtime, store):
                 continue
             url = f'media/{identifier}'
             items.append({'id': identifier, 'url': url, 'unit': metadata['unit'], 'mime': metadata['mime'],
+                          'source': 'uploaded',
                           'name': metadata.get('name') or names.get(url) or identifier,
                           'size': metadata.get('size', path.stat().st_size), 'uploaded_at': metadata.get('uploaded_at', ''),
-                          'usages': [use for use in file_usages(state, store, url)
-                                     if allowed(actor, use['kind'], {'id': use['id'], 'owner_unit_id': use['unit'], 'unit_id': use['unit']})]})
-        return {'items': sorted(items, key=lambda item: item['uploaded_at'], reverse=True)}
+                          'usages': usages(url)})
+        if include_imported:
+            for item in imported_files(store):
+                if unit and item['unit'] != unit:
+                    continue
+                if not allowed(actor, 'documents', {'owner_unit_id': item['unit']}):
+                    continue
+                items.append({**item, 'usages': usages(item['url'])})
+        return JSONResponse({'items': sorted(items, key=lambda item: item['uploaded_at'], reverse=True)}, headers={'Cache-Control': 'no-store'})
 
     @app.get('/api/internal/documents')
     async def internal_documents(request: Request):

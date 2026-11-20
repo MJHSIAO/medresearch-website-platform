@@ -31,8 +31,9 @@ def main():
         assert unit.get('/api/manage/files').json()['items'][0]['unit']=='ai-center'
         assert unit.post('/api/manage/files/biobank',content=b'%PDF-',headers={'content-type':'application/pdf'}).status_code==403
         assert unit.get('/api/manage/files?unit=biobank').status_code==403
-        assert not other.get('/api/manage/files').json()['items']
-        assert len(dept.get('/api/manage/files').json()['items'])==1
+        assert len(other.get('/api/manage/files').json()['items'])==9
+        assert not other.get('/api/manage/files?include_imported=false').json()['items']
+        assert len(dept.get('/api/manage/files').json()['items'])==10
         assert anon.get('/'+href).status_code==401
         def doc(title,href,visibility='public',status='published'):
             return dict(title=title,summary='隔離測試',version='1.0',category='申請表單',visibility=visibility,status=status,file={'href':href},document_date='2020-01-02',owner_unit_id='biobank')

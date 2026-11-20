@@ -79,3 +79,5 @@
 單位 short_description 作為 1–100 字卡片摘要，保留既有初始值；full_description 為獨立完整介紹。部門介紹卡片於讀取時解析單位共用資料，原 pages 資料保留。
 
 人體生物資料庫九份原始公開 PDF 為 documents 正式來源項目（is_demo=false），保留原 file.href，伺服器只允許初始清單精確對應的同單位原始路徑；不開放任意靜態路徑。source_url、source_checked_at、source_note、original_file_href 保存來源，既有來源欄位於儲存及歷史回復時保留。document_date 可明確為空字串，代表日期待確認，不能回退顯示 updated_at；舊項目沒有此欄時仍相容原日期。新增上傳沿用私有 media 機制。
+
+GET /api/manage/files 合併私有上傳及原始匯入的唯讀清單；include_imported=false 僅回傳上傳項目。source 區分 uploaded／imported，匯入項目由上述九份初始文件導出，url 沿用原路徑，uploaded_at 留空，另提供 original_name、source_url、source_checked_at、source_note。usages 依目前管理內容計算 title、status、visibility；relation 為 reference 或 original_source，後者表示檔案只保留為來源、目前文件已換檔。回應遵守管理範圍及 no-store，不新增 state.files 或實體副本。

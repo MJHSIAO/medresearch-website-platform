@@ -15,6 +15,26 @@ def seed_file(store, item):
                  and re.fullmatch(r'assets/documents/biobank/[0-9]+\.pdf', href)), None)
 
 
+def imported_files(store):
+    """Read-only views of existing original PDFs, never new uploads or copies."""
+    seeds = json.loads((store.source / 'documents.json').read_text(encoding='utf-8-sig'))
+    seen = set()
+    for item in seeds:
+        href = item.get('original_file_href', '')
+        if (item.get('owner_unit_id') != 'biobank' or item.get('file', {}).get('href') != href
+                or not re.fullmatch(r'assets/documents/biobank/[0-9]+\.pdf', href) or href in seen):
+            continue
+        path = store.source.parent / href
+        if not path.is_file():
+            continue
+        seen.add(href)
+        yield {'id': 'imported-' + item['id'], 'url': href, 'unit': item['owner_unit_id'],
+               'mime': 'application/pdf', 'name': item['file']['name'], 'original_name': path.name,
+               'size': path.stat().st_size, 'uploaded_at': '', 'source': 'imported',
+               'source_url': item.get('source_url', ''), 'source_checked_at': item.get('source_checked_at', ''),
+               'source_note': item.get('source_note', '')}
+
+
 def validate_document(value, old, state, store):
     # Provenance survives editing, replacement and history restore.
     for key in ('source_url', 'source_checked_at', 'source_note', 'original_file_href'):
@@ -84,6 +104,7 @@ def file_usages(state, store, href):
                 continue
             result.append({'kind': kind, 'id': item['id'], 'title': item.get('title') or item.get('name', ''),
                            'status': item.get('status', 'active'), 'visibility': item.get('visibility', 'public'),
+                           'relation': 'original_source' if kind == 'documents' and item.get('file', {}).get('href') != href else 'reference',
                            'unit': item.get('owner_unit_id', item.get('unit_id', item['id'] if kind == 'units' else 'medresearch'))})
     return result
 

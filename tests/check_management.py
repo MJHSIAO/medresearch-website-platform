@@ -88,8 +88,9 @@ def main():
         assert quote('測試附件.pdf') in a.get(url).headers['content-disposition']
         foreign_upload = root.post('/api/manage/files/core-laboratory', content=b'%PDF-1.4\n other', headers={'content-type':'application/pdf'})
         assert foreign_upload.status_code == 200
-        assert len(root.get('/api/manage/files').json()['items']) == 2
-        assert len(dept.get('/api/manage/files').json()['items']) == 2
+        assert len(root.get('/api/manage/files').json()['items']) == 11
+        assert len(dept.get('/api/manage/files').json()['items']) == 11
+        assert len(root.get('/api/manage/files?include_imported=false').json()['items']) == 2
         assert len(a.get('/api/manage/files').json()['items']) == 1
         assert a.get('/' + foreign_upload.json()['url']).status_code == 403
         current = next(i for i in a.get('/api/manage/content/news').json()['items'] if i['value']['id'] == 'test-news')

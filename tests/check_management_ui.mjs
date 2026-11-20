@@ -101,7 +101,7 @@ try{
   assert.ok(published.some(item=>item.title==='SERVER-SAVED-THROUGH-FORM'));
   assert.deepEqual(await page.evaluate(()=>Object.keys(localStorage)),[]);
   await page.locator('[data-route=media]').click();await page.locator('.file-card').filter({hasText:'附件.pdf'}).waitFor();
-  assert.equal(await page.locator('.file-card').count(),2);
+  assert.equal(await page.locator('.file-card').count(),11);
   const library=await(await page.request.get(base+'api/manage/files')).json();
   assert.ok(library.items.some(item=>item.name==='測試海報.png'));
   const rootMetadata=await(await page.request.get(base+'api/manage')).json();
