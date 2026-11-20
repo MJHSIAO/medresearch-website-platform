@@ -99,14 +99,15 @@
         onSaved:result=>edit('news',result),onBack:()=>list('news'),onHistory:()=>showHistory('news',entry)});
       return;
     }
-    const v=entry.value; const editable={}; const lists={services:'主要業務（每行一項）',goals:'發展目標（每行一項）',research_fields:'研究領域（每行一項）'};
+    const v=kind==='units'?{...entry.value,short_name:entry.value.short_name||''}:entry.value; const editable={}; const lists={services:'主要業務（每行一項）',goals:'發展目標（每行一項）',research_fields:'研究領域（每行一項）'};
     const labels={name:'名稱',title:'標題',summary:'摘要',short_description:'單位摘要（縮版介紹）',full_description:'完整介紹',purpose:'成立宗旨',bio:'簡介',category:'分類',cover_image:'封面圖片路徑',cover_alt:'圖片替代文字',notice:'網站頂端公告',description:'說明',display_order:'排序',published_at:'發布日期',expires_at:'截止日期',accent:'主色（例如 #125c4b）',width:'版面寬度（1100、1200、1320）'};
     let fields='';
+    if(kind==='units')fields+=`<label>單位簡稱<input name="short_name" value="${esc(v.short_name)}" aria-describedby="unit-short-name-help"></label><small id="unit-short-name-help">6 字以內；用於後台單位卡片與單位子站識別。留空保留原本的自動縮寫。</small>`;
     for(const [key,label] of Object.entries(labels)){
       if(!(key in v))continue;
       if(kind==='site'&&key==='notice')continue; // Managed in the dedicated announcement screen.
       if(kind==='units'&&session.profile.role==='unit_admin'&&['name','display_order'].includes(key))continue;
-      editable[key]=typeof v[key];if(kind==='theme'&&key==='width'){fields+=`<label>版面寬度<select name="width">${options(['1100','1200','1320'].map(w=>[w,w+' px']),String(v.width))}</select></label>`;continue;}fields+=field(key,label,v[key],key==='accent'?'color':['summary','short_description','full_description','purpose','bio','description'].includes(key)?'textarea':key==='display_order'?'number':'text');
+      editable[key]=typeof v[key];if(kind==='theme'&&key==='width'){fields+=`<label>版面寬度<select name="width">${options(['1100','1200','1320'].map(w=>[w,w+' px']),String(v.width))}</select></label>`;continue;}fields+=field(key,kind==='people'&&key==='title'?'職稱':label,v[key],key==='accent'?'color':['summary','short_description','full_description','purpose','bio','description'].includes(key)?'textarea':key==='display_order'?'number':'text');
     }
     for(const [key,label] of Object.entries(lists))if(Array.isArray(v[key])&&v[key].every(x=>typeof x==='string'))fields+=field('list_'+key,label,v[key].join('\n'),'textarea');
     if(kind==='units')for(const [key,label] of Object.entries({person:'聯絡窗口',phone:'電話',email:'電子郵件',address:'地址'}))fields+=field('contact_'+key,label,v.contact?.[key]||'');
@@ -126,6 +127,8 @@
     workspace.innerHTML=`<h2>編輯${names[kind]}</h2><form id="editor">${fields}<details><summary>進階內容欄位（服務、聯絡資料、段落、附件與選單等）</summary><p>保留原有欄位結構；上方表單欄位會覆蓋此處對應值。</p><label>完整內容 JSON<textarea name="advanced" rows="18">${esc(JSON.stringify(v,null,2))}</textarea></label></details><button type="submit">儲存${kind==='news'?'／套用發布狀態':''}</button></form><div id="edit-actions" class="actions"></div><div id="versions"></div>`;
     const form=document.getElementById('editor');
     if(kind==='units'){
+      const shortInput=form.elements.short_name;
+      const checkShort=()=>shortInput.setCustomValidity(Array.from(shortInput.value.trim()).length>6?'單位簡稱請填寫 6 字以內':'');shortInput.oninput=checkShort;checkShort();
       const input=form.elements.short_description,counter=document.getElementById('unit-summary-count');
       const count=()=>{const length=Array.from(input.value.trim()).length;counter.textContent=`${length} / 100 字`;input.setCustomValidity(length<1||length>100?'單位摘要請填寫 1–100 字':'');};input.oninput=count;count();
     }
@@ -134,7 +137,7 @@
       const value=JSON.parse(form.elements.advanced.value);
       for(const [key,type] of Object.entries(editable))value[key]=type==='number'?Number(form.elements[key].value):form.elements[key].value;
       for(const key of Object.keys(lists))if(form.elements['list_'+key])value[key]=form.elements['list_'+key].value.split('\n').filter(Boolean);
-      if(kind==='units')for(const key of ['person','phone','email','address']){value.contact||={};value.contact[key]=form.elements['contact_'+key].value;}
+      if(kind==='units'){value.short_name=form.elements.short_name.value.trim();for(const key of ['person','phone','email','address']){value.contact||={};value.contact[key]=form.elements['contact_'+key].value;}}
       if(kind==='news'){value.content=form.elements.paragraphs.value.split(/\n\s*\n/).filter(Boolean);value.status=form.elements.status.value;if(form.elements.featured)value.featured=form.elements.featured.checked;}
       if(form.elements.visibility)value.visibility=form.elements.visibility.value;
       if(kind==='people'&&form.elements.account_identity)value.account_identity=form.elements.account_identity.value;

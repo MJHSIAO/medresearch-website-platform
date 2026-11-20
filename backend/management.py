@@ -273,6 +273,8 @@ def install(app, runtime, store):
                 if not isinstance(after, dict):
                     raise HTTPException(422, '物件欄位格式不正確')
                 for key, child in before.items():
+                    if before is old and kind == 'units' and key == 'short_name' and key not in after:
+                        continue
                     if key in {'created_by', 'updated_by'}:
                         continue
                     if key not in after:
@@ -314,6 +316,11 @@ def install(app, runtime, store):
             raise HTTPException(422, '單位狀態不正確')
         if kind == 'units' and (not isinstance(value.get('short_description'), str) or not 1 <= len(value['short_description'].strip()) <= 100):
             raise HTTPException(422, '單位摘要請填寫 1–100 字')
+        if kind == 'units' and 'short_name' in value:
+            short_name = value['short_name']
+            if not isinstance(short_name, str) or len(short_name.strip()) > 6 or any(ord(c) < 32 for c in short_name):
+                raise HTTPException(422, '單位簡稱請填寫 6 字以內的單行文字，或留空使用預設')
+            value['short_name'] = short_name.strip()
         validate_file_scope(kind, value, state, store)
         if kind == 'people':
             validate_person(value, old, actor, state, store, runtime.settings.system_admin_ids)

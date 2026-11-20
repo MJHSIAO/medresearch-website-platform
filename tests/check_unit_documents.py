@@ -95,6 +95,22 @@ def main():
         assert next(u for u in anon.get('/data/units.json').json() if u['id']=='ai-center')['short_description']=='測試：新的單位卡片摘要。'
         reloaded=Store(directory,store.source)
         assert next(u for u in reloaded.collection(reloaded.read(),'units') if u['id']=='ai-center')['short_description']=='測試：新的單位卡片摘要。'
+        # Optional abbreviation preserves old records and stays in the existing unit scope.
+        entry=saved.json()
+        for short in ('七'*7, ['invalid'], '換\n行'):
+            assert unit.put('/api/manage/content/units/ai-center',json={**entry,'value':{**entry['value'],'short_name':short}}).status_code==422
+        abbreviated=unit.put('/api/manage/content/units/ai-center',json={**entry,'value':{**entry['value'],'short_name':' AI '}})
+        assert abbreviated.status_code==200,abbreviated.text
+        assert abbreviated.json()['value']['short_name']=='AI'
+        assert abbreviated.json()['value']['full_description']==full
+        assert other.put('/api/manage/content/units/ai-center',json=abbreviated.json()).status_code==403
+        assert next(u for u in anon.get('/data/units.json').json() if u['id']=='ai-center')['short_name']=='AI'
+        assert next(u for u in Store(directory,store.source).collection(Store(directory,store.source).read(),'units') if u['id']=='ai-center')['short_name']=='AI'
+        # An old history version without this optional field remains restorable.
+        restored=unit.put('/api/manage/content/units/ai-center',json={**entry,'revision':abbreviated.json()['revision']})
+        assert restored.status_code==200,restored.text
+        blank=unit.put('/api/manage/content/units/ai-center',json={**restored.json(),'value':{**restored.json()['value'],'short_name':''}})
+        assert blank.status_code==200 and blank.json()['value']['short_name']==''
         assert len(reloaded.read()['files'])==3
         # No public file is served for an inactive owning unit.
         ai=next(x for x in root.get('/api/manage/content/units').json()['items'] if x['value']['id']=='ai-center')
