@@ -53,6 +53,8 @@ def check_flow(case: str, jwt_mode: bool = False, return_page: str | None = None
         now = int(time.time())
         payload = {"iss": metadata["issuer"], "aud": "test-audience", "sub": "test-subject",
                    "iat": now - 5, "exp": now + 300, "role": "system_admin"}
+        if case in {"full_name", "invalid_name"}:
+            payload['unique_name'] = '測試管理員甲' if case == 'full_name' else ['invalid']
         if case == "aud_list":
             payload["aud"] = ["another-audience", "test-audience"]
         elif case == "wrong_aud":
@@ -125,12 +127,16 @@ def check_flow(case: str, jwt_mode: bool = False, return_page: str | None = None
             if case == "userinfo_non_json":
                 return httpx.Response(200, text="not-json", request=request)
             claims = {"sub": "test-subject", "name": "測試使用者", "role": "system_admin"}
+            if case in {"full_name", "invalid_name"}:
+                claims.pop('name')
+                claims['unique_name'] = '測試管理員甲' if case == 'full_name' else ['invalid']
             if case == "missing_subject":
                 claims.pop("sub")
             return httpx.Response(200, json=claims, request=request)
         raise AssertionError(f"Unexpected remote request: {request.url}")
 
-    manager = OIDCManager(replace(backend.settings, oidc_audience="test-audience" if jwt_mode else None))
+    manager = OIDCManager(replace(backend.settings, oidc_audience="test-audience" if jwt_mode else None,
+                                  oidc_name_claim='unique_name' if case in {'full_name', 'invalid_name'} else ''))
     # Intercept transport after httpx applies OAuth client/Bearer authentication.
     with patch.object(backend, "oidc", manager), patch.object(httpx.AsyncClient, "_send_single_request", provider_send):
         with TestClient(backend.app, base_url="https://site.example", root_path="/medresearch", follow_redirects=False) as client:
@@ -184,13 +190,15 @@ def check_flow(case: str, jwt_mode: bool = False, return_page: str | None = None
                 callback = client.get(callback_url)
             assert callback.headers["cache-control"] == "no-store"
             me = client.get("/medresearch/api/me").json()
-            if case in {"success", "aud_list"}:
+            if case in {"success", "aud_list", "full_name", "invalid_name"}:
                 assert callback.status_code == 303
                 assert callback.headers["location"] == BASE + expected_page
                 assert me["authenticated"] is True
                 assert me["user"]["id"] == "test-subject"
                 assert me["user"]["role"] == "internal_user"
                 assert me["user"]["unit_id"] is None
+                if case in {'full_name', 'invalid_name'}:
+                    assert me['user']['name'] == ('測試管理員甲' if case == 'full_name' else 'test-subject')
                 assert "test-access-token" not in str(me)
                 assert access_token not in str(me)
                 token_count = calls.count("/token")
@@ -217,12 +225,12 @@ def main() -> None:
         check_flow('success', return_page=page)
     assert OIDCConfigurationError("private", reason="private").reason == "configuration_error"
     for case in (
-        "success", "missing_state", "wrong_state", "missing_cookie", "provider_error",
+        "success", "full_name", "invalid_name", "missing_state", "wrong_state", "missing_cookie", "provider_error",
         "token_error", "token_non_json", "missing_access_token", "userinfo_error", "userinfo_non_json", "missing_subject",
     ):
         check_flow(case)
     for case in (
-        "success", "aud_list", "wrong_aud", "wrong_issuer", "expired", "future_nbf", "future_iat",
+        "success", "full_name", "invalid_name", "aud_list", "wrong_aud", "wrong_issuer", "expired", "future_nbf", "future_iat",
         "missing_exp", "missing_iat", "missing_aud", "missing_iss", "bad_signature", "unknown_kid",
         "wrong_algorithm", "opaque_token", "missing_subject", "blank_subject", "jwks_error", "jwks_non_json",
         "missing_state", "wrong_state", "missing_cookie", "provider_error",

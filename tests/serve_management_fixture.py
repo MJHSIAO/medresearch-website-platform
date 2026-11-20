@@ -18,11 +18,14 @@ def main():
     parser.add_argument('--port', type=int, required=True)
     parser.add_argument('--personnel-preview', action='store_true')
     parser.add_argument('--biobank-documents-preview', action='store_true')
+    parser.add_argument('--audit-identity-preview', action='store_true')
     args = parser.parse_args()
     with TemporaryDirectory(prefix='medresearch-management-ui-') as directory:
         runtime.store.directory = Path(directory)
         runtime.settings = replace(runtime.settings, app_base_url=f'http://127.0.0.1:{args.port}/medresearch',
                                    admin_identity_claim='sub', system_admin_ids=('FIXTURE-ROOT',))
+        if args.audit_identity_preview:
+            runtime.settings = replace(runtime.settings, oidc_name_claim='unique_name')
         with runtime.store.transaction() as state:
             state['grants'] = {
                 'FIXTURE-UNIT': {'role': 'unit_admin', 'units': ['ai-center'], 'active': True},
@@ -30,6 +33,9 @@ def main():
                 'FIXTURE-MULTI': {'role': 'unit_admin', 'units': ['ai-center', 'core-laboratory'], 'active': True}}
             if args.biobank_documents_preview:
                 state['grants']['FIXTURE-BIOBANK']={'role':'unit_admin','units':['biobank'],'active':True}
+            if args.audit_identity_preview:
+                state['audit'].append({'time':'2020-01-02T09:00:00+08:00','actor':'EXAMPLE-LEGACY',
+                                       'action':'歷史紀錄（無姓名）','kind':'units','id':'biobank','unit':'biobank'})
             state['content']['news'] = [
                 {'id': identifier, 'title': title, 'summary': 'Server fixture summary', 'content': ['Server fixture body'],
                  'category': '一般公告', 'owner_unit_id': unit, 'related_unit_ids': [], 'status': status,
@@ -54,14 +60,17 @@ def main():
                      'account_identity':'EXAMPLE-BIO-A' if index==0 else ''}
                     for index,(name,title) in enumerate([('示範成員甲','研究支援'),('示範成員乙','資料管理'),('示範成員丙','檢體管理')])]
 
-        if args.personnel_preview or args.biobank_documents_preview:
+        if args.personnel_preview or args.biobank_documents_preview or args.audit_identity_preview:
             from fastapi.responses import HTMLResponse
             @runtime.app.middleware('http')
             async def preview_notice(request, call_next):
                 response=await call_next(request)
                 if request.url.path.endswith('/admin') and response.status_code==200:
                     content=b''.join([chunk async for chunk in response.body_iterator]).decode('utf-8')
-                    content=content.replace('<div id="workspace">','<p class="status-message">本機隔離測試預覽｜示範帳號與新增內容供操作驗證；寫入暫存測試目錄，不影響正式資料。關閉此測試服務後清除。</p><div id="workspace">')
+                    notice='本機隔離測試預覽｜示範帳號與新增內容供操作驗證；寫入暫存測試目錄，不影響正式資料。關閉此測試服務後清除。'
+                    if args.audit_identity_preview:
+                        notice+=' 姓名來自虛構 OAuth 欄位；院方 unique_name 的姓名值仍待確認。'
+                    content=content.replace('<div id="workspace">',f'<p class="status-message">{notice}</p><div id="workspace">')
                     headers={k:v for k,v in response.headers.items() if k.lower() not in {'content-length','content-type'}}
                     return HTMLResponse(content,headers=headers)
                 return response
@@ -74,7 +83,12 @@ def main():
                 subjects['biobank']='FIXTURE-BIOBANK'
             if role not in subjects:
                 raise HTTPException(404)
-            sid = runtime.sessions.create({'id': subjects[role], 'name': 'Fixture account'}, {'sub': subjects[role]})
+            claims = {'sub': subjects[role]}
+            name = 'Fixture account'
+            if args.audit_identity_preview:
+                name = '示範管理員甲'
+                claims['unique_name'] = name
+            sid = runtime.sessions.create({'id': subjects[role], 'name': name}, claims)
             response = RedirectResponse('/medresearch/admin', status_code=303)
             response.set_cookie('medresearch_session', signed_session_cookie(sid), httponly=True, path='/medresearch', samesite='lax')
             response.set_cookie('medresearch_auth', '1', path='/medresearch', samesite='lax')

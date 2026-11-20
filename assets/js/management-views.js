@@ -15,7 +15,7 @@
     function timeSort(a,b){return (Date.parse(b.value.updated_at||b.value.published_at)||0)-(Date.parse(a.value.updated_at||a.value.published_at)||0);}
     function newsRows(items){return items.map(entry=>{const item=entry.value;return `<tr><td><div class="title-cell"><span class="document-icon">${icon('file')}</span><div><div class="message-title" title="${e(item.title)}">${e(item.title)}</div><div class="message-category">${e(item.category||'一般公告')} · ${item.visibility==='internal'?'僅院內':'公開消息'}</div></div></div></td><td class="unit-name">${e(unitName(item.owner_unit_id))}</td><td>${badge(item.status)}</td><td class="date-cell">${e(date(item.updated_at||item.published_at))}</td><td>${editButton('news',entries.indexOf(entry))}</td></tr>`;}).join('');}
     function newsTable(items){return table(['消息內容','所屬單位','狀態','更新日期',''],newsRows(items));}
-    function logsHtml(items){return items.length?items.map(item=>`<div class="activity-row"><span class="activity-dot"></span><div><p>${e(item.action)} · ${e(item.id)}</p><small>${e(item.actor)} · ${e(date(item.time,true))}${item.unit?' · '+e(unitName(item.unit)):''}</small></div></div>`).join(''):'<p class="empty">目前沒有操作紀錄。</p>';}
+    function logsHtml(items){return items.length?items.map(item=>{const name=typeof item.actor_name==='string'?item.actor_name.trim():'';const actor=name?`${name}（${item.actor}）`:item.actor;return `<div class="activity-row"><span class="activity-dot"></span><div><p>${e(item.action)} · ${e(item.id)}</p><small>${e(actor)} · ${e(date(item.time,true))}${item.unit?' · '+e(unitName(item.unit)):''}</small></div></div>`;}).join(''):'<p class="empty">目前沒有操作紀錄。</p>';}
     async function overview(serial){
       const [news,logs,stats]=await Promise.all([getContent('news'),api('manage/audit'),Promise.all([loadAnalytics(),api('manage/analytics')]).then(([,data])=>data).catch(()=>null)]);if(serial!==ticket)return;
       entries=news.sort(timeSort);
@@ -92,7 +92,7 @@
         frame('跑馬燈公告','管理全站上方的公告文字；啟用後顯示於前台。','<div id="announcement-manager"></div>');
         await window.MedAnnouncementManager.mount({target:document.getElementById('announcement-manager'),api,message,base,isCurrent:()=>serial===ticket});return;
       }
-      if(id==='audit'){const logs=await api('manage/audit');if(serial===ticket)frame('操作紀錄','依管理範圍查看最近 500 筆操作。',`<section class="panel"><div class="panel-heading"><h2>最近操作</h2></div>${logsHtml(logs.items)}</section>`);return;}
+      if(id==='audit'){const logs=await api('manage/audit');if(serial===ticket)frame('操作紀錄','依管理範圍查看最近 500 筆操作。姓名以操作當時為準；舊紀錄保留原員編。',`<section class="panel"><div class="panel-heading"><h2>最近操作</h2></div>${logsHtml(logs.items)}</section>`);return;}
       const result=await getContent(id);if(serial!==ticket)return;entries=result;
       if(id==='documents'){entries.sort(timeSort);showDocuments();}
       else if(id==='news'){entries.sort(timeSort);showNews();}

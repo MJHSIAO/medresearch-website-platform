@@ -13,6 +13,7 @@ from starlette.responses import RedirectResponse
 
 from .config import Settings
 from .permissions import initial_access_profile
+from .identity import display_name, oauth_display_name
 
 
 LOGGER = logging.getLogger(__name__)
@@ -150,7 +151,7 @@ class OIDCManager:
         profile = initial_access_profile(claims)
         user = {
             "id": profile["user_id"],
-            "name": claims.get("name") or claims.get("preferred_username") or profile["user_id"],
+            "name": oauth_display_name(claims, self.settings) or display_name(claims.get("name")) or display_name(claims.get("preferred_username")) or profile["user_id"],
             "email": claims.get("email"),
             "department": profile["department"],
             "unit_id": profile["unit_id"],

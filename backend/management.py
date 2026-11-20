@@ -10,6 +10,7 @@ from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse, FileResponse, Response
 from .personnel import ordered_people, sync_members, validate_person, clear_links
 from .documents import active_units, file_usages, imported_files, validate_file_scope
+from .identity import oauth_display_name
 
 KINDS = {'units', 'news', 'people', 'pages', 'services', 'site', 'theme', 'documents'}
 MANAGERS = {'unit_admin', 'site_admin', 'system_admin'}
@@ -55,7 +56,11 @@ def visible(item, kind):
 
 
 def audit(state, actor, action, kind, identifier, unit=None):
-    state['audit'].append({'time': now(), 'actor': actor['identity'], 'action': action, 'kind': kind, 'id': identifier, 'unit': unit})
+    entry = {'time': now(), 'actor': actor['identity'], 'action': action, 'kind': kind, 'id': identifier, 'unit': unit}
+    if actor.get('name') and actor['name'].casefold() != actor['identity'].casefold():
+        entry['actor_name'] = actor['name']
+        entry['actor_name_claim'] = actor['name_claim']
+    state['audit'].append(entry)
 
 
 def validate(value):
@@ -116,6 +121,8 @@ def install(app, runtime, store):
         if not record:
             raise HTTPException(401, '請重新登入')
         actor = profile(record['claims'], runtime.settings, state)
+        actor['name'] = oauth_display_name(record['claims'], runtime.settings)
+        actor['name_claim'] = runtime.settings.oidc_name_claim
         if manager and actor['role'] not in MANAGERS:
             raise HTTPException(403, '沒有管理權限')
         if write:

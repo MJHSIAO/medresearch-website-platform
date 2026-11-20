@@ -32,6 +32,7 @@ class Settings:
     admin_identity_claim: str = ""
     system_admin_ids: tuple[str, ...] = ()
     data_directory: str = 'var'
+    oidc_name_claim: str = ''
 
     @property
     def is_production(self) -> bool:
@@ -79,6 +80,7 @@ def get_settings() -> Settings:
         data_directory=os.getenv('DATA_DIRECTORY', 'var'),
         system_admin_ids=tuple(v.strip() for v in os.getenv("SYSTEM_ADMIN_IDS", "").split(",") if v.strip()),
         oidc_audience=os.getenv("OIDC_AUDIENCE", "").strip() or None,
+        oidc_name_claim=os.getenv("OIDC_NAME_CLAIM", "").strip(),
     )
 
     if settings.system_admin_ids and not settings.admin_identity_claim:

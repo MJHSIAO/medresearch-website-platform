@@ -25,6 +25,8 @@
 
 操作與限制詳見 [正式管理指南](docs/management-guide.md) 及 [角色矩陣](docs/role-permission-matrix.md)。
 
+操作紀錄支援「姓名（員編）」及舊紀錄相容；姓名僅讀取已設定的可信 OAuth 欄位，不影響授權。院方 unique_name 的值仍待確認，OIDC_NAME_CLAIM 範例預設留空。詳見 [本機修改與驗證紀錄](docs/audit-identity-review.md)。
+
 單位成員可拖曳／上下移後儲存順序並同步前台；人員權限依單位與原有角色排序，兩頁均支援確認範圍後刪除。詳見 [成員與授權管理](docs/personnel-management.md)。
 
 ## 資料與備份
@@ -51,6 +53,8 @@
 - `node tests/check_personnel_sort.mjs`
 - `node tests/check_biobank_search.mjs`
 - `python -m tests.check_oauth_login`
+- `python -m tests.check_audit_identity`
+- `node tests/check_audit_display.mjs`
 - `python -m tests.check_portal`
 - `python -m tests.check_management`
 - `python -m tests.check_analytics`
