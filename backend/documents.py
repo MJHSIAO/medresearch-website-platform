@@ -103,7 +103,7 @@ def file_usages(state, store, href):
             if href not in json.dumps(item, ensure_ascii=False):
                 continue
             result.append({'kind': kind, 'id': item['id'], 'title': item.get('title') or item.get('name', ''),
-                           'status': item.get('status', 'active'), 'visibility': item.get('visibility', 'public'),
+                           'status': 'draft' if kind=='people' and item.get('profile',{}).get('photo_href')==href and not item.get('profile',{}).get('enabled') else item.get('status', 'active'), 'visibility': item.get('visibility', 'public'),
                            'relation': 'original_source' if kind == 'documents' and item.get('file', {}).get('href') != href else 'reference',
                            'unit': item.get('owner_unit_id', item.get('unit_id', item['id'] if kind == 'units' else 'medresearch'))})
     return result
@@ -115,6 +115,8 @@ def validate_file_scope(kind, value, state, store):
     for identifier, metadata in state['files'].items():
         href = f'media/{identifier}'
         if href not in serialized:
+            continue
+        if kind=='people' and value.get('profile',{}).get('photo_href')==href and not value.get('profile',{}).get('enabled'):
             continue
         if kind in {'documents', 'news'} and metadata['unit'] != value.get('owner_unit_id'):
             raise HTTPException(403, '內容與附件必須屬於同一個單位')

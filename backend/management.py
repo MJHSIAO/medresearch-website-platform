@@ -281,6 +281,8 @@ def install(app, runtime, store):
                     # Validate these collections below instead of treating the first old file as a schema.
                     if before is old and kind == 'news' and key in {'attachments', 'gallery'}:
                         continue
+                    if before is old and kind == 'people' and key == 'profile':
+                        continue
                     if before is old and kind == 'documents' and key == 'file':
                         continue
                     if before is old and kind == 'pages' and key == 'groups':
@@ -450,6 +452,12 @@ def install(app, runtime, store):
             value = ordered_people(value)
         if isinstance(value, list):
             value = [item for item in value if visible(item, kind)]
+            if kind == 'people':
+                unit_ids={u['id'] for u in store.collection(state,'units') if visible(u,'units') and u.get('status')=='active'}
+                value=[p for p in value if p.get('unit_id') in unit_ids]
+                for person in value:
+                    if person.get('profile') and not person['profile'].get('enabled'):
+                        person['profile']={'enabled':False}
             if kind == 'documents':
                 value = [item for item in value if item.get('owner_unit_id') in active_units(state, store)]
             if kind == 'news':
@@ -459,7 +467,7 @@ def install(app, runtime, store):
                         item['status'] = 'expired'
         def clean(item):
             if isinstance(item, dict):
-                return {k: clean(v) for k, v in item.items() if k not in {'created_by', 'updated_by', 'account_identity'}}
+                return {k: clean(v) for k, v in item.items() if k not in {'created_by', 'updated_by', 'account_identity', 'profile_import_note'}}
             return [clean(x) for x in item] if isinstance(item, list) else item
         return JSONResponse(clean(value), headers={'Cache-Control': 'no-store'})
 
@@ -555,7 +563,9 @@ def install(app, runtime, store):
         if not metadata:
             raise HTTPException(404)
         ref = f'media/{identifier}'
+        public_units={u['id'] for u in store.collection(state,'units') if visible(u,'units') and u.get('status')=='active'}
         public = any((item.get('file', {}).get('href') == ref if kind == 'documents' else ref in json.dumps(item, ensure_ascii=False)) and visible(item, kind)
+                     and (kind != 'people' or item.get('unit_id') in public_units and (item.get('profile',{}).get('photo_href')!=ref or item.get('profile',{}).get('enabled')))
                      and (kind != 'documents' or item.get('owner_unit_id') in active_units(state, store))
                      for kind in ('news', 'units', 'people', 'pages', 'documents') for item in store.collection(state, kind))
         if not public:
@@ -582,3 +592,5 @@ def install(app, runtime, store):
     runtime.analytics = install_analytics(app, runtime, store, context)
     from .personnel import install as install_personnel
     install_personnel(app, runtime, store, context, body)
+    from .member_profiles import install as install_member_profiles
+    install_member_profiles(app, runtime, store, context, body)

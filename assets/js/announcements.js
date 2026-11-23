@@ -3,7 +3,7 @@
   window.MedAnnouncements={mount(slot,base){
     let snapshot='',observer,loading=false;
     function render(items){
-      const active=items;const serialized=JSON.stringify(active);if(snapshot===serialized)return;snapshot=serialized;
+      const active=document.body.dataset.page==='member-profile'?items.filter(item=>item.id!=='site-notice'):items;const serialized=JSON.stringify(active);if(snapshot===serialized)return;snapshot=serialized;
       slot.replaceChildren();slot.hidden=!active.length;if(!active.length){observer?.disconnect();return;}
       const label=document.createElement('span');label.className='announcement-label';label.textContent='公告';slot.append(label);
       const viewport=document.createElement('div');viewport.className='announcement-viewport';viewport.tabIndex=0;viewport.setAttribute('aria-label','網站公告，滑鼠移入或鍵盤聚焦時停止捲動');

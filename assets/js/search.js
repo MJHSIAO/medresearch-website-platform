@@ -27,8 +27,8 @@
       const unit = byId.get(person.unit_id);
       if (!unit) continue;
       entries.push({ type: '成員', title: person.name,
-        summary: text([person.title, person.bio]), body: unit.name,
-        href: unit.site_about_href ? `${root()}/${unit.site_about_href}` : `${unitHref(unit)}#unit-members`, newTab: true });
+        summary: text([person.title, person.bio]), body: text([unit.name,person.profile?.english_name,person.profile?.introduction,person.profile?.positions,person.profile?.education,person.profile?.experience,person.profile?.research_fields,person.profile?.achievements]),
+        href: person.profile?.enabled ? `${root()}/person.html?id=${encodeURIComponent(person.id)}` : unit.site_about_href ? `${root()}/${unit.site_about_href}` : `${unitHref(unit)}#unit-members`, newTab: true });
     }
     for (const item of D.publicNews(news, true)) {
       if (item.owner_unit_id !== 'medresearch' && !byId.has(item.owner_unit_id)) continue;

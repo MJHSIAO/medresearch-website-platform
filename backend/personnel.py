@@ -27,6 +27,8 @@ def sync_members(state, store, unit_id):
 
 
 def validate_person(value, old, actor, state, store, bootstrap):
+    from .member_profiles import validate_profile
+    validate_profile(value,state,store)
     if value.get('unit_id') == 'medresearch':
         group = value.get('department_group', 'members')
         if not isinstance(group, str) or group not in {'leadership', 'members'}:

@@ -11,7 +11,7 @@ import { execFileSync } from 'node:child_process';
 const root = resolve('.');
 async function walk(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
-  return (await Promise.all(entries.filter(e => !['.git', 'dist', 'node_modules', '.venv', 'var', '__pycache__'].includes(e.name)).map(e => e.isDirectory() ? walk(join(dir, e.name)) : join(dir, e.name)))).flat();
+  return (await Promise.all(entries.filter(e => !['.git', 'dist', 'node_modules', '.venv', 'var', 'work', '__pycache__'].includes(e.name)).map(e => e.isDirectory() ? walk(join(dir, e.name)) : join(dir, e.name)))).flat();
 }
 const files = await walk(root);
 for (const file of files) {
@@ -63,6 +63,11 @@ async function checkResourceHref(href) {
 for(const page of catalog)for(const group of page.groups||[])for(const card of group.cards)for(const action of card.actions)await checkResourceHref(action.href);
 for(const service of JSON.parse((await readFile(join(root, 'data/services.json'), 'utf8')).replace(/^\uFEFF/, '')))await checkResourceHref(service.href);
 await checkResourceHref('assets/js/management-personnel.js');
+for(const href of ['person.html','assets/js/member-profile.js','assets/js/member-profile-editor.js','assets/js/member-publications.js','assets/css/member-profile.css'])await checkResourceHref(href);
+for(const person of departmentPeople)if(person.profile?.photo_href&&!person.profile.photo_href.startsWith('media/'))await checkResourceHref(person.profile.photo_href);
+const publicationSeeds=JSON.parse((await readFile(join(root,'data/publications.json'),'utf8')).replace(/^\uFEFF/,''));
+assert.equal(new Set(publicationSeeds.map(p=>p.id)).size,publicationSeeds.length,'Unique publication IDs');
+for(const publication of publicationSeeds)assert.ok(departmentPeople.some(p=>p.id===publication.person_id),'Publication owner exists');
 for (const href of ['assets/js/file-picker.js','assets/js/document-editor.js','assets/js/documents.js','assets/css/documents.css']) await checkResourceHref(href);
 for (const document of JSON.parse((await readFile(join(root,'data/documents.json'),'utf8')).replace(/^\uFEFF/,''))) {
   if(document.file?.href && !document.file.href.startsWith('media/'))await checkResourceHref(document.file.href);

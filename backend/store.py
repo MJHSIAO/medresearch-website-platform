@@ -219,6 +219,32 @@ class Store:
             state.setdefault('migrations', []).append(release)
             self._write(state)
 
+    def upgrade_member_profiles(self):
+        """Add profile fields to existing members, preserving edits and deleted members."""
+        release='member-profiles-2026-11-23'
+        path=self.directory/'state.json'
+        if not path.exists():return
+        with self.lock:
+            state=self.read()
+            if release in state.get('migrations',[]):return
+            seeds=json.loads((self.source/'people.json').read_text(encoding='utf-8-sig'))
+            by_id={p['id']:p for p in seeds if p.get('profile',{}).get('enabled')}
+            if 'people' in state['content']:
+                for person in state['content']['people']:
+                    seed=by_id.get(person['id'])
+                    if not seed:continue
+                    for key in ('profile','profile_source_url','profile_source_updated_at','profile_source_checked_at','profile_import_note'):
+                        if key not in person and key in seed:person[key]=copy.deepcopy(seed[key])
+            if 'publications' in state['content']:
+                present={p['id'] for p in state['content']['publications']}
+                people={p['id'] for p in self.collection(state,'people')}
+                incoming=json.loads((self.source/'publications.json').read_text(encoding='utf-8-sig'))
+                state['content']['publications'].extend(p for p in incoming if p['id'] not in present and p['person_id'] in people)
+            backup=self.directory/f'state.before-{release}.json'
+            if not backup.exists():backup.write_bytes(path.read_bytes())
+            state.setdefault('migrations',[]).append(release)
+            self._write(state)
+
     def collection(self, state, kind):
         if kind in state['content']:
             return copy.deepcopy(state['content'][kind])

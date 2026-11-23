@@ -1,0 +1,32 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+const context=vm.createContext({window:{},document:{body:{dataset:{root:'.'}},addEventListener(){}},location:{href:'https://site.example/person.html'},Intl,URL,URLSearchParams});
+for(const name of ['data-service.js','member-profile.js','member-publications.js'])vm.runInContext(readFileSync('assets/js/'+name,'utf8'),context);
+const load=name=>JSON.parse(readFileSync('data/'+name+'.json','utf8'));
+const people=load('people'),members=people.filter(p=>p.unit_id==='medresearch'),pubs=load('publications');
+assert.equal(members.length,9);assert.ok(members.every(p=>p.profile.enabled));assert.equal(pubs.length,294);
+const unit={id:'medresearch',name:'醫學研究部',href:'content-page.html?page=department-about#department-members'};
+for(const p of members){
+ const html=context.window.MedMemberProfile.render(p,unit,pubs.filter(q=>q.person_id===p.id).length);
+ assert.match(html,new RegExp(p.name));assert.doesNotMatch(html,/依原官網|原官網所列|資料來源與使用提醒/);
+ if(p.profile.doctor_href)assert.match(html,/院方醫師介紹/);
+}
+const simple=context.window.MedMemberProfile.render(members.find(p=>p.id==='person-medresearch-staff'),unit,0);
+assert.doesNotMatch(simple,/member-education|member-publications|member-portrait/);
+const attack={...members[0],name:'<script>bad()</script>',profile:{...members[0].profile,introduction:'<img onerror=bad()>'}};
+const escaped=context.window.MedMemberProfile.render(attack,unit,1);
+assert.doesNotMatch(escaped,/<script>|<img onerror/);assert.match(escaped,/&lt;script&gt;/);
+const batch=context.window.MedMemberPublications.batch;
+assert.equal(batch('Author (2026). A.\n\nAuthor (2025). B.').length,2);
+assert.equal(batch('Author (2026). A.')[0].year,'2026');
+assert.throws(()=>batch('a'.repeat(5001)));assert.throws(()=>batch(Array(51).fill('paper').join('\n\n')));
+// Exercise the shared public list rendering with a long, hostile plain-text citation.
+const nodes={status:{classList:{toggle(){}}},list:{},prev:{},next:{},span:{}};
+const search={elements:{year:{value:'',innerHTML:''}}};
+const pages={querySelector:s=>s==='span'?nodes.span:s.includes('prev')?nodes.prev:nodes.next};
+const target={querySelector:s=>s==='.publication-search'?search:s==='.publication-status'?nodes.status:s==='.publication-items'?nodes.list:s==='.publication-pages'?pages:null};
+await context.window.MedMemberPublications.mount({target,api:async()=>{},path:'people/example/publications',initial:{items:[{citation:'<img onerror=bad()> '+('Long citation '.repeat(300)),year:'2026',category:'期刊論文',href:''}],years:['2026'],page:1,pages:1,total:1,all_total:1}});
+assert.match(nodes.list.innerHTML,/&lt;img onerror=bad\(\)&gt;/);assert.doesNotMatch(nodes.list.innerHTML,/<img/);
+assert.ok(nodes.list.innerHTML.includes('Long citation '.repeat(300)),'Long citation must remain complete');
+console.log('PASS nine profile templates, doctor links, optional sections, escaping, complete long citations and batch limits');

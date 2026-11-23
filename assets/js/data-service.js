@@ -2,6 +2,7 @@
   'use strict';
 
   const cache = new Map();
+  const departmentChart = 'assets/images/department-organization.png';
   const root = () => document.body.dataset.root || '.';
   async function load(name) {
     if (cache.has(name)) return cache.get(name);
@@ -48,12 +49,12 @@
       const department=units.find(u=>u.id==='medresearch'&&isPublic(u)&&u.status==='active');
       if(!department)return {...page,summary:'目前未公開本部資料。',sections:[],groups:[]};
       const members=people.filter(p=>p.unit_id==='medresearch'&&isPublic(p)).sort((a,b)=>(a.display_order??0)-(b.display_order??0));
-      const card=p=>({title:p.name,text:p.bio||'',tag:p.title||'',actions:p.profile_href?[{label:'查看公開介紹',href:p.profile_href}]:[],contact:''});
+      const card=p=>({title:p.name,text:p.bio||'',tag:p.title||'',actions:p.profile?.enabled?[{label:'查看介紹',href:'person.html?id='+encodeURIComponent(p.id)}]:p.profile?[]:p.profile_href?[{label:'查看公開介紹',href:p.profile_href}]:[],contact:''});
       const leaders=members.filter(p=>p.department_group==='leadership');
       const others=members.filter(p=>p.department_group!=='leadership');
       const original=page.groups||[];
       const organisation=original.find(g=>g.title==='組織與主管');
-      const preserved=(organisation?.cards||[]).filter(c=>!c.person_id&&!['研究副院長','部主任'].includes(c.tag));
+      const preserved=(organisation?.cards||[]).filter(c=>!c.person_id&&!['研究副院長','部主任'].includes(c.tag)).map(c=>({...c,actions:(c.actions||[]).map(a=>a.href==='https://depart.femh.org.tw/medresearch/structure.html'?{...a,href:departmentChart}:a)}));
       page={...page,summary:department.short_description,
         sections:[{title:'本部簡介',content:department.full_description},{title:'本部執掌',content:department.purpose},{title:'發展目標',content:(department.goals||[]).join('；')}],
         groups:[{title:'本部介紹',text:department.full_description,cards:[{title:'本部執掌',text:department.purpose,actions:[]},{title:'發展目標',text:(department.goals||[]).join('；'),actions:[]}]},
@@ -76,6 +77,6 @@
 
   window.MedData = {
     load, getUnits, getUnit, getNews, publicNews, isPublic, publicUnit,
-    escapeHTML, formatDate, statusLabels, resolveUnitCards
+    escapeHTML, formatDate, statusLabels, resolveUnitCards, departmentChart
   };
 })();

@@ -122,6 +122,13 @@ def public_catalog(store, state, kind):
 
 def page_target(store, state, path, query):
     """Canonical keys ignore arbitrary queries, search terms, and tracking parameters."""
+    if path == '/person.html':
+        from .member_profiles import public_member
+        try:
+            person,unit=public_member(store,state,query.get('id',''))
+        except HTTPException:
+            return None
+        return target('person:'+person['id'],'pages',person['id'],person['name']+'｜成員介紹',unit['id'],'person.html?'+urlencode({'id':person['id']}))
     if path in {'/unit.html', '/unit-about.html'}:
         slug = query.get('unit', 'academic-office')
         item = next((u for u in store.collection(state, 'units')

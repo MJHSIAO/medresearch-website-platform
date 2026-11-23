@@ -68,3 +68,5 @@ CSS 括號檢查不等同完整 validator；自動化鍵盤與尺寸檢查不等
 ## 2026-11-23 本部入口
 
 本部沿用 content-page.html?page=department-about，成員錨點為 #department-members。首頁、部門介紹、搜尋共用單位及人員資料；本部不混入八個隸屬單位。主管兩位與成員七位分區，姓名變更及公開範圍同步。詳見 [本部整合](department-integration.md)。
+
+本部九位啟用個人頁的成員卡片及姓名搜尋改至 person.html?id=成員ID，成果在個人頁分頁搜尋。停用個人頁不回跳舊外部介紹。[整合說明](member-profiles.md)。

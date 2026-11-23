@@ -18,7 +18,7 @@
             "actions": [
               {
                 "label": "查看組織架構",
-                "href": "https://depart.femh.org.tw/medresearch/structure.html"
+                "href": "assets/images/department-organization.png"
               },
               {
                 "label": "查看本部成員",
