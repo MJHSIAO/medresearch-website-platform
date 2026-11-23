@@ -19,6 +19,7 @@ def main():
     parser.add_argument('--personnel-preview', action='store_true')
     parser.add_argument('--biobank-documents-preview', action='store_true')
     parser.add_argument('--audit-identity-preview', action='store_true')
+    parser.add_argument('--department-preview', action='store_true')
     args = parser.parse_args()
     with TemporaryDirectory(prefix='medresearch-management-ui-') as directory:
         runtime.store.directory = Path(directory)
@@ -33,6 +34,8 @@ def main():
                 'FIXTURE-MULTI': {'role': 'unit_admin', 'units': ['ai-center', 'core-laboratory'], 'active': True}}
             if args.biobank_documents_preview:
                 state['grants']['FIXTURE-BIOBANK']={'role':'unit_admin','units':['biobank'],'active':True}
+            if args.department_preview:
+                state['grants']['FIXTURE-DEPARTMENT']={'role':'unit_admin','units':['medresearch'],'active':True}
             if args.audit_identity_preview:
                 state['audit'].append({'time':'2020-01-02T09:00:00+08:00','actor':'EXAMPLE-LEGACY',
                                        'action':'歷史紀錄（無姓名）','kind':'units','id':'biobank','unit':'biobank'})
@@ -46,7 +49,7 @@ def main():
                     ('server-ai-draft', 'SERVER-AI-DRAFT', 'ai-center', 'draft'),
                     ('server-core-public', 'SERVER-CORE-PUBLISHED', 'core-laboratory', 'published')]]
             state['content']['news'][2]['published_at'] = '2026-10-01T09:00:00+08:00'
-            if args.biobank_documents_preview:
+            if args.biobank_documents_preview or args.department_preview:
                 # Display the unmodified public seeds; all management writes stay isolated.
                 del state['content']['news']
             if args.personnel_preview:
@@ -60,7 +63,7 @@ def main():
                      'account_identity':'EXAMPLE-BIO-A' if index==0 else ''}
                     for index,(name,title) in enumerate([('示範成員甲','研究支援'),('示範成員乙','資料管理'),('示範成員丙','檢體管理')])]
 
-        if args.personnel_preview or args.biobank_documents_preview or args.audit_identity_preview:
+        if args.personnel_preview or args.biobank_documents_preview or args.audit_identity_preview or args.department_preview:
             from fastapi.responses import HTMLResponse
             @runtime.app.middleware('http')
             async def preview_notice(request, call_next):
@@ -81,6 +84,8 @@ def main():
                         'multi': 'FIXTURE-MULTI', 'ordinary': 'FIXTURE-ORDINARY'}
             if args.biobank_documents_preview:
                 subjects['biobank']='FIXTURE-BIOBANK'
+            if args.department_preview:
+                subjects['department']='FIXTURE-DEPARTMENT'
             if role not in subjects:
                 raise HTTPException(404)
             claims = {'sub': subjects[role]}

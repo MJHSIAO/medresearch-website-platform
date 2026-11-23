@@ -996,5 +996,37 @@
       }
     ],
     "news_archive": true
-  }
+  },
+{
+  "id": "medresearch",
+  "name": "醫學研究部",
+  "slug": "medresearch",
+  "is_department": true,
+  "short_description": "醫學研究部由研究發展委員會統籌全院醫學研究，整合各隸屬單位的研究行政、實驗資源、臨床試驗、人工智慧、細胞治療與研發成果管理。",
+  "full_description": "為兼顧臨床、教學與研究的均衡發展，亞東紀念醫院設立醫學研究部，透過專業研究團隊與博士級研究人力協助醫師及醫學生進行研究，並提供研究支援、推動計畫與成果發表。",
+  "purpose": "建置優質學術研究環境、推動研究計畫執行成效、促使研究論文質量倍增、強化研發成果管理運用、促進產學與國際合作、提升研究品質能力、落實研究教學與獎勵，並持續創新研究發展。",
+  "goals": [
+    "配合全院整體發展，落實全人照護之醫學研究；強化院際與產官學合作，鼓勵創新成果專利化，建立具競爭力的研究團隊，並培訓院內研究人力與年輕醫師。"
+  ],
+  "services": [],
+  "research_fields": [],
+  "members": [],
+  "contact": {
+    "person": "各項業務請依服務或隸屬單位洽詢",
+    "phone": "各單位分機請見隸屬單位頁",
+    "email": "電子郵件請依各單位官方頁面洽詢",
+    "address": "220 新北市板橋區南雅南路二段21號"
+  },
+  "hero_image": "",
+  "hero_alt": "",
+  "source_url": "https://depart.femh.org.tw/medresearch/FEMH-MR.html",
+  "source_checked_at": "2026-11-23",
+  "source_updated_at": "",
+  "display_order": 0,
+  "visibility": "public",
+  "status": "active",
+  "template_label": "醫學研究部本部",
+  "site_href": "content-page.html?page=department-about",
+  "site_about_href": "content-page.html?page=department-about#department-members"
+}
 ]

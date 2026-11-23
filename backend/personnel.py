@@ -27,6 +27,12 @@ def sync_members(state, store, unit_id):
 
 
 def validate_person(value, old, actor, state, store, bootstrap):
+    if value.get('unit_id') == 'medresearch':
+        group = value.get('department_group', 'members')
+        if not isinstance(group, str) or group not in {'leadership', 'members'}:
+            raise HTTPException(422, '本部顯示區域不正確')
+        if not isinstance(value.get('profile_href', ''), str) or len(value.get('profile_href', '')) > 2048:
+            raise HTTPException(422, '公開介紹連結格式不正確')
     identity = value.get('account_identity', '')
     if not isinstance(identity, str) or len(identity) > 160 or identity != identity.strip():
         raise HTTPException(422, '關聯帳號格式不正確')

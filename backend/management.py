@@ -67,7 +67,7 @@ def validate(value):
     """Content is plain text. URLs cannot introduce executable or protocol-relative links."""
     if isinstance(value, dict):
         for key, child in value.items():
-            if key in {'href', 'url', 'src', 'cover_image', 'hero_image', 'source_url', 'site_href', 'site_about_href'} and isinstance(child, str) and child:
+            if key in {'href', 'url', 'src', 'cover_image', 'hero_image', 'source_url', 'site_href', 'site_about_href', 'profile_href'} and isinstance(child, str) and child:
                 if any(c in child for c in '\\<>\r\n\t\"\'') or child.startswith('//') or child != child.strip():
                     raise HTTPException(422, '連結格式不正確')
                 scheme = urlsplit(child).scheme
@@ -155,7 +155,7 @@ def install(app, runtime, store):
         actor, record = context(request, state)
         record.setdefault('csrf', secrets.token_urlsafe(32))
         return {'profile': actor, 'label': LABELS[actor['role']], 'csrf': record['csrf'],
-                'units': [{'id': u['id'], 'name': u['name']} for u in store.collection(state, 'units') if allowed(actor, 'units', u)],
+                'units': [{'id': u['id'], 'name': u['name'] + ('（本部）' if u['id']=='medresearch' else '')} for u in store.collection(state, 'units') if allowed(actor, 'units', u)],
                 'kinds': [k for k in sorted(KINDS) if k != 'theme' or actor['role'] == 'system_admin'] if actor['role'] != 'unit_admin' else ['units', 'news', 'people', 'documents']}
 
     @app.get('/api/manage/grants')
@@ -251,8 +251,6 @@ def install(app, runtime, store):
             known = {u['id'] for u in store.collection(state, 'units')} | {'medresearch'}
             if unit not in known or (actor['role'] == 'unit_admin' and unit not in actor['units']):
                 raise HTTPException(403, '未獲授權的單位')
-            if kind == 'people' and unit == 'medresearch':
-                raise HTTPException(422, '請選擇實際所屬單位')
             value['unit_id' if kind == 'people' else 'owner_unit_id'] = unit
         elif not old:
             raise HTTPException(422, '此資料類型請編輯既有項目')
@@ -260,7 +258,7 @@ def install(app, runtime, store):
             raise HTTPException(403)
         if actor['role'] == 'unit_admin':
             if kind == 'units':
-                for key in ('name', 'slug', 'status', 'visibility', 'display_order', 'site_href', 'site_about_href', 'template_label'):
+                for key in ('name', 'slug', 'status', 'visibility', 'display_order', 'site_href', 'site_about_href', 'template_label', 'is_department'):
                     if value.get(key) != old.get(key):
                         raise HTTPException(403, '單位結構欄位須由總管理員維護')
             if kind == 'news':

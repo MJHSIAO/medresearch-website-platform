@@ -25,7 +25,7 @@
   }
 
   function publicUnit(unit) {
-    return isPublic(unit) && unit.status === 'active';
+    return unit.id !== 'medresearch' && isPublic(unit) && unit.status === 'active';
   }
 
   function publicNews(items, includeExpired = true) {
@@ -43,7 +43,24 @@
     return new Intl.DateTimeFormat('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
   }
 
-  function resolveUnitCards(page, units) {
+  function resolveUnitCards(page, units, people) {
+    if(page.id==='department-about' && people){
+      const department=units.find(u=>u.id==='medresearch'&&isPublic(u)&&u.status==='active');
+      if(!department)return {...page,summary:'目前未公開本部資料。',sections:[],groups:[]};
+      const members=people.filter(p=>p.unit_id==='medresearch'&&isPublic(p)).sort((a,b)=>(a.display_order??0)-(b.display_order??0));
+      const card=p=>({title:p.name,text:p.bio||'',tag:p.title||'',actions:p.profile_href?[{label:'查看公開介紹',href:p.profile_href}]:[],contact:''});
+      const leaders=members.filter(p=>p.department_group==='leadership');
+      const others=members.filter(p=>p.department_group!=='leadership');
+      const original=page.groups||[];
+      const organisation=original.find(g=>g.title==='組織與主管');
+      const preserved=(organisation?.cards||[]).filter(c=>!c.person_id&&!['研究副院長','部主任'].includes(c.tag));
+      page={...page,summary:department.short_description,
+        sections:[{title:'本部簡介',content:department.full_description},{title:'本部執掌',content:department.purpose},{title:'發展目標',content:(department.goals||[]).join('；')}],
+        groups:[{title:'本部介紹',text:department.full_description,cards:[{title:'本部執掌',text:department.purpose,actions:[]},{title:'發展目標',text:(department.goals||[]).join('；'),actions:[]}]},
+          {title:'組織與主管',text:'',cards:[...leaders.map(card),...preserved]},
+          {id:'department-members',title:'本部成員',text:'',cards:others.map(card)},
+          ...original.filter(g=>!['本部介紹','組織與主管','本部成員'].includes(g.title))]};
+    }
     return {...page, groups:(page.groups||[]).map(group=>({...group,cards:(group.cards||[]).map(card=>{
       // Only the dedicated unit directory cards use the unit summary. Other service
       // cards may link to a unit while explaining a different service.

@@ -3,25 +3,8 @@
     "id": "department-about",
     "title": "部門介紹",
     "eyebrow": "ABOUT THE DEPARTMENT",
-    "summary": "醫學研究部由研究發展委員會統籌全院醫學研究，整合各隸屬單位的研究行政、實驗資源、臨床試驗、人工智慧、細胞治療與研發成果管理。",
-    "sections": [
-      {
-        "title": "本部簡介",
-        "content": "為兼顧臨床、教學與研究的均衡發展，亞東紀念醫院設立醫學研究部，透過專業研究團隊與博士級研究人力協助醫師及醫學生進行研究，並提供研究支援、推動計畫與成果發表。"
-      },
-      {
-        "title": "本部執掌",
-        "content": "建置優質學術研究環境、推動研究計畫執行成效、促使研究論文質量倍增、強化研發成果管理運用、促進產學與國際合作、提升研究品質能力、落實研究教學與獎勵，並持續創新研究發展。"
-      },
-      {
-        "title": "發展目標",
-        "content": "配合全院整體發展，落實全人照護之醫學研究；強化院際與產官學合作，鼓勵創新成果專利化，建立具競爭力的研究團隊，並培訓院內研究人力與年輕醫師。"
-      },
-      {
-        "title": "隸屬單位",
-        "content": "學術研發室、共同研究室、動物實驗室、人工智慧中心、臨床試驗中心、細胞治療中心、創新智財產學中心及人體生物資料庫。"
-      }
-    ],
+    "summary": "醫學研究部本部介紹、組織主管與成員，以及隸屬單位導覽。",
+    "sections": [],
     "source_url": "https://depart.femh.org.tw/medresearch/FEMH-MR.html",
     "groups": [
       {
@@ -29,30 +12,8 @@
         "text": "",
         "cards": [
           {
-            "title": "張至宏",
-            "text": "研究副院長。詳細經學歷、專長及公開成果請見原官網。",
-            "tag": "研究副院長",
-            "actions": [
-              {
-                "label": "查看原官網",
-                "href": "https://depart.femh.org.tw/medresearch/ViceR.html"
-              }
-            ]
-          },
-          {
-            "title": "吳彥雯",
-            "text": "醫學研究部主任。詳細經學歷、專長及公開成果請見原官網。",
-            "tag": "部主任",
-            "actions": [
-              {
-                "label": "查看原官網",
-                "href": "https://depart.femh.org.tw/medresearch/dirmr.html"
-              }
-            ]
-          },
-          {
             "title": "組織架構與成員",
-            "text": "查看原官網組織架構及部門公開成員名單。",
+            "text": "查看組織架構及本部成員。",
             "tag": "組織資訊",
             "actions": [
               {
@@ -60,8 +21,8 @@
                 "href": "https://depart.femh.org.tw/medresearch/structure.html"
               },
               {
-                "label": "查看部門成員",
-                "href": "https://depart.femh.org.tw/medresearch/staff.html"
+                "label": "查看本部成員",
+                "href": "#department-members"
               }
             ]
           }
@@ -152,11 +113,18 @@
             "title": "人體生物資料庫",
             "text": "查看單位介紹、作業流程、收費標準、辦法表單及相關法規。",
             "tag": "單位介紹",
-            "actions": [{ "label": "認識單位", "href": "unit.html?unit=biobank" }]
+            "actions": [
+              {
+                "label": "認識單位",
+                "href": "unit.html?unit=biobank"
+              }
+            ]
           }
         ]
       }
-    ]
+    ],
+    "staff_source_url": "https://depart.femh.org.tw/medresearch/staff.html",
+    "source_checked_at": "2026-11-23"
   },
   {
     "id": "research-services",

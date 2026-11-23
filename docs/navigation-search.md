@@ -63,3 +63,8 @@ node scripts/build-site.mjs
 Playwright 僅為開發測試工具，不是網站 dependency。腳本使用隔離瀏覽器與限本機測試伺服器，以 /medresearch-website-platform/ 前綴測試。截圖輸出至系統暫存目錄，結束關閉伺服器及瀏覽器；不使用使用者瀏覽器的帳號或儲存資料。
 
 CSS 括號檢查不等同完整 validator；自動化鍵盤與尺寸檢查不等同正式 WCAG、螢幕閱讀器或跨瀏覽器驗收。實際結果記錄於 phase-1-acceptance.md。
+
+
+## 2026-11-23 本部入口
+
+本部沿用 content-page.html?page=department-about，成員錨點為 #department-members。首頁、部門介紹、搜尋共用單位及人員資料；本部不混入八個隸屬單位。主管兩位與成員七位分區，姓名變更及公開範圍同步。詳見 [本部整合](department-integration.md)。

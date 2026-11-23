@@ -57,7 +57,7 @@
     }
     async function showMedia(serial){
       const data=await api('manage/files');if(serial!==ticket)return;
-      const units=[...session.units];if(session.profile.role!=='unit_admin')units.push({id:'medresearch',name:'醫學研究部'});
+      const units=[...session.units];if(session.profile.role!=='unit_admin'&&!units.some(u=>u.id==='medresearch'))units.push({id:'medresearch',name:'醫學研究部'});
       frame('共用檔案庫','查看授權單位的上傳檔案與原始匯入檔案；匯入項目直接沿用原檔案，不會建立重複副本。',`<section class="panel upload-panel"><form id="library-upload"><label>所屬單位<select name="unit">${units.map(u=>`<option value="${e(u.id)}">${e(u.name)}</option>`).join('')}</select></label><label>選擇檔案<input type="file" name="file" accept="image/png,image/jpeg,application/pdf" required></label><button type="submit" class="button primary">${icon('upload')}上傳檔案</button><p class="panel-subtitle">PNG、JPEG 或 PDF，每個檔案最多 5 MB。上傳不會自動建立文件或消息；須由編輯器選用並發布。未被發布內容引用的上傳檔案不會公開。</p></form></section><div class="file-grid">${data.items.map(libraryCard).join('')||'<p class="empty">目前沒有可用檔案。</p>'}</div>`);
       const form=document.getElementById('library-upload');form.onsubmit=async event=>{
         event.preventDefault();const submit=form.querySelector('[type=submit]');const file=form.elements.file.files[0];if(!file)return;

@@ -39,7 +39,7 @@
     const attachments = (original.attachments || []).map(file => ({...file}));
     const cover = {src:original.cover_image || ''};
     const units = [...session.units];
-    if (session.profile.role !== 'unit_admin') units.push({id:'medresearch',name:'醫學研究部'});
+    if (session.profile.role !== 'unit_admin' && !units.some(u=>u.id==='medresearch')) units.push({id:'medresearch',name:'醫學研究部'});
     const chosen = original.owner_unit_id || units[0]?.id;
     const ownerName = units.find(unit => unit.id === chosen)?.name || '原所屬單位';
     const category = original.category || '一般公告';

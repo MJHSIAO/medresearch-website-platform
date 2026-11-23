@@ -107,7 +107,7 @@ class Analytics:
                 'tracked_days': sum(r['tracked'] for r in daily),
                 'downloads': sum(r['downloads'] for r in daily), 'rankings': rankings,
                 'units': [u for u in units if u['id'] in permitted] + (
-                    [{'id': 'medresearch', 'name': '醫學研究部主站'}] if 'medresearch' in permitted else [])}
+                    [{'id': 'medresearch', 'name': '醫學研究部主站'}] if 'medresearch' in permitted and not any(u['id']=='medresearch' for u in units) else [])}
 
 
 def target(key, kind, identifier, title, unit, href):

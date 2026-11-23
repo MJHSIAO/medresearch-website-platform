@@ -3,7 +3,7 @@
   'use strict';
   function mount({target,entry,session,base,api,message,onSaved,onBack,onHistory}){
     const {esc:e,badge}=window.MedManagementShell,original=entry.value;
-    const units=[...session.units,...(session.profile.role==='unit_admin'?[]:[{id:'medresearch',name:'醫學研究部'}])];
+    const units=[...session.units,...(session.profile.role==='unit_admin'||session.units.some(u=>u.id==='medresearch')?[]:[{id:'medresearch',name:'醫學研究部'}])];
     let file={...original.file},busy=false;
     const requested=new URLSearchParams(location.search).get('unit');
     const chosen=original.owner_unit_id||(units.some(u=>u.id===requested)?requested:units[0]?.id);

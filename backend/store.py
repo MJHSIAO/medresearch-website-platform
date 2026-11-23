@@ -183,6 +183,42 @@ class Store:
             state.setdefault('migrations', []).append(release)
             self._write(state)
 
+    def upgrade_department(self):
+        """Append the newly supported parent unit/people once, never overwrite edits."""
+        release = 'department-members-2026-11-23'
+        path = self.directory / 'state.json'
+        if not path.exists():
+            return
+        with self.lock:
+            state = self.read()
+            if release in state.get('migrations', []):
+                return
+            if 'pages' in state['content']:
+                page = next((p for p in state['content']['pages'] if p['id']=='department-about'), None)
+                current_units = self.collection(state, 'units')
+                if page and not any(u['id']=='medresearch' for u in state['content'].get('units', [])):
+                    current_units = [u for u in current_units if u['id']!='medresearch']
+                    seed = next(u for u in json.loads((self.source/'units.json').read_text(encoding='utf-8-sig')) if u['id']=='medresearch')
+                    if isinstance(page.get('summary'), str) and 1 <= len(page['summary'].strip()) <= 100:
+                        seed['short_description'] = page['summary']
+                    for section in page.get('sections', []):
+                        if section.get('title')=='本部簡介': seed['full_description']=section['content']
+                        if section.get('title')=='本部執掌': seed['purpose']=section['content']
+                        if section.get('title')=='發展目標': seed['goals']=[section['content']]
+                    state['content']['units'] = current_units + [seed]
+            for kind in ('units', 'people'):
+                if kind not in state['content']:
+                    continue
+                seeds = json.loads((self.source / f'{kind}.json').read_text(encoding='utf-8-sig'))
+                existing = {v['id'] for v in state['content'][kind]}
+                state['content'][kind].extend(v for v in seeds if v['id'] not in existing and
+                                            (v['id']=='medresearch' if kind=='units' else v.get('unit_id')=='medresearch'))
+            backup = self.directory / f'state.before-{release}.json'
+            if not backup.exists():
+                backup.write_bytes(path.read_bytes())
+            state.setdefault('migrations', []).append(release)
+            self._write(state)
+
     def collection(self, state, kind):
         if kind in state['content']:
             return copy.deepcopy(state['content'][kind])

@@ -47,6 +47,13 @@ for (const file of files) {
 // Resource cards are stored in JSON rather than literal HTML.
 const catalog = JSON.parse((await readFile(join(root, 'data/pages.json'), 'utf8')).replace(/^\uFEFF/, ''));
 const pageIds = new Set(catalog.map(page => page.id));
+const departmentUnits=JSON.parse((await readFile(join(root,'data/units.json'),'utf8')).replace(/^\uFEFF/,''));
+assert.equal(departmentUnits.filter(u=>u.id==='medresearch').length,1,'One parent department record');
+assert.ok(pageIds.has('department-about'));
+assert.equal(departmentUnits.find(u=>u.id==='medresearch').site_about_href,'content-page.html?page=department-about#department-members');
+const departmentPeople=JSON.parse((await readFile(join(root,'data/people.json'),'utf8')).replace(/^\uFEFF/,''));
+assert.equal(new Set(departmentPeople.map(p=>p.id)).size,departmentPeople.length,'Unique person IDs');
+assert.ok(departmentPeople.some(p=>p.unit_id==='medresearch'));
 async function checkResourceHref(href) {
   if (/^(?:[a-z]+:|#|\/\/)/i.test(href)) return;
   const url = new URL(href, 'https://local.invalid/');
