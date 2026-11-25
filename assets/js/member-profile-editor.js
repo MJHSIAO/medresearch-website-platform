@@ -24,7 +24,7 @@
    };
    target.querySelector('[data-publications]').onclick=async()=>{
      if(!saved){message('請先儲存成員，再管理研究成果。',true);return;}
-     const previous=document.activeElement,dialog=document.createElement('dialog');dialog.className='file-picker member-publication-dialog';dialog.setAttribute('aria-labelledby','member-publications-title');dialog.innerHTML=`<h2 id="member-publications-title">${e(person.name)}｜研究成果</h2><p>此處的新增、編輯與刪除會獨立儲存，不需再按成員表單的儲存。</p><button type="button" class="button secondary" data-close>關閉</button><div data-list></div>`;
+     const previous=document.activeElement,dialog=document.createElement('dialog');dialog.className='file-picker member-publication-dialog';dialog.setAttribute('aria-labelledby','member-publications-title');dialog.innerHTML=`<div class="member-publication-header"><h2 id="member-publications-title">${e(person.name)}｜研究成果</h2><button type="button" class="button secondary" data-close>關閉</button></div><div class="member-publication-body"><p>此處的新增、編輯與刪除會獨立儲存，不需再按成員表單的儲存。</p><div data-list></div></div>`;
      dialog.querySelector('[data-close]').onclick=()=>dialog.close();dialog.onclose=()=>{dialog.remove();previous?.focus();};document.body.append(dialog);dialog.showModal();
      try{await window.MedMemberPublications.mount({target:dialog.querySelector('[data-list]'),api,path:'manage/people/'+encodeURIComponent(person.id)+'/publications',manage:true,personName:person.name});}catch(error){message(error.message,true);}
    };
