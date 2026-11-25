@@ -262,6 +262,33 @@ class Store:
             state.setdefault('migrations',[]).append(release)
             self._write(state)
 
+    def repair_confirmed_live_profile_sections(self):
+        """Replay the approved live-only repair with backup; keep later edits intact."""
+        from datetime import datetime, timezone
+        import secrets
+        from .profile_sections import split_confirmed_live_profile
+        release='confirmed-live-profile-sections-2026-11-25'
+        path=self.directory/'state.json'
+        if not path.exists():return
+        with self.lock:
+            state=self.read()
+            if release in state.get('migrations',[]):return
+            # Back up the entire private state before making any change, including the marker.
+            backup=self.directory/f'state.before-{release}.json'
+            if not backup.exists():backup.write_bytes(path.read_bytes())
+            for person in state['content'].get('people',[]):
+                old_profile=person.get('profile')
+                new_profile=split_confirmed_live_profile(person['id'],old_profile)
+                if new_profile==old_profile:continue
+                original=copy.deepcopy(person)
+                stamp=datetime.now(timezone.utc).isoformat()
+                person['profile']=new_profile;person['updated_at']=stamp
+                for value in (original,person):
+                    if not any(h['kind']=='people' and h['id']==person['id'] and h['value']==value for h in state['history']):
+                        state['history'].append({'version':secrets.token_hex(12),'kind':'people','id':person['id'],'value':copy.deepcopy(value),'time':value.get('updated_at',stamp)})
+            state.setdefault('migrations',[]).append(release)
+            self._write(state)
+
     def collection(self, state, kind):
         if kind in state['content']:
             return copy.deepcopy(state['content'][kind])
