@@ -61,7 +61,7 @@
     "source_checked_at": "2026-11-23",
     "profile": {
       "english_name": "Dr. Chih-Hung Chang, MD. PhD.",
-      "introduction": "",
+      "introduction": "☆ 執行一件細胞治療之特管辦法，以髕骨下脂肪墊分離幹細胞治療退化性關節炎。\n☆ 申請兩件細胞治療之特管辦法。（骨髓幹細胞以治療軟骨缺損、皮下脂肪幹細胞治療退化性關節炎）\n☆ 建立再生醫學會網站與臉書，以推廣亞東醫院之細胞治療。\n☆ 於衛生福利部以專家立場，協助推廣細胞治療（https://celltherapy.mohw.gov.tw/education.htm）",
       "positions": "亞東紀念醫院 研究副院長\n元智大學生技所 教授\n台灣再生醫學會 榮譽理事\n台灣骨科醫學會 理事\n台灣細胞醫療協會 理事\n台灣肩肘醫學會 理事\n中華民國關節鏡與膝關節醫學會 理事\n台灣電腦輔助骨科手術學會常務 理事",
       "education": "國立台灣大學醫學院醫學系 醫學士\n國立台灣大學醫學工程研究所 博士\n國際外科學院 院士",
       "experience": "台大醫院骨科部 住院醫師\n台大醫院骨科部 總醫師\n台大醫院骨科部 研究員\n美國梅約醫學中心關節重建部 研究員\n台大醫院骨科部 兼任主治醫師\n台大醫學院骨科 兼任助理教授\n台灣骨科研究學會 常務理事\n台灣骨科研究學會 秘書長\n台灣再生醫學會 理事\n台灣再生醫學會 秘書長\n台灣肩肘醫學會 秘書長\n台灣骨科創傷醫學會 常務理事\n亞東紀念醫院外科部 主任\n亞東紀念醫院骨科部關節重建科 主任\n亞東紀念醫院骨科部 主任",
@@ -72,7 +72,14 @@
       "photo_href": "assets/images/people/person-medresearch-vice.jpg",
       "doctor_href": "https://www.femh.org.tw/section/sectionDetail2?CID=0287&&DoctorID=51199",
       "enabled": true,
-      "links": []
+      "links": [],
+      "honors": "",
+      "patents": "☆ 發明專利三件：\n(A) 虹吸式生物反應器 (發明第I286158號)\n(B) 具有誘導能力之骨水泥 (發明第I414326號)\n(C) 複合性骨水泥 (發明第I414327號)",
+      "legacy_activity_source": "☆ 執行一件細胞治療之特管辦法，以髕骨下脂肪墊分離幹細胞治療退化性關節炎。\n☆ 申請兩件細胞治療之特管辦法。（骨髓幹細胞以治療軟骨缺損、皮下脂肪幹細胞治療退化性關節炎）\n☆ 建立再生醫學會網站與臉書，以推廣亞東醫院之細胞治療。\n☆ 於衛生福利部以專家立場，協助推廣細胞治療（https://celltherapy.mohw.gov.tw/education.htm）",
+      "author_names": [
+        "Chih-Hung Chang"
+      ],
+      "sections_version": 1
     },
     "profile_source_url": "https://depart.femh.org.tw/medresearch/ViceR.html",
     "profile_source_updated_at": "2025-07-03",
@@ -105,7 +112,13 @@
       "photo_href": "assets/images/people/person-medresearch-director.jpg",
       "doctor_href": "https://www.femh.org.tw/section/sectionDetail2.aspx?CID=0401&&DoctorID=90116",
       "enabled": true,
-      "links": []
+      "links": [],
+      "honors": "☆ 2007/06 Cardiovascular Young Investigator Award of Society of Nuclear Medicine\n☆ 2015/08 有庠傑出教授獎\n☆ 2022/09 中華民國血脂及動脈硬化學會傑出研究論文獎\n☆ 2023/05 中華民國心臟學會丁農獎\n☆ 2023/10 未來科技獎\n☆ 2023/12 國家新創獎-學研新創獎\n☆ 2024/12 國家新創獎-學研新創獎\n☆ 2024/12 國家新創獎-學研精進獎\n☆ 2024 風傳媒AI醫療領航大獎「評審團特別獎」",
+      "patents": "",
+      "author_names": [
+        "Yen-Wen Wu"
+      ],
+      "sections_version": 1
     },
     "profile_source_url": "https://depart.femh.org.tw/medresearch/DirMR.html",
     "profile_source_updated_at": "2025-07-03",
@@ -138,7 +151,11 @@
       "photo_href": "assets/images/people/person-medresearch-physician.jpg",
       "doctor_href": "https://www.femh.org.tw/section/sectionDetail2.aspx?CID=0406&&DoctorID=97737",
       "enabled": true,
-      "links": []
+      "links": [],
+      "honors": "",
+      "patents": "",
+      "author_names": [],
+      "sections_version": 1
     },
     "profile_source_url": "https://www.femh.org.tw/section/sectionDetail2.aspx?CID=0406&&DoctorID=97737",
     "profile_source_updated_at": "",
@@ -171,7 +188,13 @@
       "photo_href": "assets/images/people/person-medresearch-lee.png",
       "doctor_href": "",
       "enabled": true,
-      "links": []
+      "links": [],
+      "honors": "",
+      "patents": "",
+      "author_names": [
+        "Ming-Yi Lee"
+      ],
+      "sections_version": 1
     },
     "profile_source_url": "https://depart.femh.org.tw/medresearch/MYL.html",
     "profile_source_updated_at": "2025-07-03",
@@ -204,7 +227,13 @@
       "photo_href": "",
       "doctor_href": "",
       "enabled": true,
-      "links": []
+      "links": [],
+      "honors": "",
+      "patents": "",
+      "author_names": [
+        "San-Fang Chou"
+      ],
+      "sections_version": 1
     },
     "profile_source_url": "https://depart.femh.org.tw/medresearch/SFC.html",
     "profile_source_updated_at": "2025-07-03",
@@ -237,7 +266,13 @@
       "photo_href": "assets/images/people/person-medresearch-chang.jpg",
       "doctor_href": "",
       "enabled": true,
-      "links": []
+      "links": [],
+      "honors": "☆ 2024 經濟部iPAS 初級巨量資料分析師證照\n☆ 2024 TQC python 網頁擷取及資料分析證照\n☆ 2024 商業數據分析師IBM SPSS 軟體認證\n☆ 2022 台灣精準醫療種子人才訓練計畫\n☆ 2021 實驗室認證規範ISO/IEC 17025訓練\n☆ 2020 乳癌防治基金會第五屆優秀論文佳作獎\n☆ 2010 The 36th La Jolla Immunology Conference 優秀海報論文獎",
+      "patents": "",
+      "author_names": [
+        "Chiung-Fang Chang"
+      ],
+      "sections_version": 1
     },
     "profile_source_url": "https://depart.femh.org.tw/medresearch/CFC.html",
     "profile_source_updated_at": "2025-12-12",
@@ -270,7 +305,13 @@
       "photo_href": "assets/images/people/person-medresearch-chen.jpg",
       "doctor_href": "",
       "enabled": true,
-      "links": []
+      "links": [],
+      "honors": "☆ 2007 Outstanding Paper Award, DMGM, NHRI, Taiwan\n☆ 2013 ARVO International Travel Grant\n☆ 2024 Outstanding Paper Award, FEMH, Taiwan",
+      "patents": "",
+      "author_names": [
+        "Tsan-Chi Chen"
+      ],
+      "sections_version": 1
     },
     "profile_source_url": "https://depart.femh.org.tw/medresearch/TCC.html",
     "profile_source_updated_at": "2026-08-07",
@@ -303,7 +344,13 @@
       "photo_href": "assets/images/people/person-medresearch-liao.jpg",
       "doctor_href": "",
       "enabled": true,
-      "links": []
+      "links": [],
+      "honors": "☆ 2026台灣創新技術博覽會發明競賽, CXCL14為基礎之促進軟骨再生的組合物及方法, 銀牌獎\n☆ 2025: AI-Enhanced Dual-Function Exosome Therapy BesKne-ExoR: A Precision Regenerative Strategy for Osteoarthritis.\n☆ 2025: National Innovation Award 2025, Oral Presentation, AI-Powered Dual-Action BesKne-ExoR Extracellular Vesicle Therapy: Precision Regeneration, Best Potential Award US $2,000, Trophy.\n☆ 2024: Manufacture and Medical Technology of Dual-targeted RNA-enriched Extracellular Vesicles, 2024 Future Tech Award\n☆ 2023: 15th Pan Pacific Symposium on Stem Cells and Cancer Research, PPSSC, Oral Presentation, US $2,000\n☆ 2020: Foundation for the Advanced of Outstanding Scholarship: Traveling Expenses and Accommodation for the International Conference, US $3,000\n☆ 2015: Ministry of Science and Technology: Postdoctoral Research Abroad Program (PRAP), US $87,000",
+      "patents": "（Patent 1）\n我方編號 FEH0001PRO\n案件名稱(英) NEW APPROACH FOR CARTILAGE REGENERATION\n申請人(中) 醫療財團法人徐元智先生醫藥基金會亞東紀念醫院申請人(英) FAR EASTERN MEMORIAL HOSPITAL\n發明人(英) Hsiu-Jung Liao, Chih-Hung Chang, Yi-Shan Shen, Chi-Ying Huang\n申請日期 2023/09/07 申請案號 63/581,085\n（Patent 2）\n我方編號 FEH0002PRO\n案件名稱(英) METHOD AND PHARMACEUTICAL COMPOSITION FOR TREATING A CARTILAGE DAMAGE USING SOX9 GENE\n申請人(中) 醫療財團法人徐元智先生醫藥基金會亞東紀念醫院,國立陽明交通大學\n申請人(英) FAR EASTERN MEMORIAL HOSPITAL, National Yang Ming Chiao Tung University\n發明人(英) Hsiu-Jung Liao, Chih-Hung Chang, Chi-Ying Huang ,Ly James Lee, Tai-Shan Cheng, Sin-Yu Chen, Andrew Stephen Lee\n申請日期 2023/06/08 申請案號 63/506,917\n（Patent 3）\n我方編號 FEH0007PRO\n案件名稱(英) METHOD AND PHARMACEUTICAL COMPOSITION FOR CARTILAGE REGENERATION\n申請人(中) 醫療財團法人徐元智先生醫藥基金會亞東紀念醫院\n申請人(英) FAR EASTERN MEMORIAL HOSPITAL\n申請日期 2024/04/05 申請案號 63/575,293",
+      "author_names": [
+        "Hsiu-Jung Liao"
+      ],
+      "sections_version": 1
     },
     "profile_source_url": "https://depart.femh.org.tw/medresearch/HJL.html",
     "profile_source_updated_at": "2026-10-27",
@@ -336,7 +383,11 @@
       "photo_href": "",
       "doctor_href": "",
       "enabled": true,
-      "links": []
+      "links": [],
+      "honors": "",
+      "patents": "",
+      "author_names": [],
+      "sections_version": 1
     },
     "profile_source_url": "https://depart.femh.org.tw/medresearch/staff.html",
     "profile_source_updated_at": "",

@@ -81,3 +81,7 @@
 依使用者提供的 PNG，新增 assets/images/department-organization.png（SHA256 C0AED2331A2C35E14DC964F488F52247FCDE6FBAABC1B1A04CAFD6E090AB583A）。data/pages.json 的查看組織架構改至此圖，data-service.js 相容舊私有資料中的 structure.html 連結，resource-directory.js 與 resource-directory.css 提供同頁原生 dialog、關閉／Esc 與焦點返回、手機圖內捲動及文字等價說明。保留舊頁來源 metadata，未變更任何隸屬單位資料。tests/check_department_search.mjs 與既有連結檢查同步更新。
 
 組織圖已實測桌機／320px 同頁開啟、Enter 操作、Esc 關閉及焦點返回；手機 document scrollWidth 為 305px（視窗 320px），700px 圖片僅在 281px 圖內區域捲動，照片原圖載入寬度 1448px。
+
+## 2026-11-25 本機後續修改
+
+榮譽與專利已分開管理，論文與成果改名研究成果並依年份由新到舊，新增作者寫法與粗體／底線編輯。本文前面的初始合併欄位與純文字敘述保留為版本紀錄，現行操作見 [研究成果編輯](profile-research-editing.md)。此後續修改及移除自動項目符號已經使用者確認，授權一併提交與推送。

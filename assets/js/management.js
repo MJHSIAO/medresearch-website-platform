@@ -102,7 +102,7 @@
     }
     if(kind==='people'){
       if(!document.getElementById('member-profile-style')){const style=document.createElement('link');style.id='member-profile-style';style.rel='stylesheet';style.href=new URL('assets/css/member-profile.css',base);document.head.append(style);}
-      for(const [name,file] of [['MedMemberPublications','member-publications.js'],['MedMemberProfileEditor','member-profile-editor.js']])if(!window[name])await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=new URL('assets/js/'+file,base);script.onload=resolve;script.onerror=()=>reject(Error('個人介紹編輯器載入失敗'));document.head.append(script);});
+      for(const [name,file] of [['MedMemberText','member-text.js'],['MedMemberPublications','member-publications.js'],['MedMemberProfileEditor','member-profile-editor.js']])if(!window[name])await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=new URL('assets/js/'+file,base);script.onload=resolve;script.onerror=()=>reject(Error('個人介紹編輯器載入失敗'));document.head.append(script);});
       if(!views.isCurrent(serial))return;
     }
     const v=kind==='units'?{...entry.value,short_name:entry.value.short_name||''}:entry.value; const editable={}; const lists={services:'主要業務（每行一項）',goals:'發展目標（每行一項）',research_fields:'研究領域（每行一項）'};

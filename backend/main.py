@@ -88,6 +88,7 @@ store.upgrade_biobank_documents()
 store.retire_demo_documents()
 store.upgrade_department()
 store.upgrade_member_profiles()
+store.upgrade_profile_sections()
 install(app, sys.modules[__name__], store)
 
 

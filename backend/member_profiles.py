@@ -7,8 +7,8 @@ from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse
 
 PROFILE_LIMITS = {'english_name':200,'introduction':20000,'positions':10000,'education':10000,
-                  'experience':10000,'research_fields':10000,'achievements':20000,
-                  'email':200,'phone':100,'photo_href':2048,'doctor_href':2048}
+                  'experience':10000,'research_fields':10000,'achievements':20000,'honors':20000,'patents':20000,
+                  'legacy_activities':20000,'email':200,'phone':100,'photo_href':2048,'doctor_href':2048}
 
 def web_url(value):
     if not isinstance(value,str) or len(value)>2048 or any(c in value for c in '\\<>\r\n\t\"\'') or value!=value.strip():
@@ -23,9 +23,18 @@ def validate_profile(value, state, store):
     if profile is None:return
     if not isinstance(profile,dict) or type(profile.get('enabled',False)) is not bool:
         raise HTTPException(422,'個人介紹格式不正確')
+    if 'achievements' in profile and profile.get('sections_version')!=1:
+        # Old history restores and existing clients may still send the combined field.
+        import json
+        from .profile_sections import split_profile
+        seed=next((p.get('profile',{}) for p in json.loads((store.source/'people.json').read_text(encoding='utf-8-sig')) if p['id']==value['id']),None)
+        profile=split_profile(profile,seed);value['profile']=profile
     for key,limit in PROFILE_LIMITS.items():
         if not isinstance(profile.get(key,''),str) or len(profile.get(key,''))>limit:
             raise HTTPException(422,f'個人介紹 {key} 最多 {limit} 字')
+    names=profile.get('author_names',[])
+    if not isinstance(names,list) or len(names)>20 or any(not isinstance(n,str) or not 1<=len(n.strip())<=200 for n in names):
+        raise HTTPException(422,'作者姓名最多 20 種寫法，每行 1–200 字')
     if profile.get('doctor_href') and not web_url(profile['doctor_href']):
         raise HTTPException(422,'院方醫師介紹只接受完整 HTTP／HTTPS 網址')
     photo=profile.get('photo_href','')
@@ -67,7 +76,18 @@ def publication_value(value,person_id,identifier):
     href=value.get('href','')
     if href and not web_url(href):raise HTTPException(422,'論文連結須為完整 HTTP／HTTPS 網址')
     if not isinstance(href,str):raise HTTPException(422,'論文連結格式不正確')
-    return {'id':identifier,'person_id':person_id,'citation':citation.strip(),'year':year,'category':category.strip(),'href':href}
+    runs=value.get('runs',[])
+    if not isinstance(runs,list) or len(runs)>5000:
+        raise HTTPException(422,'成果格式不正確')
+    normalized=[]
+    for run in runs:
+        if not isinstance(run,dict) or set(run)-{'text','bold','underline'} or not isinstance(run.get('text'),str) or any(type(run.get(mark,False)) is not bool for mark in ('bold','underline')):
+            raise HTTPException(422,'成果僅支援文字、粗體與底線')
+        if len(run['text'])>5000:raise HTTPException(422,'成果格式文字過長')
+        normalized.append({'text':run['text'],'bold':run.get('bold',False),'underline':run.get('underline',False)})
+    if runs and ''.join(r['text'] for r in normalized)!=citation:
+        raise HTTPException(422,'成果格式與引用文字不一致，請重新載入')
+    return {'id':identifier,'person_id':person_id,'citation':citation,'year':year,'category':category.strip(),'href':href,'runs':normalized}
 
 def install(app,runtime,store,context,body):
     from .management import allowed,revision,audit,now
@@ -80,9 +100,12 @@ def install(app,runtime,store,context,body):
     def page_result(state,identifier,page,year,q,limit=20):
         all_items=[p for p in store.collection(state,'publications') if p['person_id']==identifier]
         years=sorted({p['year'] for p in all_items if p.get('year')},reverse=True)
+        # Stable sort preserves the existing order within a year; undated records come last.
+        all_items.sort(key=lambda p:int(p.get('year') or 0),reverse=True)
         selected=[p for p in all_items if (not year or p.get('year')==year) and q.casefold() in p['citation'].casefold()]
+        person=next(p for p in store.collection(state,'people') if p['id']==identifier)
         pages=max(1,(len(selected)+limit-1)//limit);page=min(max(page,1),pages)
-        return {'items':selected[(page-1)*limit:page*limit],'total':len(selected),'all_total':len(all_items),'page':page,'pages':pages,'years':years}
+        return {'items':selected[(page-1)*limit:page*limit],'total':len(selected),'all_total':len(all_items),'page':page,'pages':pages,'years':years,'author_names':[person['name'],*person.get('profile',{}).get('author_names',[])]}
     @app.get('/api/people/{identifier}')
     async def public_profile(identifier:str):
         state=store.read();person,unit=public_member(store,state,identifier)

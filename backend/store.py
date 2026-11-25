@@ -245,6 +245,23 @@ class Store:
             state.setdefault('migrations',[]).append(release)
             self._write(state)
 
+    def upgrade_profile_sections(self):
+        from .profile_sections import split_profile
+        release='profile-sections-2026-11-25'
+        path=self.directory/'state.json'
+        if not path.exists():return
+        with self.lock:
+            state=self.read()
+            if release in state.get('migrations',[]):return
+            seeds={p['id']:p.get('profile',{}) for p in json.loads((self.source/'people.json').read_text(encoding='utf-8-sig'))}
+            for person in state['content'].get('people',[]):
+                if isinstance(person.get('profile'),dict):
+                    person['profile']=split_profile(person['profile'],seeds.get(person['id']))
+            backup=self.directory/f'state.before-{release}.json'
+            if not backup.exists():backup.write_bytes(path.read_bytes())
+            state.setdefault('migrations',[]).append(release)
+            self._write(state)
+
     def collection(self, state, kind):
         if kind in state['content']:
             return copy.deepcopy(state['content'][kind])
