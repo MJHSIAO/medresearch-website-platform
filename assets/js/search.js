@@ -6,7 +6,7 @@
   const normalize = (value) => text(value).normalize('NFKC').trim().toLowerCase();
   const unitHref = (unit) => `${root()}/${unit.site_href || `unit.html?unit=${encodeURIComponent(unit.slug)}`}`;
 
-  function buildIndex(site, units, people, news, pages=[], documents=[]) {
+  function buildIndex(site, units, people, news, pages=[], documents=[], organization={}) {
     const publicUnits = units.filter(D.publicUnit);
     const byId = new Map(publicUnits.map((unit) => [unit.id, unit]));
     const department=units.find(u=>u.id==='medresearch'&&D.isPublic(u)&&u.status==='active');
@@ -16,6 +16,7 @@
       body: text([unit.full_description, unit.purpose, unit.goals, unit.services, unit.research_fields]),
       href: unitHref(unit), newTab: true
     }));
+    for(const entry of (organization.supervised||[]).filter(n=>D.isPublic(n)&&n.status==='active'))entries.push({type:'督導單位',title:entry.label,summary:entry.summary,body:text([entry.introduction,entry.responsibilities]),href:`${root()}/content-page.html?page=governance&supervised=${encodeURIComponent(entry.id)}`});
     for (const unit of publicUnits) {
       for (const section of unit.special_sections || []) {
         entries.push({type: '單位資訊', title: `${unit.name}｜${section.title}`, summary: section.intro,
@@ -68,7 +69,7 @@
     document.getElementById('search-title').textContent = `搜尋「${query}」`;
     document.title = `搜尋「${query}」｜醫學研究部`;
     try {
-      const sources = await Promise.all([D.load('site'), D.getUnits(), D.load('people'), D.getNews(), D.load('pages'), D.load('documents')]);
+      const sources = await Promise.all([D.load('site'), D.getUnits(), D.load('people'), D.getNews(), D.load('pages'), D.load('documents'), D.load('organization')]);
       const results = search(buildIndex(...sources), query);
       count.textContent = `共找到 ${results.length} 筆結果（依相關程度排序）`;
       if (!results.length) { target.innerHTML = '<div class="empty-state">找不到符合條件的內容，請嘗試其他關鍵字。</div>'; return; }

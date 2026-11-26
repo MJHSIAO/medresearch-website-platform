@@ -8,21 +8,17 @@
     : `${root()}/${String(value).replace(/^\.?\//, '')}`;
 
 
-    const drawings = {
-      'academic-office':'M4 4h7v16H4zm7 0h9v16h-9M7 8h1m-1 4h1m6-4h3m-3 4h3',
-      'core-laboratory':'M9 3h5v7H9zm2 7v4m5-7a6 6 0 0 1-2 12H7m1-4H5v6h15M8 21v-3',
-      'animal-laboratory':'M8 14c2-4 6-4 8 0l2 3c2 4-4 5-6 3-2 2-8 1-6-3zm-3-4c-3 0-3-5-1-5s3 5 1 5m5-4c-2 0-3-5-1-5s3 5 1 5m5 0c-2 0-1-5 1-5s1 5-1 5m4 4c-2 0-1-5 1-5s1 5-1 5',
-      'ai-center':'M7 7h10v10H7zm3 3h4v4h-4M9 3v4m6-4v4M9 17v4m6-4v4M3 9h4m-4 6h4m10-6h4m-4 6h4',
-      'clinical-trial-center':'M8 4h8v4H8zm0 2H5v15h14V6h-3M9 13h6m-3-3v6',
-      'cell-therapy-center':'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18m-3 7a3 3 0 1 0 6 0 3 3 0 0 0-6 0m-2 7h1m8 0h1',
-      'innovation-ip-center':'M8 14a6 6 0 1 1 8 0v3H8zm1 7h6m-3-12v5M3 3l2 2m14 0 2-2M1 11h3m16 0h3',
-      'biobank':'M9 3h6m-5 0v9l-4 6a2 2 0 0 0 2 3h8a2 2 0 0 0 2-3l-4-6V3M8 16h8m-6 2h1m2-3h1'
-    };
+  const drawings = { 'biobank': 'M9 3h6m-5 0v9l-4 6a2 2 0 0 0 2 3h8a2 2 0 0 0 2-3l-4-6V3M8 16h8m-6 2h1m2-3h1' };
+  const referenceIconIds = new Set(['academic-office','clinical-trial-center','core-laboratory','animal-laboratory','cell-therapy-center','ai-center','innovation-ip-center']);
+  function unitIcon(id) {
+    if (referenceIconIds.has(id)) return `<svg class="unit-reference-icon" viewBox="0 0 74 74" aria-hidden="true" focusable="false"><use href="${assetUrl('assets/images/unit-icons.svg')}#${id}"></use></svg>`;
+    return `<svg class="unit-reference-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><path d="${drawings[id]||''}"></path></svg>`;
+  }
   function unitCard(unit, heading='h2', index=0) {
     const tag=heading==='h3'?'h3':'h2';
     const href=unit.site_href?`${root()}/${unit.site_href}`:`${root()}/unit.html?unit=${encodeURIComponent(unit.slug)}`;
     const name=D.escapeHTML(unit.name);
-    return `<article class="directory-card"><div class="directory-card-top"><span class="directory-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="${drawings[unit.id]||drawings['academic-office']}"></path></svg></span><span class="directory-number" aria-hidden="true">${String(index+1).padStart(2,'0')}</span></div><${tag}><a href="${D.escapeHTML(href)}" target="_blank" rel="noopener" aria-label="${name}（另開新分頁）">${name}</a></${tag}><p>${D.escapeHTML(unit.short_description)}</p><div class="directory-card-footer"><a class="directory-primary" href="${D.escapeHTML(href)}" target="_blank" rel="noopener" aria-label="認識${name}（另開新分頁）">認識單位<span class="directory-arrow" aria-hidden="true">→</span></a><a class="directory-source" href="${D.escapeHTML(unit.source_url)}" target="_blank" rel="noopener" aria-label="${name}原官網（外部連結，另開新分頁）">原官網<span class="external-label">（外部連結）</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M14 3h7v7M10 14 21 3M21 14v6H4V3h6"/></svg></a></div></article>`;
+    return `<article class="directory-card"><div class="directory-card-top"><span class="directory-icon" aria-hidden="true">${unitIcon(unit.id)}</span><span class="directory-number" aria-hidden="true">${String(index+1).padStart(2,'0')}</span></div><${tag}><a href="${D.escapeHTML(href)}" target="_blank" rel="noopener" aria-label="${name}（另開新分頁）">${name}</a></${tag}><p>${D.escapeHTML(unit.short_description)}</p><div class="directory-card-footer"><a class="directory-primary" href="${D.escapeHTML(href)}" target="_blank" rel="noopener" aria-label="認識${name}（另開新分頁）">認識單位<span class="directory-arrow" aria-hidden="true">→</span></a><a class="directory-source" href="${D.escapeHTML(unit.source_url)}" target="_blank" rel="noopener" aria-label="${name}原官網（外部連結，另開新分頁）">原官網<span class="external-label">（外部連結）</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M14 3h7v7M10 14 21 3M21 14v6H4V3h6"/></svg></a></div></article>`;
   }
 
   function currentFile() {
@@ -84,13 +80,21 @@
 
   async function renderShell() {
     const site = await D.load('site');
+    const primaryNavigation=[...site.navigation];
+    // Existing private site settings may predate the new public directory.
+    if(!primaryNavigation.some(n=>n.href==='content-page.html?page=governance')){
+      const index=primaryNavigation.findIndex(n=>n.href==='units.html');
+      primaryNavigation.splice(index<0?primaryNavigation.length:index+1,0,{label:'督導單位',href:'content-page.html?page=governance'});
+    }
     const header = document.getElementById('site-header');
     const footer = document.getElementById('site-footer');
     if (header) {
       const current = currentFile();
-      const navigation = [...site.navigation, { label: '全站搜尋', href: 'search.html' }];
+      const navigation = [...primaryNavigation, { label: '全站搜尋', href: 'search.html' }];
       const links = navigation.map((item) => {
-        const active = (current === item.href.split('?')[0] && (!item.href.includes('?') || location.search === '?'+item.href.split('?')[1])) || (current === 'unit.html' && item.href === 'units.html');
+        const targetQuery=new URLSearchParams(item.href.split('?')[1]||'');
+        const currentQuery=new URLSearchParams(location.search);
+        const active = (current === item.href.split('?')[0] && [...targetQuery].every(([key,value])=>currentQuery.get(key)===value)) || (current === 'unit.html' && item.href === 'units.html');
         return `<li><a href="${root()}/${item.href}"${active ? ' aria-current="page"' : ''}>${D.escapeHTML(item.label)}</a></li>`;
       }).join('');
       header.innerHTML = `
@@ -155,7 +159,7 @@
       const memberPage = document.body.dataset.page === 'member-profile';
       footer.innerHTML = `<div class="site-footer"><div class="container footer-grid">
         <div><h2>${D.escapeHTML(site.name)}</h2><p>${D.escapeHTML(site.description)}</p>${memberPage?'':'<p><strong>資料說明：</strong>本版依醫學研究部原官網整理，最新規章、表單及聯絡資訊仍以官方來源為準。</p>'}</div>
-        <div><h3>網站導覽</h3><ul>${site.navigation.map((item) => `<li><a href="${root()}/${item.href}">${D.escapeHTML(item.label)}</a></li>`).join('')}</ul></div>
+        <div><h3>網站導覽</h3><ul>${primaryNavigation.map((item) => `<li><a href="${root()}/${item.href}">${D.escapeHTML(item.label)}</a></li>`).join('')}</ul></div>
         <div><h3>聯絡資訊</h3><ul><li>${D.escapeHTML(site.contact.unit)}</li><li>${D.escapeHTML(site.contact.address)}</li><li>${D.escapeHTML(site.contact.phone)}</li><li><a href="${D.escapeHTML(site.source_url)}" target="_blank" rel="noopener">醫學研究部${memberPage?'相關資訊':'原官網'} ↗</a></li></ul></div>
       </div><div class="container footer-bottom">© 2026 亞東紀念醫院 醫學研究部 人工智慧中心</div></div>`;
     }
@@ -291,7 +295,13 @@
     document.title = `${page.title}｜醫學研究部`;
     document.querySelectorAll('[data-page-title]').forEach((node) => { node.textContent = page.title; });
     const target = document.getElementById('content-page-body');
-    if (target && page.groups) return window.MedResourceDirectory.render(target,D.resolveUnitCards(page,await D.getUnits(),id==='department-about'?await D.load('people'):undefined));
+    if (target && page.groups) {
+      let resolved=D.resolveUnitCards(page,await D.getUnits(),id==='department-about'?await D.load('people'):undefined);
+      if(window.MedDepartmentDirectory)resolved=await window.MedDepartmentDirectory.prepare(resolved);
+      window.MedResourceDirectory.render(target,resolved);
+      window.MedDepartmentDirectory?.finish(target,resolved);
+      return;
+    }
     if (target && id === 'downloads') return window.MedDocuments.render({target,page,D});
     if (target) {
       target.innerHTML = `<span class="eyebrow">${D.escapeHTML(page.eyebrow)}</span><h1>${D.escapeHTML(page.title)}</h1><p class="page-kicker">${D.escapeHTML(page.summary)}</p>${page.sections.map((section) => `<section><h2>${D.escapeHTML(section.title)}</h2><p>${D.escapeHTML(section.content)}</p></section>`).join('')}<div class="callout"><strong>資料來源</strong><p>本頁依醫學研究部官網整理，查核日期為 2026-09-01。正式規章、表單版本與申請方式請以原始頁面為準。</p><p><a class="button secondary" href="${D.escapeHTML(page.source_url)}" target="_blank" rel="noopener">前往官方來源 ↗</a></p></div>`;
@@ -333,7 +343,7 @@
     }
   });
 
-  window.MedUI = { unitCard, newsCard, renderShell, assetUrl, setupPageNavigation };
+  window.MedUI = { unitCard, unitIcon, newsCard, renderShell, assetUrl, setupPageNavigation };
 })();
 
 

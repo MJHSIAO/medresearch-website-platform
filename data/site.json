@@ -40,6 +40,10 @@
                            "href":  "units.html"
                        },
                        {
+                           "label":  "督導單位",
+                           "href":  "content-page.html?page=governance"
+                       },
+                       {
                            "label":  "聯絡資訊",
                            "href":  "contact.html"
                        }

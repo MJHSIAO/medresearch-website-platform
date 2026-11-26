@@ -69,7 +69,7 @@
       const href=card.actions?.find(a=>/^unit\.html\?unit=/.test(a.href))?.href;
       const id=href?.match(/^unit\.html\?unit=([a-z0-9-]+)(?:[&#]|$)/)?.[1];
       const unit=units.find(u=>(u.id===id||u.slug===id)&&publicUnit(u));
-      return id?(unit?{...card,title:unit.name,text:unit.short_description}:null):card;
+      return id?(unit?{...card,title:unit.name,text:unit.short_description,icon_unit_id:unit.id}:null):card;
     }).filter(Boolean)}))};
   }
 

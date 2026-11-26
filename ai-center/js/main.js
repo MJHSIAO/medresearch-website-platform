@@ -6,6 +6,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   buildNavigation();
   await renderAuthNavigation();
   buildFooter();
+  document.querySelectorAll('.brand__mark').forEach(mark => {
+    mark.classList.add('brand__mark--reference');
+    mark.innerHTML = '<svg viewBox="0 0 74 74" width="32" height="32" aria-hidden="true" focusable="false"><use href="../assets/images/unit-icons.svg#ai-center"></use></svg>';
+  });
   setupMobileNavigation();
   await renderManagedContent();
   setupContactForm();

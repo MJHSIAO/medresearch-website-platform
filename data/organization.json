@@ -1,0 +1,313 @@
+{
+  "image": "assets/images/department-organization.png",
+  "width": 1536,
+  "height": 1024,
+  "parent_unit_id": "medresearch",
+  "affiliated": [
+    {
+      "unit_id": "academic-office",
+      "rect": [
+        46,
+        425,
+        157,
+        126
+      ],
+      "children": [
+        {
+          "label": "教育訓練組"
+        },
+        {
+          "label": "學術倫理組"
+        },
+        {
+          "label": "研究發展組"
+        },
+        {
+          "label": "研發成果組"
+        }
+      ]
+    },
+    {
+      "unit_id": "clinical-trial-center",
+      "rect": [
+        210,
+        425,
+        136,
+        126
+      ],
+      "children": [
+        {
+          "label": "行政管理組"
+        },
+        {
+          "label": "試驗執行組"
+        },
+        {
+          "label": "審查稽核小組"
+        },
+        {
+          "label": "教育訓練組"
+        }
+      ]
+    },
+    {
+      "unit_id": "core-laboratory",
+      "rect": [
+        352,
+        425,
+        143,
+        126
+      ],
+      "children": [
+        {
+          "label": "第一、二、三共同研究室"
+        },
+        {
+          "label": "生物安全第二等級實驗室"
+        },
+        {
+          "label": "研究資料分析室"
+        },
+        {
+          "unit_id": "biobank",
+          "rect": [
+            408,
+            757,
+            154,
+            52
+          ]
+        },
+        {
+          "label": "精準醫學實驗室"
+        }
+      ]
+    },
+    {
+      "unit_id": "animal-laboratory",
+      "rect": [
+        502,
+        425,
+        129,
+        126
+      ],
+      "children": [
+        {
+          "label": "行政管理組"
+        },
+        {
+          "label": "小型動物研究室"
+        },
+        {
+          "label": "中型動物研究室"
+        },
+        {
+          "label": "大型動物研究室"
+        }
+      ]
+    },
+    {
+      "unit_id": "cell-therapy-center",
+      "rect": [
+        637,
+        425,
+        115,
+        126
+      ],
+      "children": []
+    },
+    {
+      "unit_id": "ai-center",
+      "rect": [
+        759,
+        425,
+        119,
+        126
+      ],
+      "children": []
+    },
+    {
+      "unit_id": "innovation-ip-center",
+      "rect": [
+        884,
+        425,
+        123,
+        126
+      ],
+      "children": []
+    }
+  ],
+  "supervised": [
+    {
+      "label": "學術倫理委員會",
+      "rect": [
+        1064,
+        369,
+        424,
+        52
+      ],
+      "id": "research-ethics",
+      "summary": "維護研究誠信與學術倫理，辦理規範研議、案件審議、諮詢輔導及教育訓練。",
+      "introduction": "學術倫理委員會以維護研究品質、促進研究人員自律及建立公正審議程序為宗旨，保障學術倫理案件當事人的權益。",
+      "responsibilities": [
+        "研議院內學術倫理規範，受理及審議相關案件。",
+        "提供學術倫理諮詢、建議與輔導。",
+        "規劃學術倫理教育訓練。",
+        "辦理其他與學術倫理相關事項。"
+      ],
+      "source_note": "原頁列有組織章程（2022-11-21 修訂）、案件處理與教育課程等規定及通報管道。現行版本與受理方式請依原官網確認。",
+      "status": "active",
+      "visibility": "public",
+      "source_url": "https://depart.femh.org.tw/medresearch/ReseachEthics.html",
+      "source_updated_at": "2026-11-11",
+      "source_checked_at": "2026-11-26"
+    },
+    {
+      "label": "受試者保護諮議委員會",
+      "rect": [
+        1064,
+        431,
+        424,
+        52
+      ],
+      "id": "human-research-advisory",
+      "summary": "規劃受試者保護策略與制度，督導保護工作並提供諮詢，提升臨床研究品質。",
+      "introduction": "受試者保護諮議委員會為受試者保護中心的指導單位，透過保護計畫的規劃及執行監督，維護臨床研究受試者的安全、權益與福祉。",
+      "responsibilities": [
+        "規劃受試者保護策略、規章與作業程序。",
+        "督導受試者保護工作並提升執行品質。",
+        "受理受試者保護事項的建議與諮詢。",
+        "審查研究人員違規行為舉發案件。"
+      ],
+      "source_note": "依原頁組織章程（2022-05-18 修訂）整理；現行制度與程序請核對原官網。",
+      "status": "active",
+      "visibility": "public",
+      "source_url": "https://depart.femh.org.tw/medresearch/RecipCommittee.html",
+      "source_updated_at": "2025-07-03",
+      "source_checked_at": "2026-11-26"
+    },
+    {
+      "label": "受試者保護中心",
+      "rect": [
+        1064,
+        493,
+        424,
+        52
+      ],
+      "id": "human-research-protection",
+      "summary": "整合跨單位受試者保護業務，推動研究品質改善，受理相關諮詢、申訴與建議。",
+      "introduction": "受試者保護中心在受試者保護諮議委員會督導下，與人體試驗審議委員會、醫學研究部、臨床試驗中心及試驗用藥管理等單位合作，促進臨床研究受試者保護。",
+      "responsibilities": [
+        "規劃受試者保護方針與策略。",
+        "統合、協調與管理跨單位保護業務及相關程序。",
+        "協調研究稽核、品質改善與研究倫理教育。",
+        "支援諮議委員會運作，受理保護業務諮詢、申訴及建議。"
+      ],
+      "source_note": "原頁提供中心介紹、任務、成員、相關法規與原網入口；聯絡窗口及現行受理方式請由原官網核對。",
+      "status": "active",
+      "visibility": "public",
+      "source_url": "https://depart.femh.org.tw/medresearch/RecipCenter.html",
+      "source_updated_at": "2025-07-03",
+      "source_checked_at": "2026-11-26"
+    },
+    {
+      "label": "研究發展委員會",
+      "rect": [
+        1064,
+        555,
+        424,
+        52
+      ],
+      "id": "research-development",
+      "summary": "規劃研究發展策略與經費，追蹤研究計畫、論文品質及研發成果管理運用。",
+      "introduction": "研究發展委員會以促進院內學術研究風氣、提升研究水準及健全研究管理為宗旨，推動醫學研究發展。",
+      "responsibilities": [
+        "編列年度研究經費預算。",
+        "規劃及制定研究發展策略。",
+        "追蹤研究計畫執行成效與研究論文品質。",
+        "追蹤研發成果管理運用及其他研究事項。"
+      ],
+      "source_note": "依原頁組織章程（2023-06-02 修訂）整理；不以查核日期代替章程修訂日期。",
+      "status": "active",
+      "visibility": "public",
+      "source_url": "https://depart.femh.org.tw/medresearch/RD.html",
+      "source_updated_at": "2025-07-03",
+      "source_checked_at": "2026-11-26"
+    },
+    {
+      "label": "實驗動物照護及使用小組",
+      "rect": [
+        1064,
+        617,
+        424,
+        52
+      ],
+      "id": "animal-care-use",
+      "summary": "監督實驗動物使用與照護，透過計畫審查、場域查核及執行監督維護動物福祉。",
+      "introduction": "實驗動物照護及使用小組（IACUC）以動物福祉與研究使用管理為核心，對實驗動物使用者提供監督與輔導。",
+      "responsibilities": [
+        "實驗動物使用須提出申請，使用者須具備操作技能。",
+        "討論及決議動物實驗室相關政策。",
+        "定期開會、內部查核並檢視飼養與實驗場所。",
+        "透過計畫通過後審查（PAM）監督執行符合規範。"
+      ],
+      "source_note": "依原頁「IACUC 的管理精神」整理；原頁另有成員名單，現任成員、申請方式與規範請洽原單位確認。",
+      "status": "active",
+      "visibility": "public",
+      "source_url": "https://depart.femh.org.tw/medresearch/Animal.html",
+      "source_updated_at": "2025-07-03",
+      "source_checked_at": "2026-11-26"
+    },
+    {
+      "label": "人體生物資料庫倫理委員會",
+      "rect": [
+        1064,
+        679,
+        424,
+        52
+      ],
+      "id": "biobank-ethics",
+      "summary": "監督人體生物資料庫的管理與運作，並提供倫理委員會章程及相關規範查閱入口。",
+      "introduction": "依原官網人體生物資料庫介紹，本庫的管理及運作受倫理委員會監督。此處介紹的是倫理監督單位，與共同研究室下的資料庫服務入口分開呈現。",
+      "responsibilities": [
+        "依原官網公開介紹，監督人體生物資料庫的管理與運作。",
+        "倫理委員會的組織及運作細節，請查閱原站所列組織章程。"
+      ],
+      "source_note": "原站督導選單使用「人體生物資料庫倫理委員會」，連入頁面標題為「人體生物資料庫」。本示範保留來源差異，不將資料庫的服務、成員或研究成果當作倫理委員會內容。",
+      "resource_links": [
+        {
+          "label": "倫理委員會組織章程（PDF）",
+          "href": "assets/documents/biobank/20260314006.pdf"
+        }
+      ],
+      "status": "active",
+      "visibility": "public",
+      "source_url": "https://depart.femh.org.tw/medresearch/BioBank.html",
+      "source_updated_at": "2025-07-03",
+      "source_checked_at": "2026-11-26"
+    },
+    {
+      "label": "生物安全委員會",
+      "rect": [
+        1064,
+        741,
+        424,
+        53
+      ],
+      "id": "biosafety",
+      "summary": "審核感染性生物材料與實驗室安全管理，督導訓練、稽核改善及意外事件處理。",
+      "introduction": "生物安全委員會以維護實驗室安全及妥善管理感染性生物材料為宗旨，辦理生物安全與生物保全相關審核及督導。",
+      "responsibilities": [
+        "審核感染性生物材料異動及實驗室安全、保全等級。",
+        "審核風險評鑑、緊急應變與實驗室設施運作計畫。",
+        "督導內部稽核、缺失改善及人員訓練。",
+        "處理、調查與報告實驗室生物安全意外事件。"
+      ],
+      "source_note": "依原頁組織章程（2021-03-26 修訂）摘要；本頁不取代現行法規、院內作業規範或正式申請程序。",
+      "status": "active",
+      "visibility": "public",
+      "source_url": "https://depart.femh.org.tw/medresearch/BioSafe.html",
+      "source_updated_at": "2025-07-03",
+      "source_checked_at": "2026-11-26"
+    }
+  ]
+}

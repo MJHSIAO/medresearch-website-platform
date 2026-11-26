@@ -444,6 +444,10 @@ def install(app, runtime, store):
 
     @app.get('/data/{kind}.json')
     async def public_data(kind: str):
+        if kind == 'organization':
+            # Read-only layout of the user-supplied public organization chart.
+            # Not a managed collection or a source of unit/permission records.
+            return FileResponse(store.source / 'organization.json', headers={'Cache-Control': 'no-cache'})
         if kind not in KINDS | {'media'} or kind == 'theme':
             raise HTTPException(404)
         state = store.read()

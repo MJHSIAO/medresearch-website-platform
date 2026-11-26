@@ -2500,3 +2500,5 @@ body {
 
 /* 深色卡片中的文字連結 */
 .card__link--light { color: #fff; }
+.brand__mark--reference::before, .brand__mark--reference::after { display: none; }
+.brand__mark--reference svg { display: block; fill: currentColor; }

@@ -11,6 +11,12 @@ documents.push({id:'private-file',title:'PRIVATE_FILE_PROBE',status:'published',
 documents.push({id:'draft-file',title:'DRAFT_FILE_PROBE',status:'draft',visibility:'public'});
 const search=context.window.MedSearch;
 const index=search.buildIndex(load('site'),load('units'),load('people'),load('news'),pages,documents);
+const organization=load('organization');
+organization.supervised.push({id:'hidden',label:'PRIVATE_SUPERVISED_PROBE',visibility:'internal',status:'active'});
+organization.supervised.push({id:'draft',label:'DRAFT_SUPERVISED_PROBE',visibility:'public',status:'draft'});
+const withSupervision=search.buildIndex(load('site'),load('units'),load('people'),load('news'),pages,documents,organization);
+assert.ok(search.search(withSupervision,'受試者保護中心').some(n=>n.type==='督導單位'&&n.href.endsWith('page=governance&supervised=human-research-protection')));
+for(const probe of ['PRIVATE_SUPERVISED_PROBE','DRAFT_SUPERVISED_PROBE'])assert.equal(search.search(withSupervision,probe).length,0);
 assert.ok(search.search(index,'周三芳').some(x=>x.href.includes('research-consultation')));
 assert.ok(search.search(index,'論文撰寫').some(x=>x.href.includes('writing')));
 assert.ok(search.search(index,'參與者同意書').some(x=>x.type==='文件表單'&&x.href.includes('downloads&q=')));

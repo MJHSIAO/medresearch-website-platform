@@ -1,5 +1,9 @@
 # 醫學研究部多單位網站平台
 
+2026-11-26 使用者已確認並授權提交、推送：組織架構依新版附件呈現，加入圖上單位連結、滑鼠拖曳及手機文字導覽；七個單位共用附件輪廓 SVG。純 HTML／SVG 整圖重建尚未完成，保留原圖以維持設計。完整檔案與驗證見 [架構圖修改說明](docs/organization-reference.md)。未部署正式站。
+
+確認後已套用至一般入口：`content-page.html?page=department-about` 使用寬鬆單位卡片，`content-page.html?page=governance` 提供七個督導單位及共用介紹頁；全站導覽與搜尋同步。舊示範參數仍可瀏覽，但不再顯示示範標示。督導介紹集中於公開組織資料，尚未新增管理中心的編輯表單。
+
 正式網站採原生 HTML、CSS、JavaScript、JSON 與 FastAPI，透過院方 OAuth2 登入。公開網站、管理中心共用資料來源；正式管理資料儲存在伺服器私有目錄，不使用瀏覽器角色切換或 localStorage。
 
 ## 啟動與部署

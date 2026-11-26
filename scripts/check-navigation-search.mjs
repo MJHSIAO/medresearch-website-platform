@@ -63,6 +63,29 @@ async function checkResourceHref(href) {
 for(const page of catalog)for(const group of page.groups||[])for(const card of group.cards)for(const action of card.actions)await checkResourceHref(action.href);
 for(const service of JSON.parse((await readFile(join(root, 'data/services.json'), 'utf8')).replace(/^\uFEFF/, '')))await checkResourceHref(service.href);
 await checkResourceHref('assets/js/management-personnel.js');
+await checkResourceHref('assets/js/organization-chart.js');
+await checkResourceHref('assets/js/department-directory.js');
+await checkResourceHref('assets/css/department-directory.css');
+await checkResourceHref('assets/images/unit-icons.svg');
+const organization=JSON.parse((await readFile(join(root,'data/organization.json'),'utf8')).replace(/^\uFEFF/,''));
+await checkResourceHref(organization.image);
+const organizationUnits=organization.affiliated.flatMap(n=>[n.unit_id,...n.children.filter(c=>c.unit_id).map(c=>c.unit_id)]);
+assert.equal(organization.affiliated.length,7,'Seven direct affiliated units');
+assert.equal(new Set(organizationUnits).size,8,'Biobank remains under core laboratory');
+for(const id of organizationUnits) {
+  assert.ok(departmentUnits.some(u=>u.id===id),'Organization unit exists: '+id);
+  await checkResourceHref('unit-about.html?unit='+id);
+}
+assert.equal(organization.supervised.length,7);
+const governance=catalog.find(p=>p.id==='governance');
+assert.equal(new Set(organization.supervised.map(n=>n.id)).size,7,'Stable supervised-unit identifiers');
+for(const supervised of organization.supervised){
+  assert.ok(governance.groups.some(g=>g.cards.some(c=>c.title===supervised.label)),'Supervised unit entry exists: '+supervised.label);
+  assert.ok(supervised.source_url&&supervised.source_updated_at&&supervised.source_checked_at,'Supervised source metadata');
+  await checkResourceHref('content-page.html?page=governance&supervised='+supervised.id);
+  for(const resource of supervised.resource_links||[])await checkResourceHref(resource.href);
+}
+await checkResourceHref('content-page.html?page=governance');
 for(const href of ['person.html','assets/js/member-profile.js','assets/js/member-profile-editor.js','assets/js/member-publications.js','assets/css/member-profile.css'])await checkResourceHref(href);
 for(const person of departmentPeople)if(person.profile?.photo_href&&!person.profile.photo_href.startsWith('media/'))await checkResourceHref(person.profile.photo_href);
 const publicationSeeds=JSON.parse((await readFile(join(root,'data/publications.json'),'utf8')).replace(/^\uFEFF/,''));

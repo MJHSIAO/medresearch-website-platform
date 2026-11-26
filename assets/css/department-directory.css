@@ -1,0 +1,40 @@
+.department-section-nav { display:flex; flex-wrap:wrap; gap:12px; margin:24px 0 6px; }
+.legacy-organization-anchor { display:block; scroll-margin-top:calc(var(--header-height,130px) + 24px); }
+.department-section-nav a { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:8px 22px; border:1px solid #bdd5c8; border-radius:8px; color:#246347; background:#fff; text-decoration:none; font-size:16px; font-weight:600; }
+.department-layout .unit-directory-group .resource-grid,
+.department-layout .supervised-directory-group .resource-grid,
+.department-layout .supervised-detail-group .resource-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; }
+.department-layout .unit-directory-group .resource-card { padding:30px; }
+.department-unit-card-heading { display:flex; align-items:center; gap:22px; margin-bottom:22px; }
+.department-unit-card-heading .resource-unit-icon { width:64px; height:64px; flex:0 0 64px; margin:0; border-radius:16px; }
+.department-unit-card-heading .unit-reference-icon { width:38px; height:38px; }
+.department-layout .department-unit-card-heading h3 { margin:0; font-size:22px; line-height:1.55; }
+.department-layout .unit-directory-group .resource-card > p { font-size:16px; line-height:1.95; margin-bottom:22px; }
+.department-layout .unit-directory-group .resource-card-actions { border-top:1px solid #e3ece6; padding-top:16px; }
+.department-layout .resource-card-actions .resource-action { min-height:44px; font-size:15px; }
+.department-layout .supervised-directory-group { margin-top:60px; padding-top:34px; border-top:2px dashed #b2d2c5; }
+.department-layout .supervised-directory-group .resource-card { padding:28px 30px; border-top:3px solid #4c9281; }
+.department-layout .supervised-directory-group .resource-card p,
+.department-layout .supervised-detail-group .resource-card p { font-size:16px; line-height:1.9; }
+.department-layout .supervised-directory-group .resource-tag { background:#edf6f4; color:#326e61; font-size:13px; }
+.department-layout .supervised-detail-group .resource-card { padding:30px; }
+.supervised-responsibilities { padding-left:1.3rem; margin:0 0 22px; font-size:16px; line-height:1.9; color:#425e50; }
+.supervised-responsibilities li { margin-bottom:12px; }
+.department-layout .organization-chart-canvas { min-width:1800px; }
+.department-layout .organization-fit .organization-chart-canvas { min-width:0; }
+.organization-pan-enabled:not(.organization-pan-fit), .organization-pan-enabled:not(.organization-pan-fit) a { cursor:grab; }
+.organization-pan-enabled.organization-panning, .organization-pan-enabled.organization-panning a { cursor:grabbing; }
+.organization-pan-enabled .organization-chart-canvas { user-select:none; }
+.organization-pan-enabled img { -webkit-user-drag:none; }
+@media(max-width:700px) {
+ .department-layout .unit-directory-group .resource-grid,
+ .department-layout .supervised-directory-group .resource-grid,
+ .department-layout .supervised-detail-group .resource-grid { grid-template-columns:minmax(0,1fr); gap:18px; }
+ .department-layout .unit-directory-group .resource-card,
+ .department-layout .supervised-directory-group .resource-card,
+ .department-layout .supervised-detail-group .resource-card { padding:24px; }
+ .department-unit-card-heading { gap:18px; margin-bottom:20px; }
+ .department-unit-card-heading .resource-unit-icon { width:52px; height:52px; flex-basis:52px; }
+ .department-unit-card-heading .unit-reference-icon { width:32px; height:32px; }
+ .department-layout .department-unit-card-heading h3 { font-size:20px; }
+}

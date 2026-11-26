@@ -54,3 +54,8 @@ ul, ol { margin-top: 0; }
 .status-message { margin-top: 1rem; padding: 0.8rem 1rem; border-left: 4px solid var(--green-600); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; background: var(--green-050); }
 .status-message.error { border-left-color: var(--danger); background: var(--danger-bg); color: var(--danger); }
 .required { color: var(--danger); }
+.unit-reference-icon { display: inline-block; width: 2rem; height: 2rem; flex: 0 0 auto; vertical-align: middle; color: inherit; }
+.unit-site-name { display: inline-flex; align-items: center; gap: .65rem; }
+.unit-identity-mark .unit-reference-icon { width: 3rem; height: 3rem; }
+.unit-about-icon { display: block; margin-bottom: 1rem; color: var(--green-700); }
+.unit-about-icon .unit-reference-icon { width: 3.5rem; height: 3.5rem; }
